@@ -8,7 +8,7 @@
 
 const REFRESH_SECONDS = 60; // GameTracker banner'ının yenilenme aralığı
 
-// ---- 42 kulüp sayfası (sol çubuktaki "42" rozeti, link: #42) ----
+// ---- 42 kulüp sayfası: sitenin ana sayfası (sol üstteki "42" butonu) ----
 const CLUB = {
   name: "42 Oyun Kulübü",
   about:
@@ -22,7 +22,6 @@ const SERVERS = [
   {
     id: "cs16",
     name: "Counter-Strike 1.6",
-    short: "1.6",
     ip: "45.74.244.214",
     port: 27015,
     connect: "steam",
@@ -43,7 +42,6 @@ const SERVERS = [
   {
     id: "cs2",
     name: "Counter-Strike 2",
-    short: "CS2",
     ip: "",
     port: 27015,
     connect: "steam",
@@ -62,7 +60,6 @@ const SERVERS = [
   {
     id: "minecraft",
     name: "Minecraft",
-    short: "MC",
     ip: "",
     port: 25565,
     connect: null,
@@ -82,7 +79,6 @@ const SERVERS = [
   {
     id: "rust",
     name: "Rust",
-    short: "RUST",
     ip: "",
     port: 28015,
     connect: null,
@@ -102,7 +98,6 @@ const SERVERS = [
   {
     id: "arma3",
     name: "Arma 3",
-    short: "A3",
     ip: "",
     port: 2302,
     connect: null,
