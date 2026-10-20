@@ -550,7 +550,7 @@ body[data-theme="club42"] {
 /* Kulüp ana sayfası: oyun pencerelerinden bağımsız, tam sayfa açılış */
 .club-home {
   width: 100%;
-  max-width: 1080px;
+  max-width: 1360px;
   font-family: "JetBrains Mono", Consolas, monospace;
   color: #f2f2f2;
 }
@@ -569,7 +569,6 @@ body[data-theme="club42"] {
   padding: 26px 34px 30px 24px;
   box-shadow: 10px 10px 0 #00babc;
 }
-.home-kicker { margin: 0 0 6px; color: #00babc; font-size: 14px; }
 .home-title {
   margin: 0;
   font: 700 clamp(28px, 4.4vw, 52px)/1.05 "JetBrains Mono", Consolas, monospace;
@@ -601,14 +600,17 @@ body[data-theme="club42"] {
 /* Oyun kartları */
 .game-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+@media (min-width: 1240px) {
+  .game-cards { grid-template-columns: repeat(5, 1fr); }
 }
 .game-card {
   --card-accent: #00babc;
   position: relative;
   display: flex;
-  min-height: 230px;
+  min-height: 400px;
   overflow: hidden;
   color: #fff;
   text-decoration: none;
@@ -628,6 +630,11 @@ body[data-theme="club42"] {
   filter: saturate(0.85);
   transition: transform 0.4s ease, filter 0.4s ease;
 }
+/* uzun kartta her sahnenin en tanıdık kısmı görünsün */
+.game-card[data-game="cs16"] .card-art { background-position: 22% bottom; }
+.game-card[data-game="minecraft"] .card-art { background-position: 10% bottom; }
+.game-card[data-game="rust"] .card-art { background-position: 88% bottom; }
+.game-card[data-game="arma3"] .card-art { background-position: 76% bottom; }
 .card-art::after {
   content: "";
   position: absolute;
@@ -639,10 +646,10 @@ body[data-theme="club42"] {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 4px;
+  gap: 6px;
   width: 100%;
-  padding: 14px;
-  border-bottom: 3px solid var(--card-accent);
+  padding: 20px;
+  border-bottom: 4px solid var(--card-accent);
 }
 .card-state {
   align-self: flex-start;
@@ -653,9 +660,8 @@ body[data-theme="club42"] {
   background: rgba(0, 0, 0, 0.7);
 }
 .card-state.on { color: #00babc; }
-.card-name { font-weight: 700; font-size: 16px; line-height: 1.2; }
-.card-addr { font-size: 12px; color: #bdbdbd; overflow-wrap: anywhere; }
-.card-cta { margin-top: 6px; font-size: 12px; color: var(--card-accent); }
+.card-name { font-weight: 700; font-size: 22px; line-height: 1.2; }
+.card-addr { font-size: 14px; color: #bdbdbd; overflow-wrap: anywhere; }
 .game-card:hover,
 .game-card:focus-visible {
   transform: translateY(-4px);
@@ -702,6 +708,9 @@ body[data-theme="club42"] {
   .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
   .home-hero { flex-direction: column; align-items: flex-start; gap: 24px; margin-bottom: 36px; }
   .home-logo { font-size: 84px; letter-spacing: -6px; border-width: 4px; padding: 14px 20px 18px 14px; box-shadow: 6px 6px 0 #00babc; }
-  .game-cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-  .game-card { min-height: 180px; }
+  .game-cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .game-card { min-height: 260px; }
+  .card-body { padding: 14px; }
+  .card-name { font-size: 17px; }
+  .card-addr { font-size: 12px; }
 }

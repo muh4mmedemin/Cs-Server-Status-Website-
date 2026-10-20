@@ -116,7 +116,6 @@ function renderClub() {
         <span class="card-state"></span>
         <span class="card-name"></span>
         <span class="card-addr"></span>
-        <span class="card-cta">Canlı durum &rarr;</span>
       </span>`;
     card.querySelector(".card-art").style.backgroundImage = `url("img/bg/${s.id}.svg")`;
     card.querySelector(".card-name").textContent = s.name;
