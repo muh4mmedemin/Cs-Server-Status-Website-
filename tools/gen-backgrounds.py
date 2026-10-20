@@ -300,15 +300,36 @@ def arma3():
     b += topo
     save("arma3.svg", svg("\n".join(b), defs))
 
-# ------------------------------------------------------------------ 42 – cluster oturma planı (iMac sıraları)
+# ------------------------------------------------------------------ 42 – oyun oynanan cluster
+# iMac ekranlarında kulübün oyunları açık; kenarlarda oyun HUD'ları,
+# kill feed'de oyuncu adı olarak 42 koltuk adları.
 def club42():
     r = random.Random(42)
+    # 46x30'luk mini ekran sahneleri (her oyun için bir <symbol>)
+    defs = '''
+<symbol id="scr-cs16" viewBox="0 0 46 30"><rect width="46" height="30" fill="#8a6a3c"/><rect y="18" width="46" height="12" fill="#5a4229"/>
+ <rect x="4" y="9" width="16" height="13" fill="#6e5432"/><path d="M8,22 v-6 a4,4 0 0 1 8,0 v6 z" fill="#2a1c10"/>
+ <rect x="30" y="16" width="8" height="8" fill="#5b4122" stroke="#2b1d0e"/><path d="M23,13 v4 M21,15 h4" stroke="#7cff6b" stroke-width="1"/></symbol>
+<symbol id="scr-cs2" viewBox="0 0 46 30"><rect width="46" height="30" fill="#16233b"/><rect y="20" width="46" height="10" fill="#c46a3a" opacity=".6"/>
+ <path d="M12,24 a11,9 0 0 1 22,0 z" fill="#0b111d"/><rect x="8" y="24" width="30" height="6" fill="#0b111d"/><rect x="6" y="10" width="2" height="14" fill="#0b111d"/>
+ <path d="M23,11 v3 M23,16 v3 M20,15 h2 M24,15 h2" stroke="#3cff9a" stroke-width="1"/></symbol>
+<symbol id="scr-mc" viewBox="0 0 46 30"><rect width="46" height="30" fill="#7ea3f0"/><rect x="34" y="3" width="6" height="6" fill="#fff8b0"/>
+ <rect x="4" y="5" width="12" height="3" fill="#fff"/><rect y="18" width="46" height="3" fill="#5f9f35"/><rect y="21" width="46" height="9" fill="#79553a"/>
+ <rect x="10" y="12" width="3" height="6" fill="#6a5032"/><rect x="7" y="7" width="9" height="6" fill="#3d7a26"/><rect x="26" y="15" width="6" height="3" fill="#5f9f35"/></symbol>
+<symbol id="scr-rust" viewBox="0 0 46 30"><rect width="46" height="30" fill="#3a2216"/><rect y="12" width="46" height="8" fill="#b5582a" opacity=".7"/>
+ <circle cx="30" cy="16" r="3" fill="#ffc890" opacity=".8"/><rect y="22" width="46" height="8" fill="#0d0907"/>
+ <path d="M34,26 l3,-12 M42,26 l-3,-12" stroke="#0d0907" stroke-width="1.5"/><rect x="33" y="10" width="10" height="5" rx="2" fill="#0d0907"/>
+ <rect x="6" y="18" width="10" height="6" fill="#2a1a12"/></symbol>
+<symbol id="scr-arma" viewBox="0 0 46 30"><rect width="46" height="30" fill="#36424a"/><rect y="14" width="46" height="6" fill="#d0a868" opacity=".6"/>
+ <path d="M0,22 L8,15 L15,19 L24,12 L33,18 L40,14 L46,17 V30 H0 Z" fill="#353a31"/><path d="M0,26 L12,21 L26,25 L38,20 L46,23 V30 H0 Z" fill="#1d2019"/>
+ <path d="M28,7 h8 l2,-1 h1 l-1,2 h-10 z M27,5.5 h14" stroke="#0e1114" stroke-width=".8" fill="#0e1114"/></symbol>'''
+    screens = ["scr-cs16", "scr-cs2", "scr-mc", "scr-rust", "scr-arma"]
     b = ['<rect width="1600" height="900" fill="#050505"/>',
          '<g fill="none" stroke="#ffffff" stroke-opacity=".035">']
     b += [f'<line x1="{x}" y1="0" x2="{x}" y2="{H}"/>' for x in range(0, W+1, 40)]
     b += [f'<line x1="0" y1="{y}" x2="{W}" y2="{y}"/>' for y in range(0, H+1, 40)]
     b.append('</g>')
-    # cluster bölgeleri: her biri sıra sıra iMac'ler
+    seats = []
     for ox, oy, cols, rows, label in [(60, 60, 10, 6, "c1"), (900, 60, 10, 6, "c2"),
                                       (60, 520, 10, 6, "c3"), (900, 520, 10, 6, "c4")]:
         b.append(f'<rect x="{ox-20}" y="{oy-30}" width="{cols*62+30}" height="{rows*56+50}" rx="10" '
@@ -318,17 +339,56 @@ def club42():
         for row in range(rows):
             for col in range(cols):
                 x, y = ox + col*62, oy + 10 + row*56
-                used = r.random() < .45
-                fill = "#00babc" if used else "#ffffff"
-                op = r.uniform(.35, .6) if used else .07
-                b.append(f'<rect x="{x}" y="{y}" width="46" height="30" rx="4" fill="{fill}" fill-opacity="{op:.2f}"/>')
+                name = f"{label}r{row+1}p{col+1}"
+                roll = r.random()
+                if roll < .42:   # oyun açık ekran
+                    b.append(f'<g opacity="{r.uniform(.35, .6):.2f}"><use href="#{r.choice(screens)}" x="{x}" y="{y}" width="46" height="30"/>'
+                             f'<rect x="{x}" y="{y}" width="46" height="30" rx="3" fill="none" stroke="#00babc" stroke-opacity=".7"/></g>')
+                    seats.append(name)
+                elif roll < .55:  # terminal / kod (42 projesi)
+                    b.append(f'<rect x="{x}" y="{y}" width="46" height="30" rx="3" fill="#00babc" fill-opacity=".22"/>')
+                    for i in range(3):
+                        b.append(f'<rect x="{x+5}" y="{y+6+i*7}" width="{r.randint(12, 34)}" height="2" fill="#ffffff" fill-opacity=".35"/>')
+                else:             # boş koltuk
+                    b.append(f'<rect x="{x}" y="{y}" width="46" height="30" rx="3" fill="#ffffff" fill-opacity=".06"/>')
                 b.append(f'<rect x="{x+19}" y="{y+31}" width="8" height="6" fill="#ffffff" fill-opacity=".06"/>')
-                if used and r.random() < .3:
-                    b.append(f'<text x="{x+23}" y="{y+20}" text-anchor="middle" fill="#ffffff" fill-opacity=".5" '
-                             f'font-family="monospace" font-size="9">{label}r{row+1}p{col+1}</text>')
     # ortada büyük, çok silik "42"
     b.append('<text x="800" y="560" text-anchor="middle" fill="#ffffff" fill-opacity=".04" '
              'font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="520">42</text>')
-    save("club42.svg", svg("\n".join(b)))
+    # --- oyun HUD katmanı ---
+    mono = 'font-family="monospace"'
+    # CS HUD: can / zırh / para
+    # (HUD öğeleri x=220..1500 arasında: 16:10 ekranda kırpılmasın, sol menünün altında kalmasın)
+    b.append(f'<g fill="#ffb43c" fill-opacity=".35" {mono} font-weight="700" font-size="34">'
+             '<text x="230" y="880">✚ 100</text><text x="390" y="880">⛨ 100</text>'
+             '<text x="1500" y="880" text-anchor="end">$ 4242</text></g>')
+    # nişangah
+    b.append('<g stroke="#7cff6b" stroke-opacity=".45" stroke-width="3">'
+             '<path d="M1290,450 h18 M1322,450 h18 M1315,425 v18 M1315,457 v18"/></g>')
+    # kill feed: oyuncu adları 42 koltukları
+    weapons = ["AK-47", "AWP", "M4A1", "Deagle", "USP"]
+    b.append(f'<g {mono} font-size="14">')
+    for i in range(4):
+        a, v = r.sample(seats, 2)
+        y = 32 + i*26
+        b.append(f'<rect x="1140" y="{y-16}" width="370" height="22" fill="#000" fill-opacity=".45"/>'
+                 f'<text x="1500" y="{y}" text-anchor="end" fill="#ffffff" fill-opacity=".55">'
+                 f'<tspan fill="#00babc">{a}</tspan>  [{r.choice(weapons)}]  <tspan fill="#ff6b5a">{v}</tspan></text>')
+    b.append('</g>')
+    # Minecraft envanter çubuğu
+    x0 = 800 - 9*44/2
+    items = {0: "#9c9c9c", 1: "#6a5032", 2: "#5f9f35", 4: "#79553a", 7: "#3f62d8"}
+    b.append('<g opacity=".35">')
+    for i in range(9):
+        x = x0 + i*44
+        b.append(f'<rect x="{x}" y="836" width="44" height="44" fill="#000" fill-opacity=".5" stroke="#8b8b8b" stroke-width="3"/>')
+        if i in items:
+            b.append(f'<rect x="{x+12}" y="848" width="20" height="20" fill="{items[i]}"/>')
+    b.append(f'<rect x="{x0-2}" y="834" width="48" height="48" fill="none" stroke="#fff" stroke-width="3"/></g>')
+    # skor tablosu
+    b.append(f'<g {mono} font-size="13" fill="#ffffff" fill-opacity=".4">'
+             '<rect x="220" y="16" width="230" height="24" fill="#000" fill-opacity=".45"/>'
+             '<text x="232" y="33"><tspan fill="#5aa9ff">CT 13</tspan>  :  <tspan fill="#ffb43c">T 08</tspan>   ⏱ 1:42</text></g>')
+    save("club42.svg", svg("\n".join(b), defs))
 
 for f in (cs16, cs2, minecraft, rust, arma3, club42): f()

@@ -543,7 +543,7 @@ body[data-theme="club42"] {
   --primary-bg: #00babc;
   --primary-text: #000;
   --page-bg:
-    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .55) 0%, rgba(0, 0, 0, .8) 100%),
+    radial-gradient(ellipse at 50% 40%, rgba(0, 0, 0, .55) 0%, rgba(0, 0, 0, .35) 100%),
     url("../img/bg/club42.svg") center / cover no-repeat;
   --page-color: #050505;
 }
