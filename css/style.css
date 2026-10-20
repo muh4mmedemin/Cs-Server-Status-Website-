@@ -29,16 +29,18 @@ a { color: var(--accent); }
 
 .desktop {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(220px, 300px) minmax(0, 640px);
-  gap: 48px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 24px;
   padding: 32px 16px;
 }
 
 /* ---------- Ana menü ---------- */
-.logo { margin: 0 0 32px; font-weight: normal; }
+.main-menu { width: 100%; max-width: 640px; }
+.desktop > .vgui-window:not(.console-window) { max-width: 640px; }
+.logo { margin: 0; font-weight: normal; }
 .logo-top {
   display: block;
   font: bold 30px/1 Verdana, Tahoma, sans-serif;
@@ -54,20 +56,6 @@ a { color: var(--accent); }
   letter-spacing: 2px;
   text-transform: uppercase;
 }
-
-.main-menu nav { display: flex; flex-direction: column; gap: 4px; }
-
-.menu-link {
-  all: unset;
-  cursor: pointer;
-  font: 15px/1.6 var(--font);
-  color: var(--text);
-  padding: 2px 0;
-  text-shadow: 1px 1px 0 #000;
-}
-.menu-link:hover,
-.menu-link:focus-visible { color: var(--accent); }
-.menu-link.active { color: #fff; }
 
 /* ---------- VGUI pencere ---------- */
 .vgui-window {
@@ -115,6 +103,8 @@ button.tbtn { cursor: pointer; }
   top: 1px;
 }
 .tab.active { color: #fff; background: var(--panel); }
+#tab-console { margin-left: auto; }
+#tab-console.open { color: var(--accent); }
 
 .panel {
   margin: 0 8px;
@@ -250,10 +240,15 @@ button.tbtn { cursor: pointer; }
 /* ---------- Konsol ---------- */
 .console-window {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  left: 0;
+  top: 0;
   width: min(480px, calc(100vw - 32px));
   z-index: 10;
+}
+.console-window .title-bar {
+  cursor: move;
+  user-select: none;
+  touch-action: none;
 }
 .console-window .panel { margin-bottom: 8px; padding: 6px; }
 .console-log {
@@ -300,10 +295,7 @@ button.tbtn { cursor: pointer; }
 
 /* ---------- Mobil ---------- */
 @media (max-width: 860px) {
-  .desktop { grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; align-content: start; }
-  .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
-  .logo { margin-bottom: 16px; }
+  .desktop { justify-content: flex-start; }
   .logo-top { font-size: 24px; }
-  .main-menu nav { flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
-  .menu-link { font-size: 13px; }
+  .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
 }
