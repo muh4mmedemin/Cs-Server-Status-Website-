@@ -686,6 +686,49 @@ body[data-theme="club42"] {
   padding: 3px 6px 4px 4px;
 }
 
+/* ---------- Yapımlar (harita, mod...) ---------- */
+.work-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.work-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-dark);
+  border: 1px solid;
+  border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.work-img { aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
+.work-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.work-body { display: flex; flex-direction: column; gap: 6px; flex: 1; padding: 10px 12px 12px; }
+.work-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85em; color: var(--text-dim); }
+.work-type { color: var(--accent); }
+.work-title { margin: 0; font-size: 1.15em; color: var(--text); }
+.work-desc { margin: 0 0 4px; color: var(--text-dim); flex: 1; }
+.work-dl { align-self: flex-start; }
+.works-empty { margin: 8px 0; color: var(--text-dim); text-align: center; padding: 24px 0; }
+
+/* Ana sayfadaki yapımlar: 42 görünümü */
+.home-works { margin-top: 48px; }
+.home-works .work-cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+.home-works .work-card { background: #0b0b0b; border: 1px solid #2a2a2a; border-radius: 0; font-family: "JetBrains Mono", Consolas, monospace; }
+.home-works .work-body { padding: 16px; }
+.home-works .work-type { color: #00babc; }
+.home-works .work-title { color: #fff; font-size: 18px; }
+.home-works .work-desc,
+.home-works .work-meta { color: #a8a8a8; }
+.home-works .work-dl {
+  font: 700 13px/1 "JetBrains Mono", Consolas, monospace;
+  color: #000;
+  background: #00babc;
+  border: 1px solid #00babc;
+  padding: 10px 14px;
+}
+.home-works .work-dl:hover { background: #fff; border-color: #fff; color: #000; }
+
 /* ---------- Mobil ---------- */
 @media (max-width: 860px) {
   :root { --rail-width: 0px; }
