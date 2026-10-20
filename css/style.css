@@ -37,27 +37,9 @@ a { color: var(--accent); }
   padding: 32px 16px;
 }
 
-/* ---------- Ana menü ---------- */
-.main-menu { width: 100%; max-width: 640px; }
-.desktop > .vgui-window:not(.console-window) { max-width: 640px; }
-.logo { margin: 0; font-weight: normal; }
-.logo-top {
-  display: block;
-  font: bold 30px/1 Verdana, Tahoma, sans-serif;
-  letter-spacing: 1px;
-  color: #e8e4c8;
-  text-shadow: 2px 2px 0 #000;
-}
-.logo-sub {
-  display: block;
-  margin-top: 6px;
-  color: var(--text-dim);
-  font-size: 13px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
 /* ---------- VGUI pencere ---------- */
+.desktop > .vgui-window:not(.console-window) { max-width: 640px; }
+
 .vgui-window {
   background: var(--bg);
   border: 1px solid;
@@ -107,7 +89,7 @@ button.tbtn { cursor: pointer; }
 #tab-console.open { color: var(--accent); }
 
 .panel {
-  margin: 0 8px;
+  margin: 0 8px 8px;
   padding: 12px;
   background: var(--panel);
   border: 1px solid;
@@ -229,14 +211,6 @@ button.tbtn { cursor: pointer; }
   word-break: break-all;
 }
 
-/* Durum çubuğu */
-.status-bar {
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 10px 6px;
-  color: var(--text-dim);
-}
-
 /* ---------- Konsol ---------- */
 .console-window {
   position: fixed;
@@ -296,6 +270,5 @@ button.tbtn { cursor: pointer; }
 /* ---------- Mobil ---------- */
 @media (max-width: 860px) {
   .desktop { justify-content: flex-start; }
-  .logo-top { font-size: 24px; }
   .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
 }
