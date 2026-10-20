@@ -3,7 +3,8 @@
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
-let current; // seçili sunucu (SERVERS içinden)
+const CLUB_ID = "42";
+let current; // seçili sunucu (SERVERS içinden); kulüp sayfasında null
 
 const addressOf = (s) => `${s.ip}:${s.port}`;
 const hasIp = (s) => Boolean(s.ip);
@@ -50,13 +51,14 @@ function loadBanner() {
 }
 
 banner.addEventListener("load", () => {
+  if (!current) return;
   banner.hidden = false;
   bannerError.hidden = true;
   log(`GameTracker banner güncellendi (${current.name} – ${addressOf(current)})`);
 });
 
 banner.addEventListener("error", () => {
-  if (!banner.getAttribute("src")) return;
+  if (!current || !banner.getAttribute("src")) return;
   showBannerError("Banner yüklenemedi. GameTracker'a ulaşılamıyor olabilir.");
   log(`HATA: GameTracker banner yüklenemedi (${current.name})`);
 });
@@ -69,7 +71,7 @@ function updateCountdown() {
 }
 
 setInterval(() => {
-  if (!hasIp(current)) return;
+  if (!current || !hasIp(current)) return;
   remaining--;
   if (remaining <= 0) loadBanner();
   else updateCountdown();
@@ -78,6 +80,13 @@ setInterval(() => {
 // ---- Oyun seçimi ----
 function renderRail() {
   const rail = $("#game-rail");
+  const club = document.createElement("a");
+  club.className = "rail-item rail-club";
+  club.href = `#${CLUB_ID}`;
+  club.dataset.game = CLUB_ID;
+  club.title = CLUB.name;
+  club.innerHTML = `<span class="rail-short">42</span><span class="rail-name">Kulüp</span>`;
+  rail.appendChild(club);
   SERVERS.forEach((s) => {
     const a = document.createElement("a");
     a.className = "rail-item";
@@ -91,6 +100,45 @@ function renderRail() {
   });
 }
 
+function renderClub() {
+  $("#club-name").textContent = CLUB.name;
+  $("#club-about").textContent = CLUB.about;
+  const tbody = $("#club-servers");
+  tbody.innerHTML = "";
+  SERVERS.forEach((s) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td></td><td></td><td><a></a></td>`;
+    tr.children[0].textContent = s.name;
+    tr.children[1].textContent = hasIp(s) ? addressOf(s) : "IP ayarlanmadı";
+    const a = tr.querySelector("a");
+    a.href = `#${s.id}`;
+    a.textContent = "Durum →";
+    tbody.appendChild(tr);
+  });
+  const links = $("#club-links");
+  links.innerHTML = "";
+  CLUB.links.forEach((l) => {
+    const a = document.createElement("a");
+    a.className = "vbtn";
+    a.href = l.url;
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.textContent = l.label;
+    links.appendChild(a);
+  });
+}
+
+function showClub() {
+  current = null;
+  banner.removeAttribute("src");
+  document.body.dataset.theme = "club42";
+  document.title = `${CLUB.name} – Sunucular`;
+  $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === CLUB_ID));
+  $("#window-title").textContent = `${CLUB.name} – Sunucular`;
+  $$(".tab-content").forEach((c) => c.classList.toggle("active", c.id === "tab-club"));
+  log(`~/${CLUB_ID} $ cd kulup`);
+}
+
 function fillList(el, items) {
   el.innerHTML = "";
   items.forEach((html) => {
@@ -102,9 +150,15 @@ function fillList(el, items) {
 }
 
 function selectGame(id) {
+  if (id === CLUB_ID) {
+    if (document.body.dataset.theme !== "club42") showClub();
+    return;
+  }
   const next = SERVERS.find((s) => s.id === id) || SERVERS[0];
   if (current === next) return;
+  const fromClub = !current;
   current = next;
+  if (fromClub) showTab("status");
 
   document.body.dataset.theme = current.id;
   document.title = `${current.name} Sunucu Durumu`;
@@ -142,6 +196,7 @@ $$("[data-tab]").forEach((el) => el.addEventListener("click", () => showTab(el.d
 
 // ---- IP kopyala ----
 async function copyAddress() {
+  if (!current) return log("Önce bir oyun seçin (games).");
   if (!hasIp(current)) return log(`${current.name} için IP ayarlanmadı.`);
   const address = addressOf(current);
   try {
@@ -161,6 +216,7 @@ async function copyAddress() {
 $("#btn-copy").addEventListener("click", copyAddress);
 
 $("#btn-refresh").addEventListener("click", loadBanner);
+const refresh = () => (current ? loadBanner() : log("Önce bir oyun seçin (games)."));
 
 $("#btn-connect").addEventListener("click", () => log(`] connect ${addressOf(current)}`));
 
@@ -227,22 +283,38 @@ document.addEventListener("keydown", (e) => {
 });
 
 const COMMANDS = {
-  help: () => log("Komutlar: help, status, games, game <id>, connect, copy, refresh, clear"),
+  help: () => log("Komutlar: help, status, games, game <id>, connect, copy, refresh, clear, 42, norminette"),
   status: () =>
-    log(`${current.name}: ${hasIp(current) ? addressOf(current) : "IP ayarlanmadı"}`),
-  games: () => SERVERS.forEach((s) => log(`  ${s.id.padEnd(10)} ${s.name}`)),
+    current
+      ? log(`${current.name}: ${hasIp(current) ? addressOf(current) : "IP ayarlanmadı"}`)
+      : SERVERS.forEach((s) => log(`  ${s.name}: ${hasIp(s) ? addressOf(s) : "IP ayarlanmadı"}`)),
+  games: () => {
+    log(`  ${CLUB_ID.padEnd(10)} ${CLUB.name}`);
+    SERVERS.forEach((s) => log(`  ${s.id.padEnd(10)} ${s.name}`));
+  },
   game: (id) => {
-    if (!SERVERS.some((s) => s.id === id)) return log("Kullanım: game <id> (liste için: games)");
+    if (id !== CLUB_ID && !SERVERS.some((s) => s.id === id))
+      return log("Kullanım: game <id> (liste için: games)");
     location.hash = id;
   },
   connect: () => {
+    if (!current) return log("Önce bir oyun seçin (games).");
     if (!hasIp(current)) return log(`${current.name} için IP ayarlanmadı.`);
     if (current.connect !== "steam") return log("Bu oyun için 'Nasıl Bağlanırım?' sekmesine bakın.");
     window.location.href = `steam://connect/${addressOf(current)}`;
   },
   copy: copyAddress,
-  refresh: loadBanner,
+  refresh,
   clear: () => (consoleLog.textContent = ""),
+  42: () => {
+    log(`${CLUB.name} – ${CLUB.about}`);
+    location.hash = CLUB_ID;
+  },
+  norminette: () => {
+    log("index.html: OK!");
+    log("js/main.js: OK!");
+    log("Error: TOO_MANY_HOURS_IN_GAME  (line: 42, col: 1)");
+  },
 };
 
 $("#console-form").addEventListener("submit", (e) => {
@@ -259,5 +331,6 @@ $("#console-form").addEventListener("submit", (e) => {
 log("Sunucu durum paneli yüklendi.");
 log("Komut listesi için 'help' yazın.");
 renderRail();
+renderClub();
 showTab("status");
 selectGame(location.hash.slice(1));

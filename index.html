@@ -7,7 +7,7 @@
   <meta name="description" content="Oyun sunucularının anlık durumu (GameTracker).">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600&family=Oswald:wght@400;600&family=Rajdhani:wght@500;700&family=VT323&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Oswald:wght@400;600&family=Rajdhani:wght@500;700&family=VT323&display=swap">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-theme="cs16">
@@ -90,6 +90,31 @@
             <div class="group-label">Bağlanma Yolları</div>
             <ol class="rules howto" id="howto-list"></ol>
           </div>
+        </section>
+
+        <!-- 42 KULÜP SAYFASI -->
+        <section class="tab-content" id="tab-club">
+          <div class="club-hero">
+            <span class="club-42">42</span>
+            <div>
+              <div class="club-name" id="club-name"></div>
+              <p class="club-about" id="club-about"></p>
+            </div>
+          </div>
+          <div class="group">
+            <div class="group-label">Sunucular</div>
+            <table class="server-list club-servers">
+              <thead>
+                <tr>
+                  <th>Oyun</th>
+                  <th>Adres</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="club-servers"></tbody>
+            </table>
+          </div>
+          <div class="button-row" id="club-links"></div>
         </section>
       </div>
     </main>

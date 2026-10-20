@@ -8,6 +8,16 @@
 
 const REFRESH_SECONDS = 60; // GameTracker banner'ının yenilenme aralığı
 
+// ---- 42 kulüp sayfası (sol çubuktaki "42" rozeti, link: #42) ----
+const CLUB = {
+  name: "42 Oyun Kulübü",
+  about:
+    "42 öğrencilerinin oyun kulübü. Sunucularımız herkese açık; " +
+    "cluster'dan çıkınca bir maça bekleriz.",
+  // Kulüp linkleri, ör: { label: "Discord", url: "https://discord.gg/..." }
+  links: [],
+};
+
 const SERVERS = [
   {
     id: "cs16",
