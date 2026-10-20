@@ -41,7 +41,18 @@ const CLUB = {
 //     download: "works/cs16/de_kulup42.zip",
 //     date: "2026-11",
 //   },
-const WORKS = [];
+
+const WORKS = [
+  {
+    game: "cs16",
+    title: "de_haritam",
+    type: "Harita",
+    description: "Kısa bir açıklama.",
+    image: "works/cs16/istanbul_42.jpg",
+    download: "works/cs16/istanbul_42.zip",
+    date: "2026-11",
+  },
+];
 
 const SERVERS = [
   {
