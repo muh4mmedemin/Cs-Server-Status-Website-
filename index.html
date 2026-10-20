@@ -16,7 +16,27 @@
   <div class="fade-veil" aria-hidden="true"></div>
 
   <div class="desktop">
-    <main class="vgui-window" id="server-window">
+    <!-- 42 KULÜP ANA SAYFASI -->
+    <main class="club-home" id="club-home" hidden>
+      <header class="home-hero">
+        <div class="home-logo" aria-hidden="true">42</div>
+        <div class="home-intro">
+          <p class="home-kicker">// oyun sunucuları</p>
+          <h1 class="home-title" id="club-name"></h1>
+          <p class="home-about" id="club-about"></p>
+          <div class="home-actions" id="club-links">
+            <button class="home-btn" id="home-console" type="button">&gt;_ Konsol</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="home-games">
+        <h2 class="home-section"><span>$</span> ls sunucular/</h2>
+        <div class="game-cards" id="club-servers"></div>
+      </section>
+    </main>
+
+    <main class="vgui-window" id="server-window" hidden>
       <div class="title-bar">
         <span class="title" id="window-title" lang="en"></span>
         <span class="title-buttons">
@@ -91,31 +111,6 @@
             <div class="group-label">Bağlanma Yolları</div>
             <ol class="rules howto" id="howto-list"></ol>
           </div>
-        </section>
-
-        <!-- 42 KULÜP SAYFASI -->
-        <section class="tab-content" id="tab-club">
-          <div class="club-hero">
-            <span class="club-42">42</span>
-            <div>
-              <div class="club-name" id="club-name"></div>
-              <p class="club-about" id="club-about"></p>
-            </div>
-          </div>
-          <div class="group">
-            <div class="group-label">Sunucular</div>
-            <table class="server-list club-servers">
-              <thead>
-                <tr>
-                  <th>Oyun</th>
-                  <th>Adres</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="club-servers"></tbody>
-            </table>
-          </div>
-          <div class="button-row" id="club-links"></div>
         </section>
       </div>
     </main>
