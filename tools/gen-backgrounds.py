@@ -300,4 +300,35 @@ def arma3():
     b += topo
     save("arma3.svg", svg("\n".join(b), defs))
 
-for f in (cs16, cs2, minecraft, rust, arma3): f()
+# ------------------------------------------------------------------ 42 – cluster oturma planı (iMac sıraları)
+def club42():
+    r = random.Random(42)
+    b = ['<rect width="1600" height="900" fill="#050505"/>',
+         '<g fill="none" stroke="#ffffff" stroke-opacity=".035">']
+    b += [f'<line x1="{x}" y1="0" x2="{x}" y2="{H}"/>' for x in range(0, W+1, 40)]
+    b += [f'<line x1="0" y1="{y}" x2="{W}" y2="{y}"/>' for y in range(0, H+1, 40)]
+    b.append('</g>')
+    # cluster bölgeleri: her biri sıra sıra iMac'ler
+    for ox, oy, cols, rows, label in [(60, 60, 10, 6, "c1"), (900, 60, 10, 6, "c2"),
+                                      (60, 520, 10, 6, "c3"), (900, 520, 10, 6, "c4")]:
+        b.append(f'<rect x="{ox-20}" y="{oy-30}" width="{cols*62+30}" height="{rows*56+50}" rx="10" '
+                 f'fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-dasharray="6 6"/>')
+        b.append(f'<text x="{ox-10}" y="{oy-10}" fill="#ffffff" fill-opacity=".18" '
+                 f'font-family="monospace" font-size="14">{label}</text>')
+        for row in range(rows):
+            for col in range(cols):
+                x, y = ox + col*62, oy + 10 + row*56
+                used = r.random() < .45
+                fill = "#00babc" if used else "#ffffff"
+                op = r.uniform(.35, .6) if used else .07
+                b.append(f'<rect x="{x}" y="{y}" width="46" height="30" rx="4" fill="{fill}" fill-opacity="{op:.2f}"/>')
+                b.append(f'<rect x="{x+19}" y="{y+31}" width="8" height="6" fill="#ffffff" fill-opacity=".06"/>')
+                if used and r.random() < .3:
+                    b.append(f'<text x="{x+23}" y="{y+20}" text-anchor="middle" fill="#ffffff" fill-opacity=".5" '
+                             f'font-family="monospace" font-size="9">{label}r{row+1}p{col+1}</text>')
+    # ortada büyük, çok silik "42"
+    b.append('<text x="800" y="560" text-anchor="middle" fill="#ffffff" fill-opacity=".04" '
+             'font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="520">42</text>')
+    save("club42.svg", svg("\n".join(b)))
+
+for f in (cs16, cs2, minecraft, rust, arma3, club42): f()

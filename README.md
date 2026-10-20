@@ -7,9 +7,12 @@ arayüzüne benzeyen temalarla gösteren statik web sitesi.
 - Soldaki geçiş çubuğundan oyun seçilir (mobilde üstte). Her oyunun kendi linki vardır:
   `#cs16`, `#cs2`, `#minecraft`, `#rust`, `#arma3`
 - Her oyunun kendine ait çizim arka planı var (`img/bg/`)
+- Sol çubuğun en üstündeki **42** rozeti kulüp sayfasını açar (`#42`): siyah-beyaz 42 teması,
+  cluster oturma planı arka planı ve tüm sunucuların listesi. Kulüp adı, açıklaması ve linkleri
+  (Discord vb.) `js/config.js` içindeki `CLUB` bloğundan değiştirilir.
 - GameTracker banner'ı her 60 saniyede otomatik yenilenir
 - **Bağlan** butonu (`steam://connect/...`), **IP Kopyala**, kurallar ve bağlanma rehberi
-- **Konsol** sekmesi veya `~` / `"` tuşuyla açılan, fareyle sürüklenebilir ayrı konsol penceresi (`help`, `status`, `games`, `game <id>`, `connect`, `copy`, `refresh`, `clear`)
+- **Konsol** sekmesi veya `~` / `"` tuşuyla açılan, fareyle sürüklenebilir ayrı konsol penceresi (`help`, `status`, `games`, `game <id>`, `connect`, `copy`, `refresh`, `clear`, `42`, `norminette`)
 
 ## GitHub Codespaces ile çalıştırma
 
@@ -47,9 +50,9 @@ aynı dosyadadır.
 ```
 index.html                     Ana sayfa
 css/style.css                  Ortak düzen + oyun temaları
-js/config.js                   Sunucu IP/port, kurallar, bağlanma adımları
+js/config.js                   Kulüp bilgisi, sunucu IP/port, kurallar, bağlanma adımları
 js/main.js                     Oyun geçişi, banner yenileme, sekmeler, konsol
-img/bg/*.svg                   Oyun arka planları (Dust2, Mirage, Minecraft, Rust, Altis)
+img/bg/*.svg                   Arka planlar (Dust2, Mirage, Minecraft, Rust, Altis, 42 cluster)
 tools/gen-backgrounds.py       Arka plan SVG'lerini üreten betik
 start.sh                       Yerel sunucu (python3 http.server, port 8080)
 .devcontainer/devcontainer.json Codespaces ayarı

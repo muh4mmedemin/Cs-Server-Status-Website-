@@ -502,6 +502,63 @@ body[data-theme="arma3"] .console-window .title-bar { background: #c48214; }
 body[data-theme="arma3"] .rail-short,
 body[data-theme="arma3"] .rail-name { font-family: "Barlow Condensed", sans-serif; }
 
+/* ---------- 42 kulüp sayfası: siyah-beyaz, monospace, turkuaz vurgu ---------- */
+body[data-theme="club42"] {
+  --bg: #000;
+  --panel: #0b0b0b;
+  --panel-dark: #141414;
+  --border-light: #2a2a2a;
+  --border-dark: #2a2a2a;
+  --text: #f2f2f2;
+  --text-dim: #8c8c8c;
+  --accent: #00babc;
+  --select: rgba(0, 186, 188, 0.18);
+  --font: "JetBrains Mono", Consolas, monospace;
+  --font-size: 13px;
+  --mono: "JetBrains Mono", Consolas, monospace;
+  --title-bg: #fff;
+  --title-text: #000;
+  --btn-bg: #000;
+  --primary-bg: #00babc;
+  --primary-text: #000;
+  --page-bg:
+    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .2) 0%, rgba(0, 0, 0, .65) 100%),
+    url("../img/bg/club42.svg") center / cover no-repeat;
+  --page-color: #050505;
+}
+body[data-theme="club42"] .vgui-window { border-color: #fff; box-shadow: 0 0 0 1px #000, 0 20px 50px rgba(0, 0, 0, 0.7); }
+body[data-theme="club42"] .tbtn { color: #000; border-color: #000; }
+/* kulüp sayfasında oyun sekmeleri gizli, Konsol kalır */
+body[data-theme="club42"] .tab[data-tab] { display: none; }
+body[data-theme="club42"] .group-label { color: var(--accent); }
+body[data-theme="club42"] .vbtn { border: 1px solid #fff; }
+body[data-theme="club42"] .vbtn:hover { background: #fff; color: #000; }
+body[data-theme="club42"] .server-list td { border-bottom: 1px solid #1f1f1f; }
+body[data-theme="club42"] .server-list a { color: var(--accent); text-decoration: none; }
+body[data-theme="club42"] .server-list tr:hover td { background: var(--select); }
+
+.club-hero { display: flex; align-items: center; gap: 18px; margin: 4px 0 18px; }
+.club-42 {
+  font: 700 64px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: -4px;
+  color: #fff;
+  border: 3px solid #fff;
+  padding: 6px 14px 10px 10px;
+}
+.club-name { font-weight: 700; font-size: 18px; color: #fff; }
+.club-about { margin: 4px 0 0; color: var(--text-dim); }
+.club-servers td { word-break: normal; overflow-wrap: anywhere; }
+.club-servers td:last-child { text-align: right; white-space: nowrap; }
+
+/* Sol çubuktaki 42 rozeti */
+.rail-club { margin-bottom: 10px; }
+.game-rail .rail-club .rail-short {
+  font: 700 20px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: -1px;
+  border: 2px solid currentColor;
+  padding: 3px 6px 4px 4px;
+}
+
 /* ---------- Mobil ---------- */
 @media (max-width: 860px) {
   :root { --rail-width: 0px; }
@@ -520,5 +577,8 @@ body[data-theme="arma3"] .rail-name { font-family: "Barlow Condensed", sans-seri
   .rail-item { border-left: 0; border-bottom: 3px solid transparent; padding: 12px 12px 9px; }
   .rail-item.active { border-bottom-color: var(--accent); }
   .rail-name { display: none; }
-  .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
+  .rail-club { margin-bottom: 0; }
+  .club-42 { font-size: 44px; }
+  .server-list:not(.club-servers) th:nth-child(2),
+  .server-list:not(.club-servers) td:nth-child(2) { display: none; }
 }
