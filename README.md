@@ -64,7 +64,7 @@ css/style.css                  Ortak düzen + oyun temaları
 js/config.js                   Kulüp bilgisi, yapımlar, sunucu IP/port, kurallar, bağlanma adımları
 works/<oyun>/                  Yapım dosyaları ve görselleri
 js/main.js                     Oyun geçişi, banner yenileme, sekmeler, konsol
-img/bg/*.svg                   Arka planlar (Dust2, Mirage, Minecraft, Rust, Altis, 42 cluster)
+img/bg/*.svg                   Arka planlar (Dust2, Mirage, Minecraft, Rust, Altis, oyun oynanan 42 cluster)
 tools/gen-backgrounds.py       Arka plan SVG'lerini üreten betik
 start.sh                       Yerel sunucu (python3 http.server, port 8080)
 .devcontainer/devcontainer.json Codespaces ayarı
