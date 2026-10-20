@@ -3,17 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CS 1.6 Sunucu Durumu</title>
-  <meta name="description" content="Counter-Strike 1.6 sunucusunun anlık durumu (GameTracker).">
+  <title>Sunucu Durumu</title>
+  <meta name="description" content="Oyun sunucularının anlık durumu (GameTracker).">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600&family=Oswald:wght@400;600&family=Rajdhani:wght@500;700&family=VT323&display=swap">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <div class="desktop">
+<body data-theme="cs16">
+  <!-- Sol: oyun geçiş çubuğu -->
+  <nav class="game-rail" id="game-rail" aria-label="Oyunlar"></nav>
 
-    <!-- Orta: VGUI pencere -->
+  <div class="desktop">
     <main class="vgui-window" id="server-window">
       <div class="title-bar">
-        <span class="title">Sunucu Bilgisi &ndash; <span class="js-address"></span></span>
+        <span class="title" id="window-title" lang="en"></span>
         <span class="title-buttons">
           <span class="tbtn" aria-hidden="true">_</span>
           <span class="tbtn" aria-hidden="true">x</span>
@@ -36,9 +40,7 @@
               <a id="gt-link" href="#" target="_blank" rel="noopener">
                 <img id="gt-banner" width="560" height="95" alt="GameTracker sunucu banner'ı">
               </a>
-              <div class="banner-error" id="gt-error" hidden>
-                Banner yüklenemedi. GameTracker'a ulaşılamıyor olabilir.
-              </div>
+              <div class="banner-error" id="gt-error" hidden></div>
             </div>
           </div>
 
@@ -55,8 +57,8 @@
               <tbody>
                 <tr class="selected">
                   <td class="js-address"></td>
-                  <td>Counter-Strike 1.6</td>
-                  <td><a class="js-gt-url" href="#" target="_blank" rel="noopener">GameTracker</a></td>
+                  <td id="game-name"></td>
+                  <td><a id="gt-url" href="#" target="_blank" rel="noopener">GameTracker</a></td>
                 </tr>
               </tbody>
             </table>
@@ -78,14 +80,7 @@
         <section class="tab-content" id="tab-rules">
           <div class="group">
             <div class="group-label">Sunucu Kuralları</div>
-            <ol class="rules">
-              <li>Hile (cheat, script, config hilesi) kullanmak yasaktır.</li>
-              <li>Küfür, hakaret ve aşağılayıcı söylemler yasaktır.</li>
-              <li>Takım arkadaşlarına bilerek zarar vermek (team kill/flash) yasaktır.</li>
-              <li>Mikrofonu spam amaçlı kullanmak yasaktır.</li>
-              <li>Reklam yapmak yasaktır.</li>
-              <li>Adminlerin uyarılarına uyunuz.</li>
-            </ol>
+            <ol class="rules" id="rules-list"></ol>
           </div>
         </section>
 
@@ -93,10 +88,7 @@
         <section class="tab-content" id="tab-howto">
           <div class="group">
             <div class="group-label">Bağlanma Yolları</div>
-            <p><b>1.</b> Yukarıdaki <b>Bağlan</b> butonuna basın (Steam yüklü olmalı).</p>
-            <p><b>2.</b> Oyunu açın, <b>~</b> tuşuyla konsolu açın ve şunu yazın:</p>
-            <div class="code-line">connect <span class="js-address"></span></div>
-            <p><b>3.</b> <i>Find Servers &rarr; Favorites &rarr; Add a Server</i> ile IP'yi favorilere ekleyin.</p>
+            <ol class="rules howto" id="howto-list"></ol>
           </div>
         </section>
       </div>
@@ -122,6 +114,7 @@
 
   <div class="toast" id="toast" hidden></div>
 
+  <script src="js/config.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

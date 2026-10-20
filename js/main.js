@@ -1,23 +1,12 @@
-// ---- Ayarlar ----
-const CONFIG = {
-  ip: "45.74.244.214",
-  port: 27015,
-  refreshSeconds: 60, // GameTracker banner'ının yenilenme aralığı
-};
-
-const ADDRESS = `${CONFIG.ip}:${CONFIG.port}`;
-const GT_URL = `https://www.gametracker.com/server_info/${ADDRESS}/`;
-const GT_BANNER = `https://cache.gametracker.com/server_info/${ADDRESS}/b_560_95_1.png`;
-const STEAM_CONNECT = `steam://connect/${ADDRESS}`;
+// Sunucu listesi ve ayarlar js/config.js dosyasındadır.
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
-// ---- Statik alanları doldur ----
-$$(".js-address").forEach((el) => (el.textContent = ADDRESS));
-$$(".js-gt-url").forEach((el) => (el.href = GT_URL));
-$("#gt-link").href = GT_URL;
-$("#btn-connect").href = STEAM_CONNECT;
+let current; // seçili sunucu (SERVERS içinden)
+
+const addressOf = (s) => `${s.ip}:${s.port}`;
+const hasIp = (s) => Boolean(s.ip);
 
 // ---- Konsol ----
 const consoleLog = $("#console-log");
@@ -39,38 +28,110 @@ function toast(msg) {
 // ---- GameTracker banner + otomatik yenileme ----
 const banner = $("#gt-banner");
 const bannerError = $("#gt-error");
-let remaining = CONFIG.refreshSeconds;
+let remaining = REFRESH_SECONDS;
+
+function showBannerError(msg) {
+  banner.hidden = true;
+  bannerError.textContent = msg;
+  bannerError.hidden = false;
+}
 
 function loadBanner() {
-  // Önbelleği atlatmak için zaman damgası ekle
-  banner.src = `${GT_BANNER}?t=${Date.now()}`;
-  remaining = CONFIG.refreshSeconds;
+  remaining = REFRESH_SECONDS;
   updateCountdown();
+  if (!hasIp(current)) {
+    banner.removeAttribute("src");
+    showBannerError(`${current.name} sunucusunun IP adresi henüz ayarlanmadı (js/config.js).`);
+    return;
+  }
+  // Önbelleği atlatmak için zaman damgası ekle
+  const url = `https://cache.gametracker.com/server_info/${addressOf(current)}/b_560_95_1.png`;
+  banner.src = `${url}?t=${Date.now()}`;
 }
 
 banner.addEventListener("load", () => {
   banner.hidden = false;
   bannerError.hidden = true;
-  log(`GameTracker banner güncellendi (${ADDRESS})`);
+  log(`GameTracker banner güncellendi (${current.name} – ${addressOf(current)})`);
 });
 
 banner.addEventListener("error", () => {
-  banner.hidden = true;
-  bannerError.hidden = false;
-  log("HATA: GameTracker banner yüklenemedi");
+  if (!banner.getAttribute("src")) return;
+  showBannerError("Banner yüklenemedi. GameTracker'a ulaşılamıyor olabilir.");
+  log(`HATA: GameTracker banner yüklenemedi (${current.name})`);
 });
 
 function updateCountdown() {
-  $("#countdown").textContent = remaining;
-  const pct = ((CONFIG.refreshSeconds - remaining) / CONFIG.refreshSeconds) * 100;
+  const active = hasIp(current);
+  $("#countdown").textContent = active ? remaining : "--";
+  const pct = active ? ((REFRESH_SECONDS - remaining) / REFRESH_SECONDS) * 100 : 0;
   $("#progress-bar").style.width = `${pct}%`;
 }
 
 setInterval(() => {
+  if (!hasIp(current)) return;
   remaining--;
   if (remaining <= 0) loadBanner();
   else updateCountdown();
 }, 1000);
+
+// ---- Oyun seçimi ----
+function renderRail() {
+  const rail = $("#game-rail");
+  SERVERS.forEach((s) => {
+    const a = document.createElement("a");
+    a.className = "rail-item";
+    a.href = `#${s.id}`;
+    a.dataset.game = s.id;
+    a.title = s.name;
+    a.innerHTML = `<span class="rail-short"></span><span class="rail-name"></span>`;
+    a.querySelector(".rail-short").textContent = s.short;
+    a.querySelector(".rail-name").textContent = s.name;
+    rail.appendChild(a);
+  });
+}
+
+function fillList(el, items) {
+  el.innerHTML = "";
+  items.forEach((html) => {
+    const li = document.createElement("li");
+    // howto/rules metinleri config.js'den (site sahibinden) gelir
+    li.innerHTML = html.replaceAll("{address}", hasIp(current) ? addressOf(current) : "IP:PORT");
+    el.appendChild(li);
+  });
+}
+
+function selectGame(id) {
+  const next = SERVERS.find((s) => s.id === id) || SERVERS[0];
+  if (current === next) return;
+  current = next;
+
+  document.body.dataset.theme = current.id;
+  document.title = `${current.name} Sunucu Durumu`;
+  $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === current.id));
+
+  const address = hasIp(current) ? addressOf(current) : "IP ayarlanmadı";
+  const gtUrl = hasIp(current) ? `https://www.gametracker.com/server_info/${addressOf(current)}/` : "#";
+  $("#window-title").textContent = `${current.name} – ${address}`;
+  $$(".js-address").forEach((el) => (el.textContent = address));
+  $("#game-name").textContent = current.name;
+  $("#gt-url").href = gtUrl;
+  $("#gt-link").href = gtUrl;
+
+  const connectBtn = $("#btn-connect");
+  connectBtn.hidden = !(current.connect === "steam" && hasIp(current));
+  connectBtn.href = `steam://connect/${addressOf(current)}`;
+  $("#btn-copy").disabled = !hasIp(current);
+  $("#btn-refresh").disabled = !hasIp(current);
+
+  fillList($("#rules-list"), current.rules);
+  fillList($("#howto-list"), current.howto);
+
+  log(`Oyun değiştirildi: ${current.name}`);
+  loadBanner();
+}
+
+window.addEventListener("hashchange", () => selectGame(location.hash.slice(1)));
 
 // ---- Sekmeler ----
 function showTab(name) {
@@ -81,25 +142,27 @@ $$("[data-tab]").forEach((el) => el.addEventListener("click", () => showTab(el.d
 
 // ---- IP kopyala ----
 async function copyAddress() {
+  if (!hasIp(current)) return log(`${current.name} için IP ayarlanmadı.`);
+  const address = addressOf(current);
   try {
-    await navigator.clipboard.writeText(ADDRESS);
+    await navigator.clipboard.writeText(address);
   } catch {
     // clipboard API yoksa eski yöntem
     const tmp = document.createElement("textarea");
-    tmp.value = ADDRESS;
+    tmp.value = address;
     document.body.appendChild(tmp);
     tmp.select();
     document.execCommand("copy");
     tmp.remove();
   }
-  toast(`IP kopyalandı: ${ADDRESS}`);
-  log(`IP panoya kopyalandı: ${ADDRESS}`);
+  toast(`IP kopyalandı: ${address}`);
+  log(`IP panoya kopyalandı: ${address}`);
 }
 $("#btn-copy").addEventListener("click", copyAddress);
 
 $("#btn-refresh").addEventListener("click", loadBanner);
 
-$("#btn-connect").addEventListener("click", () => log(`] connect ${ADDRESS}`));
+$("#btn-connect").addEventListener("click", () => log(`] connect ${addressOf(current)}`));
 
 // ---- Konsol penceresi ----
 const consoleWindow = $("#console-window");
@@ -164,11 +227,18 @@ document.addEventListener("keydown", (e) => {
 });
 
 const COMMANDS = {
-  help: () => log("Komutlar: help, status, connect, copy, refresh, clear"),
-  status: () => log(`Sunucu: ${ADDRESS} | GameTracker: ${GT_URL}`),
+  help: () => log("Komutlar: help, status, games, game <id>, connect, copy, refresh, clear"),
+  status: () =>
+    log(`${current.name}: ${hasIp(current) ? addressOf(current) : "IP ayarlanmadı"}`),
+  games: () => SERVERS.forEach((s) => log(`  ${s.id.padEnd(10)} ${s.name}`)),
+  game: (id) => {
+    if (!SERVERS.some((s) => s.id === id)) return log("Kullanım: game <id> (liste için: games)");
+    location.hash = id;
+  },
   connect: () => {
-    log(`] connect ${ADDRESS}`);
-    window.location.href = STEAM_CONNECT;
+    if (!hasIp(current)) return log(`${current.name} için IP ayarlanmadı.`);
+    if (current.connect !== "steam") return log("Bu oyun için 'Nasıl Bağlanırım?' sekmesine bakın.");
+    window.location.href = `steam://connect/${addressOf(current)}`;
   },
   copy: copyAddress,
   refresh: loadBanner,
@@ -178,15 +248,16 @@ const COMMANDS = {
 $("#console-form").addEventListener("submit", (e) => {
   e.preventDefault();
   const input = $("#console-cmd");
-  const cmd = input.value.trim().toLowerCase().split(/\s+/)[0];
+  const [cmd, arg] = input.value.trim().toLowerCase().split(/\s+/);
   input.value = "";
   if (!cmd) return;
-  log(`] ${cmd}`);
-  (COMMANDS[cmd] || (() => log(`Bilinmeyen komut: ${cmd}`)))();
+  log(`] ${cmd}${arg ? " " + arg : ""}`);
+  (COMMANDS[cmd] || (() => log(`Bilinmeyen komut: ${cmd}`)))(arg);
 });
 
 // ---- Başlat ----
-log("Counter-Strike 1.6 sunucu durum paneli yüklendi.");
+log("Sunucu durum paneli yüklendi.");
 log("Komut listesi için 'help' yazın.");
+renderRail();
 showTab("status");
-loadBanner();
+selectGame(location.hash.slice(1));

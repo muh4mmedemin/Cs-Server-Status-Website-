@@ -10,6 +10,20 @@
   --accent: #c4b550;      /* sarı vurgu */
   --select: #958831;      /* seçili satır */
   --font: Tahoma, Verdana, "Segoe UI", sans-serif;
+  --font-size: 12px;
+  --mono: "Lucida Console", Consolas, monospace;
+  --title-bg: transparent;
+  --title-text: #fff;
+  --btn-bg: var(--bg);
+  --btn-text: var(--text);
+  --primary-bg: var(--bg);
+  --primary-text: var(--accent);
+  --radius: 0;
+  --rail-width: 76px;
+  --page-bg:
+    radial-gradient(ellipse at 70% 30%, rgba(196, 181, 80, 0.08), transparent 60%),
+    linear-gradient(180deg, #1a1d16 0%, #22261d 50%, #12140f 100%);
+  --page-color: #1a1d16;
 }
 
 * { box-sizing: border-box; }
@@ -17,12 +31,11 @@
 html, body { margin: 0; height: 100%; }
 
 body {
-  font: 12px/1.5 var(--font);
+  font: var(--font-size)/1.5 var(--font);
   color: var(--text);
-  background:
-    radial-gradient(ellipse at 70% 30%, rgba(196, 181, 80, 0.08), transparent 60%),
-    linear-gradient(180deg, #1a1d16 0%, #22261d 50%, #12140f 100%);
-  background-color: #1a1d16;
+  background: var(--page-bg);
+  background-color: var(--page-color);
+  background-attachment: fixed;
 }
 
 a { color: var(--accent); }
@@ -34,7 +47,46 @@ a { color: var(--accent); }
   align-items: center;
   justify-content: center;
   gap: 24px;
-  padding: 32px 16px;
+  padding: 32px 16px 32px calc(var(--rail-width) + 16px);
+}
+
+/* ---------- Sol oyun geçiş çubuğu ---------- */
+.game-rail {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--rail-width);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 0;
+  background: rgba(0, 0, 0, 0.35);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 5;
+}
+.rail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 4px;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  text-align: center;
+}
+.rail-short {
+  font: bold 15px/1 Verdana, Tahoma, sans-serif;
+  letter-spacing: 0.5px;
+}
+.rail-name { font: 10px/1.2 Tahoma, Verdana, sans-serif; }
+.rail-item:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+.rail-item.active {
+  color: #fff;
+  border-left-color: var(--accent);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* ---------- VGUI pencere ---------- */
@@ -45,6 +97,7 @@ a { color: var(--accent); }
   border: 1px solid;
   border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
   box-shadow: 0 0 0 1px #000, 4px 6px 18px rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius);
   width: 100%;
 }
 
@@ -53,7 +106,8 @@ a { color: var(--accent); }
   justify-content: space-between;
   align-items: center;
   padding: 6px 8px;
-  color: #fff;
+  color: var(--title-text);
+  background: var(--title-bg);
   font-weight: bold;
 }
 
@@ -74,7 +128,7 @@ button.tbtn { cursor: pointer; }
 
 .tabs { display: flex; gap: 2px; padding: 4px 8px 0; }
 .tab {
-  font: 12px var(--font);
+  font: var(--font-size) var(--font);
   color: var(--text-dim);
   background: var(--bg);
   border: 1px solid;
@@ -180,9 +234,9 @@ button.tbtn { cursor: pointer; }
 /* Butonlar */
 .button-row { display: flex; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
 .vbtn {
-  font: 12px var(--font);
-  color: var(--text);
-  background: var(--bg);
+  font: var(--font-size) var(--font);
+  color: var(--btn-text);
+  background: var(--btn-bg);
   border: 1px solid;
   border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
   padding: 4px 16px;
@@ -195,11 +249,19 @@ button.tbtn { cursor: pointer; }
 .vbtn:active {
   border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
 }
-.vbtn.primary { color: var(--accent); }
+.vbtn.primary { color: var(--primary-text); background: var(--primary-bg); }
+.vbtn:disabled { opacity: 0.45; cursor: default; }
 
 /* Kurallar */
 .rules { margin: 0; padding-left: 22px; }
 .rules li { margin: 4px 0; }
+
+code {
+  font-family: var(--mono);
+  background: var(--panel-dark);
+  padding: 1px 6px;
+  word-break: break-all;
+}
 
 .code-line {
   font-family: "Lucida Console", Consolas, monospace;
@@ -231,7 +293,7 @@ button.tbtn { cursor: pointer; }
   overflow-y: auto;
   padding: 4px 6px;
   background: var(--panel-dark);
-  font: 12px/1.4 "Lucida Console", Consolas, monospace;
+  font: 12px/1.4 var(--mono);
   white-space: pre-wrap;
   word-break: break-all;
   border: 1px solid;
@@ -241,7 +303,7 @@ button.tbtn { cursor: pointer; }
 .console-input input {
   flex: 1;
   min-width: 0;
-  font: 12px "Lucida Console", Consolas, monospace;
+  font: 12px var(--mono);
   color: var(--text);
   background: var(--panel-dark);
   border: 1px solid;
@@ -267,8 +329,192 @@ button.tbtn { cursor: pointer; }
 
 [hidden] { display: none !important; }
 
+/* =====================================================================
+   OYUN TEMALARI  (body[data-theme="..."])
+   cs16 varsayılan temadır (:root). Diğerleri değişkenleri ezer.
+   ===================================================================== */
+
+/* ---------- Counter-Strike 2: koyu, düz, modern menü ---------- */
+body[data-theme="cs2"] {
+  --bg: rgba(18, 22, 30, 0.94);
+  --panel: #121720;
+  --panel-dark: #0b0f15;
+  --border-light: #263042;
+  --border-dark: #263042;
+  --text: #e7eaf0;
+  --text-dim: #8a94a6;
+  --accent: #6db3f2;
+  --select: rgba(109, 179, 242, 0.22);
+  --font: "Rajdhani", "Segoe UI", sans-serif;
+  --font-size: 15px;
+  --btn-bg: #1c2431;
+  --primary-bg: #4f9a3a;
+  --primary-text: #fff;
+  --radius: 4px;
+  --page-bg:
+    radial-gradient(ellipse at 20% 0%, rgba(109, 179, 242, 0.18), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(232, 160, 60, 0.10), transparent 50%),
+    linear-gradient(160deg, #0c1018 0%, #141b27 60%, #090c12 100%);
+  --page-color: #0c1018;
+}
+body[data-theme="cs2"] .vgui-window { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); backdrop-filter: blur(6px); }
+body[data-theme="cs2"] .title-bar { text-transform: uppercase; letter-spacing: 2px; padding: 10px 14px; }
+body[data-theme="cs2"] .tab { border: 0; border-bottom: 2px solid transparent; background: none; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+body[data-theme="cs2"] .tab.active { background: none; border-bottom-color: var(--accent); }
+body[data-theme="cs2"] .panel,
+body[data-theme="cs2"] .group { border-radius: 4px; }
+body[data-theme="cs2"] .server-list tr.selected td { color: var(--text); }
+body[data-theme="cs2"] .server-list tr.selected a { color: var(--accent); }
+body[data-theme="cs2"] .progress-bar { background: linear-gradient(90deg, #3d7fc1, var(--accent)); }
+body[data-theme="cs2"] .vbtn { border-radius: 3px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+body[data-theme="cs2"] .rail-short,
+body[data-theme="cs2"] .rail-name { font-family: "Rajdhani", sans-serif; }
+
+/* ---------- Minecraft: gri envanter penceresi + taş butonlar ---------- */
+body[data-theme="minecraft"] {
+  --bg: #c6c6c6;
+  --panel: #c6c6c6;
+  --panel-dark: #8b8b8b;
+  --border-light: #ffffff;
+  --border-dark: #555555;
+  --text: #3f3f3f;
+  --text-dim: #555555;
+  --accent: #2f4fbf;
+  --select: #5b8731;
+  --font: "VT323", "Courier New", monospace;
+  --font-size: 19px;
+  --mono: "VT323", "Courier New", monospace;
+  --title-text: #3f3f3f;
+  --btn-bg: #6f6f6f;
+  --btn-text: #fff;
+  --primary-bg: #6f6f6f;
+  --primary-text: #ffff55;
+  /* toprak blok deseni */
+  --page-bg:
+    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+    repeating-conic-gradient(#6b4a32 0 25%, #5a3d29 0 50%) 0 0 / 32px 32px;
+  --page-color: #3b2a1d;
+}
+body[data-theme="minecraft"] .vgui-window { border: 3px solid; border-color: #fff #555 #555 #fff; box-shadow: 0 0 0 2px #000; }
+body[data-theme="minecraft"] .title-bar { font-weight: normal; }
+body[data-theme="minecraft"] .tbtn { font-size: 14px; color: var(--text); }
+body[data-theme="minecraft"] .tab { color: #555; background: #a0a0a0; }
+body[data-theme="minecraft"] .tab.active { color: var(--text); background: var(--panel); }
+body[data-theme="minecraft"] .panel { border-width: 2px; }
+body[data-theme="minecraft"] .group { border-width: 2px; }
+body[data-theme="minecraft"] .server-list,
+body[data-theme="minecraft"] .banner-error { color: #fff; }
+body[data-theme="minecraft"] .server-list th { color: var(--text); background: #a0a0a0; }
+body[data-theme="minecraft"] .vbtn {
+  border: 2px solid #000;
+  box-shadow: inset 2px 2px 0 #a8a8a8, inset -2px -2px 0 #4a4a4a;
+  text-shadow: 2px 2px 0 #3f3f3f;
+  padding: 2px 16px;
+}
+body[data-theme="minecraft"] .vbtn:hover { background: #7e88bf; box-shadow: inset 2px 2px 0 #bcc4ef, inset -2px -2px 0 #4a5180; }
+body[data-theme="minecraft"] .progress { background: #3f3f3f; }
+body[data-theme="minecraft"] .progress-bar { background: repeating-linear-gradient(90deg, #80ff20 0 8px, #5ec014 8px 10px); }
+body[data-theme="minecraft"] code { color: #fff; }
+/* Konsol = oyun içi sohbet kutusu */
+body[data-theme="minecraft"] .console-log,
+body[data-theme="minecraft"] .console-input input {
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 18px;
+  text-shadow: 2px 2px 0 #3f3f3f;
+}
+body[data-theme="minecraft"] .rail-short,
+body[data-theme="minecraft"] .rail-name { font-family: "VT323", monospace; font-weight: normal; }
+body[data-theme="minecraft"] .rail-short { font-size: 22px; }
+body[data-theme="minecraft"] .rail-name { font-size: 14px; }
+
+/* ---------- Rust: koyu, endüstriyel, pas kırmızısı ---------- */
+body[data-theme="rust"] {
+  --bg: #1e1d1a;
+  --panel: #262521;
+  --panel-dark: #171613;
+  --border-light: #3a3832;
+  --border-dark: #3a3832;
+  --text: #e4dad1;
+  --text-dim: #9c948a;
+  --accent: #cd412b;
+  --select: rgba(205, 65, 43, 0.35);
+  --font: "Oswald", "Arial Narrow", sans-serif;
+  --font-size: 14px;
+  --btn-bg: #3b3a35;
+  --primary-bg: #cd412b;
+  --primary-text: #fff;
+  --page-bg:
+    radial-gradient(ellipse at 80% 20%, rgba(205, 65, 43, 0.16), transparent 55%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0 2px, transparent 2px 8px),
+    linear-gradient(180deg, #161512 0%, #1d1b17 60%, #0f0e0c 100%);
+  --page-color: #161512;
+}
+body[data-theme="rust"] .vgui-window { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7); }
+body[data-theme="rust"] .title-bar { text-transform: uppercase; letter-spacing: 2px; font-weight: 600; border-bottom: 2px solid var(--accent); }
+body[data-theme="rust"] .tab { text-transform: uppercase; letter-spacing: 1px; border: 0; background: #2f2e29; }
+body[data-theme="rust"] .tab.active { background: var(--accent); color: #fff; }
+body[data-theme="rust"] .group-label { text-transform: uppercase; letter-spacing: 1px; color: var(--accent); }
+body[data-theme="rust"] .server-list tr.selected td { color: var(--text); }
+body[data-theme="rust"] .server-list tr.selected a { color: #fff; }
+body[data-theme="rust"] .progress-bar { background: var(--accent); }
+body[data-theme="rust"] .vbtn { text-transform: uppercase; letter-spacing: 1px; border: 0; padding: 6px 18px; }
+body[data-theme="rust"] .vbtn:hover { filter: brightness(1.15); }
+body[data-theme="rust"] .rail-short,
+body[data-theme="rust"] .rail-name { font-family: "Oswald", sans-serif; }
+
+/* ---------- Arma 3: siyah yarı saydam paneller, turuncu başlıklar ---------- */
+body[data-theme="arma3"] {
+  --bg: rgba(0, 0, 0, 0.72);
+  --panel: rgba(0, 0, 0, 0.45);
+  --panel-dark: rgba(0, 0, 0, 0.55);
+  --border-light: rgba(255, 255, 255, 0.12);
+  --border-dark: rgba(255, 255, 255, 0.12);
+  --text: #f2f2f2;
+  --text-dim: #a8a8a0;
+  --accent: #c48214;
+  --select: rgba(196, 130, 20, 0.55);
+  --font: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-size: 16px;
+  --title-bg: #c48214;
+  --btn-bg: rgba(0, 0, 0, 0.6);
+  --primary-bg: #c48214;
+  --primary-text: #fff;
+  --page-bg:
+    radial-gradient(ellipse at 30% 20%, rgba(150, 140, 100, 0.22), transparent 60%),
+    linear-gradient(180deg, #3a3c33 0%, #24261f 55%, #121310 100%);
+  --page-color: #24261f;
+}
+body[data-theme="arma3"] .vgui-window { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
+body[data-theme="arma3"] .title-bar { text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+body[data-theme="arma3"] .tbtn { color: #fff; border-color: rgba(255, 255, 255, 0.5); }
+body[data-theme="arma3"] .tab { border: 0; background: rgba(0, 0, 0, 0.5); text-transform: uppercase; }
+body[data-theme="arma3"] .tab.active { background: rgba(196, 130, 20, 0.85); color: #fff; }
+body[data-theme="arma3"] .group-label { background: #0b0b0a; }
+body[data-theme="arma3"] .progress-bar { background: var(--accent); }
+body[data-theme="arma3"] .vbtn { border: 0; text-transform: uppercase; padding: 5px 18px; }
+body[data-theme="arma3"] .vbtn:hover { background: #c48214; color: #fff; }
+body[data-theme="arma3"] .console-window .title-bar { background: #c48214; }
+body[data-theme="arma3"] .rail-short,
+body[data-theme="arma3"] .rail-name { font-family: "Barlow Condensed", sans-serif; }
+
 /* ---------- Mobil ---------- */
 @media (max-width: 860px) {
-  .desktop { justify-content: flex-start; }
+  :root { --rail-width: 0px; }
+  .desktop { justify-content: flex-start; padding-top: 72px; }
+  .game-rail {
+    bottom: auto;
+    right: 0;
+    width: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 0 8px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .rail-item { border-left: 0; border-bottom: 3px solid transparent; padding: 12px 12px 9px; }
+  .rail-item.active { border-bottom-color: var(--accent); }
+  .rail-name { display: none; }
   .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
 }
