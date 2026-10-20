@@ -6,6 +6,7 @@ arayüzüne benzeyen temalarla gösteren statik web sitesi.
 - Oyunlar: **Counter-Strike 1.6**, **Counter-Strike 2**, **Minecraft**, **Rust**, **Arma 3**
 - Soldaki geçiş çubuğundan oyun seçilir (mobilde üstte). Her oyunun kendi linki vardır:
   `#cs16`, `#cs2`, `#minecraft`, `#rust`, `#arma3`
+- Her oyunun kendine ait çizim arka planı var (`img/bg/`)
 - GameTracker banner'ı her 60 saniyede otomatik yenilenir
 - **Bağlan** butonu (`steam://connect/...`), **IP Kopyala**, kurallar ve bağlanma rehberi
 - **Konsol** sekmesi veya `~` / `"` tuşuyla açılan, fareyle sürüklenebilir ayrı konsol penceresi (`help`, `status`, `games`, `game <id>`, `connect`, `copy`, `refresh`, `clear`)
@@ -48,6 +49,8 @@ index.html                     Ana sayfa
 css/style.css                  Ortak düzen + oyun temaları
 js/config.js                   Sunucu IP/port, kurallar, bağlanma adımları
 js/main.js                     Oyun geçişi, banner yenileme, sekmeler, konsol
+img/bg/*.svg                   Oyun arka planları (Dust2, Mirage, Minecraft, Rust, Altis)
+tools/gen-backgrounds.py       Arka plan SVG'lerini üreten betik
 start.sh                       Yerel sunucu (python3 http.server, port 8080)
 .devcontainer/devcontainer.json Codespaces ayarı
 ```

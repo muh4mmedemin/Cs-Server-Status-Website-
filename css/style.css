@@ -21,8 +21,8 @@
   --radius: 0;
   --rail-width: 76px;
   --page-bg:
-    radial-gradient(ellipse at 70% 30%, rgba(196, 181, 80, 0.08), transparent 60%),
-    linear-gradient(180deg, #1a1d16 0%, #22261d 50%, #12140f 100%);
+    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .15) 0%, rgba(0, 0, 0, .6) 100%),
+    url("../img/bg/cs16.svg") center bottom / cover no-repeat;
   --page-color: #1a1d16;
 }
 
@@ -33,9 +33,16 @@ html, body { margin: 0; height: 100%; }
 body {
   font: var(--font-size)/1.5 var(--font);
   color: var(--text);
-  background: var(--page-bg);
   background-color: var(--page-color);
-  background-attachment: fixed;
+}
+
+/* Oyun sahnesi: sabit arka plan katmanı (img/bg/*.svg) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--page-bg);
 }
 
 a { color: var(--accent); }
@@ -352,9 +359,8 @@ body[data-theme="cs2"] {
   --primary-text: #fff;
   --radius: 4px;
   --page-bg:
-    radial-gradient(ellipse at 20% 0%, rgba(109, 179, 242, 0.18), transparent 55%),
-    radial-gradient(ellipse at 100% 100%, rgba(232, 160, 60, 0.10), transparent 50%),
-    linear-gradient(160deg, #0c1018 0%, #141b27 60%, #090c12 100%);
+    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .1) 0%, rgba(0, 0, 0, .55) 100%),
+    url("../img/bg/cs2.svg") center bottom / cover no-repeat;
   --page-color: #0c1018;
 }
 body[data-theme="cs2"] .vgui-window { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); backdrop-filter: blur(6px); }
@@ -389,11 +395,10 @@ body[data-theme="minecraft"] {
   --btn-text: #fff;
   --primary-bg: #6f6f6f;
   --primary-text: #ffff55;
-  /* toprak blok deseni */
   --page-bg:
-    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-    repeating-conic-gradient(#6b4a32 0 25%, #5a3d29 0 50%) 0 0 / 32px 32px;
-  --page-color: #3b2a1d;
+    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .05) 0%, rgba(0, 0, 0, .45) 100%),
+    url("../img/bg/minecraft.svg") center bottom / cover no-repeat;
+  --page-color: #3f63c8;
 }
 body[data-theme="minecraft"] .vgui-window { border: 3px solid; border-color: #fff #555 #555 #fff; box-shadow: 0 0 0 2px #000; }
 body[data-theme="minecraft"] .title-bar { font-weight: normal; }
@@ -445,9 +450,8 @@ body[data-theme="rust"] {
   --primary-bg: #cd412b;
   --primary-text: #fff;
   --page-bg:
-    radial-gradient(ellipse at 80% 20%, rgba(205, 65, 43, 0.16), transparent 55%),
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0 2px, transparent 2px 8px),
-    linear-gradient(180deg, #161512 0%, #1d1b17 60%, #0f0e0c 100%);
+    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .1) 0%, rgba(0, 0, 0, .6) 100%),
+    url("../img/bg/rust.svg") center bottom / cover no-repeat;
   --page-color: #161512;
 }
 body[data-theme="rust"] .vgui-window { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7); }
@@ -481,8 +485,8 @@ body[data-theme="arma3"] {
   --primary-bg: #c48214;
   --primary-text: #fff;
   --page-bg:
-    radial-gradient(ellipse at 30% 20%, rgba(150, 140, 100, 0.22), transparent 60%),
-    linear-gradient(180deg, #3a3c33 0%, #24261f 55%, #121310 100%);
+    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .1) 0%, rgba(0, 0, 0, .55) 100%),
+    url("../img/bg/arma3.svg") center bottom / cover no-repeat;
   --page-color: #24261f;
 }
 body[data-theme="arma3"] .vgui-window { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
