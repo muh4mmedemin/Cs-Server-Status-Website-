@@ -102,28 +102,40 @@ function renderRail() {
 function renderClub() {
   $("#club-name").textContent = CLUB.name;
   $("#club-about").textContent = CLUB.about;
-  const tbody = $("#club-servers");
-  tbody.innerHTML = "";
+
+  const cards = $("#club-servers");
+  cards.innerHTML = "";
   SERVERS.forEach((s) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td></td><td></td><td><a></a></td>`;
-    tr.children[0].textContent = s.name;
-    tr.children[1].textContent = hasIp(s) ? addressOf(s) : "IP ayarlanmadı";
-    const a = tr.querySelector("a");
-    a.href = `#${s.id}`;
-    a.textContent = "Durum →";
-    tbody.appendChild(tr);
+    const card = document.createElement("a");
+    card.className = "game-card";
+    card.href = `#${s.id}`;
+    card.dataset.game = s.id;
+    card.innerHTML = `
+      <span class="card-art"></span>
+      <span class="card-body">
+        <span class="card-state"></span>
+        <span class="card-name"></span>
+        <span class="card-addr"></span>
+        <span class="card-cta">Canlı durum &rarr;</span>
+      </span>`;
+    card.querySelector(".card-art").style.backgroundImage = `url("img/bg/${s.id}.svg")`;
+    card.querySelector(".card-name").textContent = s.name;
+    card.querySelector(".card-addr").textContent = hasIp(s) ? addressOf(s) : "IP ayarlanmadı";
+    const state = card.querySelector(".card-state");
+    state.textContent = hasIp(s) ? "● açık" : "○ yakında";
+    state.classList.toggle("on", hasIp(s));
+    cards.appendChild(card);
   });
+
   const links = $("#club-links");
-  links.innerHTML = "";
   CLUB.links.forEach((l) => {
     const a = document.createElement("a");
-    a.className = "vbtn";
+    a.className = "home-btn primary";
     a.href = l.url;
     a.target = "_blank";
     a.rel = "noopener";
     a.textContent = l.label;
-    links.appendChild(a);
+    links.insertBefore(a, $("#home-console"));
   });
 }
 
@@ -136,8 +148,8 @@ function showClub() {
   document.body.dataset.theme = "club42";
   document.title = `${CLUB.name} – Sunucular`;
   $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === CLUB_ID));
-  $("#window-title").textContent = `${CLUB.name} – Sunucular`;
-  $$(".tab-content").forEach((c) => c.classList.toggle("active", c.id === "tab-club"));
+  $("#server-window").hidden = true;
+  $("#club-home").hidden = false;
   log(`~/${CLUB_ID} $ cd kulup`);
 }
 
@@ -166,7 +178,11 @@ function selectGame(id) {
   const fromClub = !current;
   onClub = false;
   current = next;
-  if (fromClub) showTab("status");
+  if (fromClub) {
+    $("#club-home").hidden = true;
+    $("#server-window").hidden = false;
+    showTab("status");
+  }
 
   document.body.dataset.theme = current.id;
   document.title = `${current.name} Sunucu Durumu`;
@@ -271,6 +287,7 @@ function moveConsole(x, y) {
 }
 
 consoleTab.addEventListener("click", () => setConsoleOpen(consoleWindow.hidden));
+$("#home-console").addEventListener("click", () => setConsoleOpen(consoleWindow.hidden));
 $("#console-close").addEventListener("click", () => setConsoleOpen(false));
 
 // Başlık çubuğundan mouse (veya dokunmatik) ile sürükleme

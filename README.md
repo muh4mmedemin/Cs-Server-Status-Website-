@@ -7,8 +7,9 @@ arayüzüne benzeyen temalarla gösteren statik web sitesi.
 - Soldaki menüden oyun seçilir (mobilde üstte). Her oyunun kendi linki vardır:
   `#cs16`, `#cs2`, `#minecraft`, `#rust`, `#arma3`
 - Her oyunun kendine ait çizim arka planı var (`img/bg/`)
-- **Ana sayfa 42 kulüp sayfasıdır** (sol üstteki **42** butonu, `#42`): siyah-beyaz 42 teması,
-  cluster oturma planı arka planı ve tüm sunucuların listesi. Kulüp adı, açıklaması ve linkleri
+- **Ana sayfa 42 kulüp sayfasıdır** (sol üstteki **42** butonu, `#42`): oyun pencerelerinden
+  bağımsız, tam sayfa bir açılış; büyük 42 başlığı, kulüp tanıtımı ve her oyun için kendi sahnesini
+  gösteren tıklanabilir kartlar. Kulüp adı, açıklaması ve linkleri
   (Discord vb.) `js/config.js` içindeki `CLUB` bloğundan değiştirilir.
 - Sayfalar arası geçişler yumuşak (kararma + pencere animasyonu); sistemde "hareketi azalt"
   açıksa animasyonsuz geçer.
