@@ -27,10 +27,6 @@ function log(msg) {
   consoleLog.scrollTop = consoleLog.scrollHeight;
 }
 
-function setStatus(msg) {
-  $("#status-text").textContent = msg;
-}
-
 let toastTimer;
 function toast(msg) {
   const el = $("#toast");
@@ -50,20 +46,17 @@ function loadBanner() {
   banner.src = `${GT_BANNER}?t=${Date.now()}`;
   remaining = CONFIG.refreshSeconds;
   updateCountdown();
-  setStatus("GameTracker'dan veri alınıyor...");
 }
 
 banner.addEventListener("load", () => {
   banner.hidden = false;
   bannerError.hidden = true;
-  setStatus("Sunucu durumu güncellendi.");
   log(`GameTracker banner güncellendi (${ADDRESS})`);
 });
 
 banner.addEventListener("error", () => {
   banner.hidden = true;
   bannerError.hidden = false;
-  setStatus("Banner yüklenemedi.");
   log("HATA: GameTracker banner yüklenemedi");
 });
 
@@ -78,13 +71,6 @@ setInterval(() => {
   if (remaining <= 0) loadBanner();
   else updateCountdown();
 }, 1000);
-
-// ---- Saat ----
-function tickClock() {
-  $("#clock").textContent = new Date().toLocaleString("tr-TR");
-}
-setInterval(tickClock, 1000);
-tickClock();
 
 // ---- Sekmeler ----
 function showTab(name) {
