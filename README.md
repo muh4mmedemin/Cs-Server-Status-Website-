@@ -6,7 +6,7 @@ GameTracker üzerindeki anlık durumunu gösteren statik web sitesi.
 - Sunucu: `45.74.244.214:27015`
 - GameTracker banner'ı her 60 saniyede otomatik yenilenir
 - **Bağlan** butonu (`steam://connect/...`), **IP Kopyala**, kurallar ve bağlanma rehberi
-- Oyundaki gibi `~` / `"` tuşuyla açılan konsol (`help`, `status`, `connect`, `copy`, `refresh`, `clear`)
+- **Konsol** sekmesi veya `~` / `"` tuşuyla açılan, fareyle sürüklenebilir ayrı konsol penceresi (`help`, `status`, `connect`, `copy`, `refresh`, `clear`)
 
 ## GitHub Codespaces ile çalıştırma
 

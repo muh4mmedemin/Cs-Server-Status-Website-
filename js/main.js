@@ -18,7 +18,6 @@ $$(".js-address").forEach((el) => (el.textContent = ADDRESS));
 $$(".js-gt-url").forEach((el) => (el.href = GT_URL));
 $("#gt-link").href = GT_URL;
 $("#btn-connect").href = STEAM_CONNECT;
-$("#menu-connect").href = STEAM_CONNECT;
 
 // ---- Konsol ----
 const consoleLog = $("#console-log");
@@ -91,7 +90,6 @@ tickClock();
 function showTab(name) {
   $$(".tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === name));
   $$(".tab-content").forEach((c) => c.classList.toggle("active", c.id === `tab-${name}`));
-  $$(".menu-link[data-tab]").forEach((m) => m.classList.toggle("active", m.dataset.tab === name));
 }
 $$("[data-tab]").forEach((el) => el.addEventListener("click", () => showTab(el.dataset.tab)));
 
@@ -112,27 +110,70 @@ async function copyAddress() {
   log(`IP panoya kopyalandı: ${ADDRESS}`);
 }
 $("#btn-copy").addEventListener("click", copyAddress);
-$("#menu-copy").addEventListener("click", copyAddress);
 
 $("#btn-refresh").addEventListener("click", loadBanner);
 
-[$("#btn-connect"), $("#menu-connect")].forEach((el) =>
-  el.addEventListener("click", () => log(`] connect ${ADDRESS}`))
-);
+$("#btn-connect").addEventListener("click", () => log(`] connect ${ADDRESS}`));
 
 // ---- Konsol penceresi ----
 const consoleWindow = $("#console-window");
-$("#menu-console").addEventListener("click", () => {
-  consoleWindow.hidden = !consoleWindow.hidden;
-  if (!consoleWindow.hidden) $("#console-cmd").focus();
+const consoleTab = $("#tab-console");
+let consolePlaced = false;
+
+function setConsoleOpen(open) {
+  consoleWindow.hidden = !open;
+  consoleTab.classList.toggle("open", open);
+  if (!open) return;
+  if (!consolePlaced) {
+    // İlk açılışta sağ alta yerleştir
+    const r = consoleWindow.getBoundingClientRect();
+    moveConsole(window.innerWidth - r.width - 16, window.innerHeight - r.height - 16);
+    consolePlaced = true;
+  }
+  $("#console-cmd").focus();
+}
+
+function moveConsole(x, y) {
+  const r = consoleWindow.getBoundingClientRect();
+  // Pencere ekran dışına taşmasın
+  x = Math.min(Math.max(0, x), Math.max(0, window.innerWidth - r.width));
+  y = Math.min(Math.max(0, y), Math.max(0, window.innerHeight - r.height));
+  consoleWindow.style.left = `${x}px`;
+  consoleWindow.style.top = `${y}px`;
+}
+
+consoleTab.addEventListener("click", () => setConsoleOpen(consoleWindow.hidden));
+$("#console-close").addEventListener("click", () => setConsoleOpen(false));
+
+// Başlık çubuğundan mouse (veya dokunmatik) ile sürükleme
+const consoleTitle = consoleWindow.querySelector(".title-bar");
+consoleTitle.addEventListener("pointerdown", (e) => {
+  if (e.target.closest("button")) return;
+  const r = consoleWindow.getBoundingClientRect();
+  const dx = e.clientX - r.left;
+  const dy = e.clientY - r.top;
+  consoleTitle.setPointerCapture(e.pointerId);
+  const onMove = (ev) => moveConsole(ev.clientX - dx, ev.clientY - dy);
+  const onUp = () => {
+    consoleTitle.removeEventListener("pointermove", onMove);
+    consoleTitle.removeEventListener("pointerup", onUp);
+  };
+  consoleTitle.addEventListener("pointermove", onMove);
+  consoleTitle.addEventListener("pointerup", onUp);
 });
-$("#console-close").addEventListener("click", () => (consoleWindow.hidden = true));
+
+window.addEventListener("resize", () => {
+  if (!consoleWindow.hidden) {
+    const r = consoleWindow.getBoundingClientRect();
+    moveConsole(r.left, r.top);
+  }
+});
 
 // "~" tuşu ile konsol aç/kapa (oyundaki gibi)
 document.addEventListener("keydown", (e) => {
   if ((e.key === "`" || e.key === "~" || e.key === '"') && e.target.tagName !== "INPUT") {
     e.preventDefault();
-    $("#menu-console").click();
+    setConsoleOpen(consoleWindow.hidden);
   }
 });
 
