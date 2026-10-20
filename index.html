@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS 1.6 Sunucu Durumu</title>
+  <meta name="description" content="Counter-Strike 1.6 sunucusunun anlık durumu (GameTracker).">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="desktop">
+
+    <!-- Sol taraf: CS 1.6 ana menüsü -->
+    <aside class="main-menu">
+      <h1 class="logo">
+        <span class="logo-top">COUNTER-STRIKE</span>
+        <span class="logo-sub">1.6 &middot; Sunucu Durumu</span>
+      </h1>
+      <nav>
+        <button class="menu-link" data-tab="status">Sunucu Durumu</button>
+        <a class="menu-link" id="menu-connect" href="#">Sunucuya Bağlan</a>
+        <button class="menu-link" id="menu-copy">IP Adresini Kopyala</button>
+        <button class="menu-link" data-tab="rules">Kurallar</button>
+        <button class="menu-link" data-tab="howto">Nasıl Bağlanırım?</button>
+        <button class="menu-link" id="menu-console">Konsol</button>
+      </nav>
+    </aside>
+
+    <!-- Orta: VGUI pencere -->
+    <main class="vgui-window" id="server-window">
+      <div class="title-bar">
+        <span class="title">Sunucu Bilgisi &ndash; <span class="js-address"></span></span>
+        <span class="title-buttons">
+          <span class="tbtn" aria-hidden="true">_</span>
+          <span class="tbtn" aria-hidden="true">x</span>
+        </span>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="status" role="tab">Durum</button>
+        <button class="tab" data-tab="rules" role="tab">Kurallar</button>
+        <button class="tab" data-tab="howto" role="tab">Nasıl Bağlanırım?</button>
+      </div>
+
+      <div class="panel">
+        <!-- DURUM -->
+        <section class="tab-content active" id="tab-status">
+          <div class="group">
+            <div class="group-label">GameTracker &ndash; Anlık Durum</div>
+            <div class="banner-wrap">
+              <a id="gt-link" href="#" target="_blank" rel="noopener">
+                <img id="gt-banner" width="560" height="95" alt="GameTracker sunucu banner'ı">
+              </a>
+              <div class="banner-error" id="gt-error" hidden>
+                Banner yüklenemedi. GameTracker'a ulaşılamıyor olabilir.
+              </div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-label">Sunucu</div>
+            <table class="server-list">
+              <thead>
+                <tr>
+                  <th>Adres</th>
+                  <th>Oyun</th>
+                  <th>Kaynak</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="selected">
+                  <td class="js-address"></td>
+                  <td>Counter-Strike 1.6</td>
+                  <td><a class="js-gt-url" href="#" target="_blank" rel="noopener">GameTracker</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="refresh-row">
+            <span class="refresh-label">Sonraki yenileme: <b id="countdown">--</b> sn</span>
+            <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+          </div>
+
+          <div class="button-row">
+            <a class="vbtn primary" id="btn-connect" href="#">Bağlan</a>
+            <button class="vbtn" id="btn-copy">IP Kopyala</button>
+            <button class="vbtn" id="btn-refresh">Yenile</button>
+          </div>
+        </section>
+
+        <!-- KURALLAR -->
+        <section class="tab-content" id="tab-rules">
+          <div class="group">
+            <div class="group-label">Sunucu Kuralları</div>
+            <ol class="rules">
+              <li>Hile (cheat, script, config hilesi) kullanmak yasaktır.</li>
+              <li>Küfür, hakaret ve aşağılayıcı söylemler yasaktır.</li>
+              <li>Takım arkadaşlarına bilerek zarar vermek (team kill/flash) yasaktır.</li>
+              <li>Mikrofonu spam amaçlı kullanmak yasaktır.</li>
+              <li>Reklam yapmak yasaktır.</li>
+              <li>Adminlerin uyarılarına uyunuz.</li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- NASIL BAĞLANIRIM -->
+        <section class="tab-content" id="tab-howto">
+          <div class="group">
+            <div class="group-label">Bağlanma Yolları</div>
+            <p><b>1.</b> Yukarıdaki <b>Bağlan</b> butonuna basın (Steam yüklü olmalı).</p>
+            <p><b>2.</b> Oyunu açın, <b>~</b> tuşuyla konsolu açın ve şunu yazın:</p>
+            <div class="code-line">connect <span class="js-address"></span></div>
+            <p><b>3.</b> <i>Find Servers &rarr; Favorites &rarr; Add a Server</i> ile IP'yi favorilere ekleyin.</p>
+          </div>
+        </section>
+      </div>
+
+      <div class="status-bar">
+        <span id="status-text">Hazır.</span>
+        <span id="clock"></span>
+      </div>
+    </main>
+
+    <!-- Konsol penceresi -->
+    <section class="vgui-window console-window" id="console-window" hidden>
+      <div class="title-bar">
+        <span class="title">Konsol</span>
+        <span class="title-buttons">
+          <button class="tbtn" id="console-close" aria-label="Kapat">x</button>
+        </span>
+      </div>
+      <div class="panel">
+        <pre class="console-log" id="console-log"></pre>
+        <form class="console-input" id="console-form" autocomplete="off">
+          <input type="text" id="console-cmd" placeholder="help yazın...">
+          <button class="vbtn" type="submit">Gönder</button>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

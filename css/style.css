@@ -1,0 +1,309 @@
+/* CS 1.6 / klasik Steam VGUI teması */
+:root {
+  --bg: #4c5844;          /* pencere zemini */
+  --panel: #3e4637;       /* iç panel */
+  --panel-dark: #2c3127;  /* liste / input zemini */
+  --border-light: #8c9284;
+  --border-dark: #292c21;
+  --text: #d8ded3;
+  --text-dim: #a0aa95;
+  --accent: #c4b550;      /* sarı vurgu */
+  --select: #958831;      /* seçili satır */
+  --font: Tahoma, Verdana, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; height: 100%; }
+
+body {
+  font: 12px/1.5 var(--font);
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 70% 30%, rgba(196, 181, 80, 0.08), transparent 60%),
+    linear-gradient(180deg, #1a1d16 0%, #22261d 50%, #12140f 100%);
+  background-color: #1a1d16;
+}
+
+a { color: var(--accent); }
+
+.desktop {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 640px);
+  gap: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+/* ---------- Ana menü ---------- */
+.logo { margin: 0 0 32px; font-weight: normal; }
+.logo-top {
+  display: block;
+  font: bold 30px/1 Verdana, Tahoma, sans-serif;
+  letter-spacing: 1px;
+  color: #e8e4c8;
+  text-shadow: 2px 2px 0 #000;
+}
+.logo-sub {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-dim);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.main-menu nav { display: flex; flex-direction: column; gap: 4px; }
+
+.menu-link {
+  all: unset;
+  cursor: pointer;
+  font: 15px/1.6 var(--font);
+  color: var(--text);
+  padding: 2px 0;
+  text-shadow: 1px 1px 0 #000;
+}
+.menu-link:hover,
+.menu-link:focus-visible { color: var(--accent); }
+.menu-link.active { color: #fff; }
+
+/* ---------- VGUI pencere ---------- */
+.vgui-window {
+  background: var(--bg);
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  box-shadow: 0 0 0 1px #000, 4px 6px 18px rgba(0, 0, 0, 0.6);
+  width: 100%;
+}
+
+.title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.title-buttons { display: flex; gap: 4px; }
+.tbtn {
+  all: unset;
+  width: 16px;
+  height: 14px;
+  line-height: 12px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text);
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  cursor: default;
+}
+button.tbtn { cursor: pointer; }
+
+.tabs { display: flex; gap: 2px; padding: 4px 8px 0; }
+.tab {
+  font: 12px var(--font);
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) transparent var(--border-light);
+  padding: 3px 12px;
+  cursor: pointer;
+  position: relative;
+  top: 1px;
+}
+.tab.active { color: #fff; background: var(--panel); }
+
+.panel {
+  margin: 0 8px;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Gruplanmış kutular */
+.group {
+  position: relative;
+  border: 1px solid;
+  border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+  padding: 16px 10px 10px;
+  margin: 8px 0 16px;
+}
+.group-label {
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  padding: 0 4px;
+  background: var(--panel);
+  color: var(--text);
+}
+.group p { margin: 6px 0; }
+
+/* GameTracker banner */
+.banner-wrap { text-align: center; }
+#gt-banner {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #000;
+  background: var(--panel-dark);
+}
+.banner-error {
+  padding: 24px 8px;
+  background: var(--panel-dark);
+  color: var(--text-dim);
+}
+
+/* Sunucu listesi (Find Servers görünümü) */
+.server-list {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel-dark);
+  border: 1px solid;
+  border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+}
+.server-list th {
+  text-align: left;
+  font-weight: normal;
+  padding: 3px 6px;
+  background: var(--bg);
+  border-right: 1px solid var(--border-dark);
+  border-bottom: 1px solid var(--border-dark);
+}
+.server-list td { padding: 3px 6px; word-break: break-all; }
+.server-list tr.selected td { background: var(--select); color: #fff; }
+.server-list tr.selected a { color: #fff; }
+
+/* Yenileme göstergesi */
+.refresh-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--text-dim);
+}
+.progress {
+  flex: 1;
+  height: 12px;
+  background: var(--panel-dark);
+  border: 1px solid;
+  border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+  padding: 1px;
+}
+.progress-bar {
+  height: 100%;
+  width: 0;
+  /* CS 1.6 parçalı ilerleme çubuğu */
+  background: repeating-linear-gradient(90deg, var(--accent) 0 6px, transparent 6px 8px);
+  transition: width 1s linear;
+}
+
+/* Butonlar */
+.button-row { display: flex; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
+.vbtn {
+  font: 12px var(--font);
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  padding: 4px 16px;
+  min-width: 72px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.vbtn:hover { color: #fff; }
+.vbtn:active {
+  border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+}
+.vbtn.primary { color: var(--accent); }
+
+/* Kurallar */
+.rules { margin: 0; padding-left: 22px; }
+.rules li { margin: 4px 0; }
+
+.code-line {
+  font-family: "Lucida Console", Consolas, monospace;
+  background: var(--panel-dark);
+  padding: 6px 8px;
+  margin: 6px 0;
+  border: 1px solid;
+  border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+  word-break: break-all;
+}
+
+/* Durum çubuğu */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 10px 6px;
+  color: var(--text-dim);
+}
+
+/* ---------- Konsol ---------- */
+.console-window {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: min(480px, calc(100vw - 32px));
+  z-index: 10;
+}
+.console-window .panel { margin-bottom: 8px; padding: 6px; }
+.console-log {
+  margin: 0 0 6px;
+  height: 180px;
+  overflow-y: auto;
+  padding: 4px 6px;
+  background: var(--panel-dark);
+  font: 12px/1.4 "Lucida Console", Consolas, monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  border: 1px solid;
+  border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+}
+.console-input { display: flex; gap: 6px; }
+.console-input input {
+  flex: 1;
+  min-width: 0;
+  font: 12px "Lucida Console", Consolas, monospace;
+  color: var(--text);
+  background: var(--panel-dark);
+  border: 1px solid;
+  border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+  padding: 3px 6px;
+  outline: none;
+}
+
+/* Bildirim */
+.toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  color: #fff;
+  padding: 6px 14px;
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  box-shadow: 0 0 0 1px #000;
+  z-index: 20;
+}
+
+[hidden] { display: none !important; }
+
+/* ---------- Mobil ---------- */
+@media (max-width: 860px) {
+  .desktop { grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; align-content: start; }
+  .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
+  .logo { margin-bottom: 16px; }
+  .logo-top { font-size: 24px; }
+  .main-menu nav { flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
+  .menu-link { font-size: 13px; }
+}
