@@ -4,7 +4,7 @@
   "forwardPorts": [8080],
   "portsAttributes": {
     "8080": {
-      "label": "CS 1.6 Sunucu Durumu",
+      "label": "42 Oyun Kulübü – Sunucular",
       "onAutoForward": "openBrowser"
     }
   },

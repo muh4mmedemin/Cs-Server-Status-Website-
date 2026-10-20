@@ -85,7 +85,7 @@ function renderRail() {
   club.href = `#${CLUB_ID}`;
   club.dataset.game = CLUB_ID;
   club.title = CLUB.name;
-  club.innerHTML = `<span class="rail-short">42</span><span class="rail-name">Kulüp</span>`;
+  club.innerHTML = `<span class="rail-short">42</span>`;
   rail.appendChild(club);
   SERVERS.forEach((s) => {
     const a = document.createElement("a");
@@ -93,8 +93,7 @@ function renderRail() {
     a.href = `#${s.id}`;
     a.dataset.game = s.id;
     a.title = s.name;
-    a.innerHTML = `<span class="rail-short"></span><span class="rail-name"></span>`;
-    a.querySelector(".rail-short").textContent = s.short;
+    a.innerHTML = `<span class="rail-name"></span>`;
     a.querySelector(".rail-name").textContent = s.name;
     rail.appendChild(a);
   });
@@ -128,7 +127,10 @@ function renderClub() {
   });
 }
 
+let onClub = false;
+
 function showClub() {
+  onClub = true;
   current = null;
   banner.removeAttribute("src");
   document.body.dataset.theme = "club42";
@@ -149,14 +151,20 @@ function fillList(el, items) {
   });
 }
 
+// Bilinmeyen ya da boş link → ana sayfa (42 kulüp sayfası)
+const resolveId = (id) => (SERVERS.some((s) => s.id === id) ? id : CLUB_ID);
+const activeId = () => (current ? current.id : CLUB_ID);
+
 function selectGame(id) {
+  id = resolveId(id);
   if (id === CLUB_ID) {
-    if (document.body.dataset.theme !== "club42") showClub();
+    if (!onClub) showClub();
     return;
   }
-  const next = SERVERS.find((s) => s.id === id) || SERVERS[0];
+  const next = SERVERS.find((s) => s.id === id);
   if (current === next) return;
   const fromClub = !current;
+  onClub = false;
   current = next;
   if (fromClub) showTab("status");
 
@@ -185,7 +193,22 @@ function selectGame(id) {
   loadBanner();
 }
 
-window.addEventListener("hashchange", () => selectGame(location.hash.slice(1)));
+// Sayfa geçişi: ekran kararır, tema değişir, yeni sayfa belirir
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let switchTimer;
+
+function navigate(id) {
+  if (resolveId(id) === activeId()) return;
+  clearTimeout(switchTimer);
+  if (reduceMotion.matches) return selectGame(id);
+  document.body.classList.add("switching");
+  switchTimer = setTimeout(() => {
+    selectGame(id);
+    requestAnimationFrame(() => document.body.classList.remove("switching"));
+  }, 220);
+}
+
+window.addEventListener("hashchange", () => navigate(location.hash.slice(1)));
 
 // ---- Sekmeler ----
 function showTab(name) {
@@ -334,3 +357,4 @@ renderRail();
 renderClub();
 showTab("status");
 selectGame(location.hash.slice(1));
+requestAnimationFrame(() => document.body.classList.add("ready"));

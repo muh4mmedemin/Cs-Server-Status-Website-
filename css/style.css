@@ -19,7 +19,7 @@
   --primary-bg: var(--bg);
   --primary-text: var(--accent);
   --radius: 0;
-  --rail-width: 76px;
+  --rail-width: 132px;
   --page-bg:
     radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .15) 0%, rgba(0, 0, 0, .6) 100%),
     url("../img/bg/cs16.svg") center bottom / cover no-repeat;
@@ -78,7 +78,7 @@ a { color: var(--accent); }
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 10px 4px;
+  padding: 10px 8px;
   color: rgba(255, 255, 255, 0.55);
   text-decoration: none;
   border-left: 3px solid transparent;
@@ -88,12 +88,35 @@ a { color: var(--accent); }
   font: bold 15px/1 Verdana, Tahoma, sans-serif;
   letter-spacing: 0.5px;
 }
-.rail-name { font: 10px/1.2 Tahoma, Verdana, sans-serif; }
+.rail-name { font: bold 13px/1.25 Tahoma, Verdana, sans-serif; }
 .rail-item:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
 .rail-item.active {
   color: #fff;
   border-left-color: var(--accent);
   background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- Sayfa geçişleri ---------- */
+.fade-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 4; /* sol çubuğun altında, pencerelerin üstünde */
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+body.switching .fade-veil { opacity: 0.9; }
+#server-window { transition: opacity 0.25s ease, transform 0.25s ease; }
+body.switching #server-window { opacity: 0; transform: translateY(10px) scale(0.985); }
+body:not(.ready) #server-window { opacity: 0; transform: translateY(10px); }
+.game-rail, .rail-item { transition: background-color 0.3s ease, color 0.2s ease, border-color 0.3s ease; }
+.tab-content.active { animation: tab-in 0.2s ease; }
+@keyframes tab-in { from { opacity: 0; transform: translateY(4px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-veil, #server-window, .game-rail, .rail-item { transition: none; }
+  .tab-content.active { animation: none; }
 }
 
 /* ---------- VGUI pencere ---------- */
@@ -373,7 +396,6 @@ body[data-theme="cs2"] .server-list tr.selected td { color: var(--text); }
 body[data-theme="cs2"] .server-list tr.selected a { color: var(--accent); }
 body[data-theme="cs2"] .progress-bar { background: linear-gradient(90deg, #3d7fc1, var(--accent)); }
 body[data-theme="cs2"] .vbtn { border-radius: 3px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
-body[data-theme="cs2"] .rail-short,
 body[data-theme="cs2"] .rail-name { font-family: "Rajdhani", sans-serif; }
 
 /* ---------- Minecraft: gri envanter penceresi + taş butonlar ---------- */
@@ -428,10 +450,8 @@ body[data-theme="minecraft"] .console-input input {
   font-size: 18px;
   text-shadow: 2px 2px 0 #3f3f3f;
 }
-body[data-theme="minecraft"] .rail-short,
 body[data-theme="minecraft"] .rail-name { font-family: "VT323", monospace; font-weight: normal; }
-body[data-theme="minecraft"] .rail-short { font-size: 22px; }
-body[data-theme="minecraft"] .rail-name { font-size: 14px; }
+body[data-theme="minecraft"] .rail-name { font-size: 18px; }
 
 /* ---------- Rust: koyu, endüstriyel, pas kırmızısı ---------- */
 body[data-theme="rust"] {
@@ -464,7 +484,6 @@ body[data-theme="rust"] .server-list tr.selected a { color: #fff; }
 body[data-theme="rust"] .progress-bar { background: var(--accent); }
 body[data-theme="rust"] .vbtn { text-transform: uppercase; letter-spacing: 1px; border: 0; padding: 6px 18px; }
 body[data-theme="rust"] .vbtn:hover { filter: brightness(1.15); }
-body[data-theme="rust"] .rail-short,
 body[data-theme="rust"] .rail-name { font-family: "Oswald", sans-serif; }
 
 /* ---------- Arma 3: siyah yarı saydam paneller, turuncu başlıklar ---------- */
@@ -499,7 +518,6 @@ body[data-theme="arma3"] .progress-bar { background: var(--accent); }
 body[data-theme="arma3"] .vbtn { border: 0; text-transform: uppercase; padding: 5px 18px; }
 body[data-theme="arma3"] .vbtn:hover { background: #c48214; color: #fff; }
 body[data-theme="arma3"] .console-window .title-bar { background: #c48214; }
-body[data-theme="arma3"] .rail-short,
 body[data-theme="arma3"] .rail-name { font-family: "Barlow Condensed", sans-serif; }
 
 /* ---------- 42 kulüp sayfası: siyah-beyaz, monospace, turkuaz vurgu ---------- */
@@ -551,7 +569,14 @@ body[data-theme="club42"] .server-list tr:hover td { background: var(--select); 
 .club-servers td:last-child { text-align: right; white-space: nowrap; }
 
 /* Sol çubuktaki 42 rozeti */
-.rail-club { margin-bottom: 10px; }
+/* sol üst köşe */
+.rail-club {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  padding: 8px 0;
+}
 .game-rail .rail-club .rail-short {
   font: 700 20px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: -1px;
@@ -576,8 +601,8 @@ body[data-theme="club42"] .server-list tr:hover td { background: var(--select); 
   }
   .rail-item { border-left: 0; border-bottom: 3px solid transparent; padding: 12px 12px 9px; }
   .rail-item.active { border-bottom-color: var(--accent); }
-  .rail-name { display: none; }
-  .rail-club { margin-bottom: 0; }
+  .rail-name { white-space: nowrap; }
+  .rail-club { position: static; padding: 9px 12px 6px; }
   .club-42 { font-size: 44px; }
   .server-list:not(.club-servers) th:nth-child(2),
   .server-list:not(.club-servers) td:nth-child(2) { display: none; }
