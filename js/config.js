@@ -18,6 +18,31 @@ const CLUB = {
   links: [],
 };
 
+// ---- Yapımlar: harita, mod, skin, plugin, build... ----
+// Her yapım için listeye bir blok ekleyin; oyunun sayfasındaki "Yapımlar"
+// sekmesinde ve ana sayfada görünür. Dosyaları works/<oyun>/ klasörüne koyun
+// (ayrıntılar: works/README.md).
+//
+// game:        hangi oyunun yapımı (aşağıdaki SERVERS içindeki id: cs16, cs2, minecraft, rust, arma3)
+// title:       yapımın adı
+// type:        kısa etiket, ör. "Harita", "Mod", "Skin", "Plugin", "Build"
+// description: bir iki cümlelik açıklama
+// image:       görsel yolu (isteğe bağlı; yoksa oyunun arka planı kullanılır)
+// download:    indirme dosyası (works/ altında) ya da harici link (isteğe bağlı)
+// date:        "YYYY-AA" biçiminde tarih; ana sayfada yeniden eskiye sıralanır
+//
+// Örnek (başındaki // işaretlerini kaldırıp düzenleyin):
+//   {
+//     game: "cs16",
+//     title: "de_kulup42",
+//     type: "Harita",
+//     description: "42 kampüsünden esinlenen 5v5 bomba haritası.",
+//     image: "works/cs16/de_kulup42.jpg",
+//     download: "works/cs16/de_kulup42.zip",
+//     date: "2026-11",
+//   },
+const WORKS = [];
+
 const SERVERS = [
   {
     id: "cs16",

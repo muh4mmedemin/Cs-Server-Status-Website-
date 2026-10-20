@@ -33,6 +33,11 @@
         <h2 class="home-section"><span>$</span> ls sunucular/</h2>
         <div class="game-cards" id="club-servers"></div>
       </section>
+
+      <section class="home-works" id="home-works" hidden>
+        <h2 class="home-section"><span>$</span> ls yapimlar/</h2>
+        <div class="work-cards" id="home-works-list"></div>
+      </section>
     </main>
 
     <main class="vgui-window" id="server-window" hidden>
@@ -47,6 +52,7 @@
       <div class="tabs" role="tablist">
         <button class="tab active" data-tab="status" role="tab">Durum</button>
         <button class="tab" data-tab="rules" role="tab">Kurallar</button>
+        <button class="tab" data-tab="works" role="tab">Yapımlar</button>
         <button class="tab" data-tab="howto" role="tab">Nasıl Bağlanırım?</button>
         <button class="tab" id="tab-console" type="button">Konsol</button>
       </div>
@@ -102,6 +108,12 @@
             <div class="group-label">Sunucu Kuralları</div>
             <ol class="rules" id="rules-list"></ol>
           </div>
+        </section>
+
+        <!-- YAPIMLAR -->
+        <section class="tab-content" id="tab-works">
+          <div class="work-cards" id="works-list"></div>
+          <p class="works-empty" id="works-empty">Bu oyun için henüz yapım eklenmedi.</p>
         </section>
 
         <!-- NASIL BAĞLANIRIM -->

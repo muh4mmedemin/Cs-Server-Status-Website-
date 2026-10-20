@@ -48,12 +48,21 @@ aynı dosyadadır.
 }
 ```
 
+## Yapım ekleme (harita, mod, build...)
+
+1. Dosyayı ve varsa ekran görüntüsünü `works/<oyun>/` klasörüne koyun (ör. `works/cs16/`).
+2. `js/config.js` içindeki `WORKS` listesine bir blok ekleyin (dosyada örnek var).
+3. Commit + push. Yapım, oyunun **Yapımlar** sekmesinde ve ana sayfada görünür.
+
+Ayrıntılar ve büyük dosyalar için: [`works/README.md`](works/README.md)
+
 ## Dosyalar
 
 ```
 index.html                     Ana sayfa
 css/style.css                  Ortak düzen + oyun temaları
-js/config.js                   Kulüp bilgisi, sunucu IP/port, kurallar, bağlanma adımları
+js/config.js                   Kulüp bilgisi, yapımlar, sunucu IP/port, kurallar, bağlanma adımları
+works/<oyun>/                  Yapım dosyaları ve görselleri
 js/main.js                     Oyun geçişi, banner yenileme, sekmeler, konsol
 img/bg/*.svg                   Arka planlar (Dust2, Mirage, Minecraft, Rust, Altis, 42 cluster)
 tools/gen-backgrounds.py       Arka plan SVG'lerini üreten betik

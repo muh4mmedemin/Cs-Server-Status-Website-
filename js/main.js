@@ -138,6 +138,65 @@ function renderClub() {
   });
 }
 
+// ---- Yapımlar (WORKS, js/config.js) ----
+const isExternal = (url) => /^https?:\/\//.test(url);
+
+function workCard(w, showGame) {
+  const game = SERVERS.find((s) => s.id === w.game);
+  const card = document.createElement("article");
+  card.className = "work-card";
+  card.dataset.game = w.game;
+  card.innerHTML = `
+    <div class="work-img"><img alt="" loading="lazy"></div>
+    <div class="work-body">
+      <div class="work-meta"><span class="work-type"></span><span class="work-game"></span></div>
+      <h3 class="work-title"></h3>
+      <p class="work-desc"></p>
+      <a class="vbtn primary work-dl"></a>
+    </div>`;
+  const img = card.querySelector("img");
+  img.src = w.image || `img/bg/${w.game}.svg`;
+  img.addEventListener("error", () => (img.src = `img/bg/${w.game}.svg`), { once: true });
+  card.querySelector(".work-type").textContent = w.type || "Yapım";
+  card.querySelector(".work-game").textContent = showGame && game ? game.name : w.date || "";
+  card.querySelector(".work-title").textContent = w.title;
+  card.querySelector(".work-desc").textContent = w.description || "";
+  const dl = card.querySelector(".work-dl");
+  if (w.download) {
+    dl.href = w.download;
+    if (isExternal(w.download)) {
+      dl.textContent = "Bağlantıya git ↗";
+      dl.target = "_blank";
+      dl.rel = "noopener";
+    } else {
+      dl.textContent = "İndir";
+      dl.setAttribute("download", "");
+    }
+  } else {
+    dl.remove();
+  }
+  return card;
+}
+
+function renderWorks() {
+  const list = $("#works-list");
+  list.innerHTML = "";
+  const mine = WORKS.filter((w) => w.game === current.id);
+  mine.forEach((w) => list.appendChild(workCard(w, false)));
+  $("#works-empty").hidden = mine.length > 0;
+  $('.tab[data-tab="works"]').textContent = mine.length ? `Yapımlar (${mine.length})` : "Yapımlar";
+}
+
+function renderHomeWorks() {
+  const known = WORKS.filter((w) => SERVERS.some((s) => s.id === w.game));
+  $("#home-works").hidden = known.length === 0;
+  const list = $("#home-works-list");
+  list.innerHTML = "";
+  [...known]
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .forEach((w) => list.appendChild(workCard(w, true)));
+}
+
 let onClub = false;
 
 function showClub() {
@@ -203,6 +262,7 @@ function selectGame(id) {
 
   fillList($("#rules-list"), current.rules);
   fillList($("#howto-list"), current.howto);
+  renderWorks();
 
   log(`Oyun değiştirildi: ${current.name}`);
   loadBanner();
@@ -371,6 +431,7 @@ log("Sunucu durum paneli yüklendi.");
 log("Komut listesi için 'help' yazın.");
 renderRail();
 renderClub();
+renderHomeWorks();
 showTab("status");
 selectGame(location.hash.slice(1));
 requestAnimationFrame(() => document.body.classList.add("ready"));
