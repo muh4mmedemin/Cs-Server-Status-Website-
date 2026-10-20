@@ -1,0 +1,12 @@
+{
+  "name": "CS 1.6 Sunucu Durumu",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "CS 1.6 Sunucu Durumu",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "postAttachCommand": "setsid nohup ./start.sh > /tmp/site.log 2>&1 &"
+}
