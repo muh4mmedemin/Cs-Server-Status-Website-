@@ -56,6 +56,8 @@ aynı dosyadadır.
 1. Dosyayı ve varsa ekran görüntüsünü `works/<oyun>/` klasörüne koyun (ör. `works/cs16/`).
 2. `js/config.js` içindeki `WORKS` listesine bir blok ekleyin (dosyada örnek var).
 3. Commit + push. Yapım, oyunun **Yapımlar** sekmesinde ve ana sayfada görünür.
+   Karta tıklayınca yapımın kendi sayfası açılır: fotoğraf galerisi, video, uzun açıklama,
+   özellik tablosu ve indirme butonu (`gallery`, `video`, `details`, `specs` alanları).
 
 Ayrıntılar ve büyük dosyalar için: [`works/README.md`](works/README.md)
 

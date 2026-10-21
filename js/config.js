@@ -20,14 +20,25 @@ const CLUB = {
 
 // ---- Yapımlar: harita, mod, skin, plugin, build... ----
 // Her yapım için listeye bir blok ekleyin; oyunun sayfasındaki "Yapımlar"
-// sekmesinde ve ana sayfada görünür. Dosyaları works/<oyun>/ klasörüne koyun
-// (ayrıntılar: works/README.md).
+// sekmesinde ve ana sayfada kart olarak görünür. Karta tıklayınca yapımın
+// kendi sayfası açılır (link: #yapim/<id>). Dosyaları works/<oyun>/ klasörüne
+// koyun (ayrıntılar: works/README.md).
 //
 // game:        hangi oyunun yapımı (aşağıdaki SERVERS içindeki id: cs16, cs2, minecraft, rust, arma3)
 // title:       yapımın adı
+// id:          sayfa linki, ör. "de_kulup42" → #yapim/de_kulup42 (isteğe bağlı; yoksa addan üretilir)
 // type:        kısa etiket, ör. "Harita", "Mod", "Skin", "Plugin", "Build"
-// description: bir iki cümlelik açıklama
-// image:       görsel yolu (isteğe bağlı; yoksa oyunun arka planı kullanılır)
+// description: kartta ve sayfanın başında görünen kısa açıklama (bir iki cümle)
+// image:       kapak görseli (isteğe bağlı; yoksa oyunun arka planı kullanılır)
+// gallery:     yapım sayfasındaki fotoğraflar listesi; ilki kapak olur (isteğe bağlı)
+// video:       YouTube linki; sayfada oynatıcı olarak görünür (isteğe bağlı)
+// details:     yapım sayfasındaki uzun açıklama (isteğe bağlı). Ters tırnak (`) içinde
+//              birden fazla satır yazabilirsiniz:
+//                boş satır  → yeni paragraf
+//                ## Başlık  → ara başlık
+//                - madde    → madde işaretli liste
+//                **kalın**  → kalın yazı
+// specs:       yan paneldeki bilgi tablosu, ör. { "Oyuncu": "5v5", "Mod": "Bomba" } (isteğe bağlı)
 // download:    indirme dosyası (works/ altında) ya da harici link (isteğe bağlı)
 // date:        "YYYY-AA" biçiminde tarih; ana sayfada yeniden eskiye sıralanır
 //
@@ -38,6 +49,23 @@ const CLUB = {
 //     type: "Harita",
 //     description: "42 kampüsünden esinlenen 5v5 bomba haritası.",
 //     image: "works/cs16/de_kulup42.jpg",
+//     gallery: [
+//       "works/cs16/de_kulup42.jpg",
+//       "works/cs16/de_kulup42-a.jpg",
+//       "works/cs16/de_kulup42-b.jpg",
+//     ],
+//     video: "https://www.youtube.com/watch?v=XXXXXXXXXXX",
+//     details: `
+//       Haritayı kampüsün koridorlarından esinlenerek yaptık.
+//
+//       ## Bölgeler
+//       - **A bölgesi:** cluster girişi
+//       - **B bölgesi:** kafeterya
+//
+//       ## Kurulum
+//       Zip'i açıp içindekileri cstrike klasörüne kopyalayın.
+//     `,
+//     specs: { "Oyuncu": "5v5", "Mod": "Bomba (de_)", "Boyut": "Orta" },
 //     download: "works/cs16/de_kulup42.zip",
 //     date: "2026-11",
 //   },
