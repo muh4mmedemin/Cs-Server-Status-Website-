@@ -15,6 +15,7 @@ arayüzüne benzeyen temalarla gösteren statik web sitesi.
   açıksa animasyonsuz geçer.
 - GameTracker banner'ı her 60 saniyede otomatik yenilenir
 - **Bağlan** butonu (`steam://connect/...`), **IP Kopyala**, kurallar ve bağlanma rehberi
+- Kurulum rehberleri için **Dokümanlar** bölümü (Markdown, kod kopyalama, içindekiler)
 - **Konsol** sekmesi veya `~` / `"` tuşuyla açılan, fareyle sürüklenebilir ayrı konsol penceresi (`help`, `status`, `games`, `game <id>`, `connect`, `copy`, `refresh`, `clear`, `42`, `norminette`)
 
 ## GitHub Codespaces ile çalıştırma
@@ -61,6 +62,17 @@ aynı dosyadadır.
 
 Ayrıntılar ve büyük dosyalar için: [`works/README.md`](works/README.md)
 
+## Doküman ekleme (kurulum rehberleri, cluster betikleri...)
+
+Dokümanlar `docs/` klasöründeki Markdown (`.md`) dosyalarıdır; ana sayfada
+`$ ls dokumanlar/` altında listelenir, her biri kendi sayfasında açılır
+(`#dokuman/<id>`): kod renklendirme, kod bloklarında **Kopyala** butonu,
+not kutuları, tablolar ve otomatik içindekiler.
+
+1. `docs/_sablon.md` dosyasını kopyalayın: `cp docs/_sablon.md docs/yeni.md`
+2. Yazın (kurallar: sitedeki **Doküman nasıl yazılır?** sayfası / `docs/dokuman-yazma.md`).
+3. `js/config.js` içindeki `DOCS` listesine ekleyin, commit + push.
+
 ## Dosyalar
 
 ```
@@ -68,6 +80,8 @@ index.html                     Ana sayfa
 css/style.css                  Ortak düzen + oyun temaları
 js/config.js                   Kulüp bilgisi, yapımlar, sunucu IP/port, kurallar, bağlanma adımları
 works/<oyun>/                  Yapım dosyaları ve görselleri
+docs/*.md, docs/img/           Dokümanlar ve görselleri (docs/_sablon.md: şablon)
+js/vendor/                     Markdown ve kod renklendirme kütüphaneleri (marked, highlight.js)
 js/main.js                     Oyun geçişi, banner yenileme, sekmeler, konsol
 img/bg/*.svg                   Arka planlar (Dust2, Mirage, Minecraft, Rust, Altis, oyun oynanan 42 cluster)
 tools/gen-backgrounds.py       Arka plan SVG'lerini üreten betik

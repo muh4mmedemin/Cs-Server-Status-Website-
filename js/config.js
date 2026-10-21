@@ -82,6 +82,30 @@ const WORKS = [
   },
 ];
 
+// ---- Dokümanlar: kurulum rehberleri, cluster betikleri, sistemler... ----
+// Her doküman docs/ klasöründe bir Markdown (.md) dosyasıdır. Listeye bir blok
+// ekleyince ana sayfada "$ ls dokumanlar/" altında görünür ve kendi sayfasında
+// açılır (link: #dokuman/<id>). Nasıl yazılacağı: docs/dokuman-yazma.md
+// Yeni doküman için şablon: docs/_sablon.md (kopyalayıp yeniden adlandırın)
+//
+// id:          sayfa linki, ör. "cs16-cluster-kurulum" → #dokuman/cs16-cluster-kurulum
+// title:       dokümanın adı
+// file:        Markdown dosyasının yolu, ör. "docs/cs16-cluster-kurulum.md"
+// description: listede ve sayfanın başında görünen kısa açıklama (isteğe bağlı)
+// game:        ilgili oyun (SERVERS içindeki id; isteğe bağlı, sayfa o oyunun renginde olur)
+// tags:        ek etiketler, ör. ["bash", "cluster"] (isteğe bağlı)
+// date:        "YYYY-AA" biçiminde tarih; listede yeniden eskiye sıralanır (isteğe bağlı)
+const DOCS = [
+  {
+    id: "dokuman-yazma",
+    title: "Doküman nasıl yazılır?",
+    file: "docs/dokuman-yazma.md",
+    description: "Siteye yeni bir kurulum rehberi eklemek ve Markdown ile biçimlendirmek.",
+    tags: ["rehber"],
+    date: "2026-10",
+  },
+];
+
 const SERVERS = [
   {
     id: "cs16",
