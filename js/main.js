@@ -80,6 +80,9 @@ setInterval(() => {
 // ---- Oyun seçimi ----
 function renderRail() {
   const rail = $("#game-rail");
+  const indicator = document.createElement("span");
+  indicator.className = "rail-indicator";
+  rail.appendChild(indicator);
   const club = document.createElement("a");
   club.className = "rail-item rail-club";
   club.href = `#${CLUB_ID}`;
@@ -99,15 +102,74 @@ function renderRail() {
   });
 }
 
+// Sol menüde seçili öğe; gösterge yeni öğeye kayarak gider
+function setRailActive(id) {
+  $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === id));
+  updateRailIndicator();
+}
+
+function updateRailIndicator() {
+  const item = $(".rail-item.active");
+  const ind = $(".rail-indicator");
+  if (!ind) return;
+  ind.style.opacity = item ? 1 : 0;
+  if (!item) return;
+  ind.style.top = `${item.offsetTop}px`;
+  ind.style.left = `${item.offsetLeft}px`;
+  ind.style.width = `${item.offsetWidth}px`;
+  ind.style.height = `${item.offsetHeight}px`;
+  item.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
+// Kartlar fareye doğru hafifçe eğilir, ışık imleci takip eder
+const canHover = window.matchMedia("(hover: hover)");
+function addTilt(el, max = 7) {
+  el.addEventListener("pointermove", (e) => {
+    if (!canHover.matches || reduceMotion.matches) return;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    el.style.setProperty("--mx", `${x * 100}%`);
+    el.style.setProperty("--my", `${y * 100}%`);
+    el.style.setProperty("--rx", `${(0.5 - y) * max}deg`);
+    el.style.setProperty("--ry", `${(x - 0.5) * max}deg`);
+  });
+  el.addEventListener("pointerleave", () => {
+    el.style.setProperty("--rx", "0deg");
+    el.style.setProperty("--ry", "0deg");
+  });
+}
+
+// Kaydırınca görünür olan bölümler yumuşakça belirir
+const revealer = new IntersectionObserver(
+  (entries) =>
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add("in");
+        revealer.unobserve(e.target);
+      }
+    }),
+  { threshold: 0.12 }
+);
+
+// Animasyonu baştan oynat (aynı öğede sınıfı kaldırıp geri ekleyerek)
+function replay(el, cls) {
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+}
+
 function renderClub() {
   $("#club-name").textContent = CLUB.name;
   $("#club-about").textContent = CLUB.about;
 
   const cards = $("#club-servers");
   cards.innerHTML = "";
-  SERVERS.forEach((s) => {
+  SERVERS.forEach((s, i) => {
     const card = document.createElement("a");
     card.className = "game-card";
+    card.style.setProperty("--i", i);
+    addTilt(card);
     card.href = `#${s.id}`;
     card.dataset.game = s.id;
     card.innerHTML = `
@@ -248,6 +310,7 @@ function showGalleryImage(i) {
   galleryIndex = (i + galleryImages.length) % galleryImages.length;
   const img = $("#wp-hero-img");
   img.src = galleryImages[galleryIndex];
+  replay(img, "swap");
   $$(".wp-thumb").forEach((t, n) => t.classList.toggle("active", n === galleryIndex));
 }
 
@@ -257,7 +320,7 @@ function showWork(w) {
   banner.removeAttribute("src");
   document.body.dataset.theme = "club42";
   document.title = `${w.title} – ${CLUB.name}`;
-  $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === w.game));
+  setRailActive(w.game);
   showView("work");
 
   const page = $("#work-page");
@@ -351,6 +414,7 @@ function openLightbox(i) {
 }
 function updateLightbox() {
   $("#lb-img").src = galleryImages[galleryIndex];
+  replay($("#lb-img"), "swap");
   $("#lb-count").textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
   const many = galleryImages.length > 1;
   $("#lb-prev").hidden = !many;
@@ -387,7 +451,7 @@ function showClub() {
   banner.removeAttribute("src");
   document.body.dataset.theme = "club42";
   document.title = `${CLUB.name} – Sunucular`;
-  $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === CLUB_ID));
+  setRailActive(CLUB_ID);
   showView("club");
   log(`~/${CLUB_ID} $ cd kulup`);
 }
@@ -435,7 +499,7 @@ function selectGame(id) {
 
   document.body.dataset.theme = current.id;
   document.title = `${current.name} Sunucu Durumu`;
-  $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === current.id));
+  setRailActive(current.id);
 
   const address = hasIp(current) ? addressOf(current) : "IP ayarlanmadı";
   const gtUrl = hasIp(current) ? `https://www.gametracker.com/server_info/${addressOf(current)}/` : "#";
@@ -558,6 +622,7 @@ consoleTitle.addEventListener("pointerdown", (e) => {
 });
 
 window.addEventListener("resize", () => {
+  updateRailIndicator();
   if (!consoleWindow.hidden) {
     const r = consoleWindow.getBoundingClientRect();
     moveConsole(r.left, r.top);
@@ -625,4 +690,6 @@ renderClub();
 renderHomeWorks();
 showTab("status");
 route(location.hash.slice(1));
+$$(".reveal").forEach((el) => revealer.observe(el));
+document.fonts.ready.then(updateRailIndicator);
 requestAnimationFrame(() => document.body.classList.add("ready"));
