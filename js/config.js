@@ -97,6 +97,15 @@ const WORKS = [
 // date:        "YYYY-AA" biçiminde tarih; listede yeniden eskiye sıralanır (isteğe bağlı)
 const DOCS = [
   {
+    id: "cs16-bottles-kurulum",
+    title: "Bottles ile CS 1.6 kurulumu",
+    file: "docs/cs16-bottles-kurulum.md",
+    description: "Cluster'da sudo olmadan Bottles, Steam ve Counter-Strike 1.6 kurup kulüp sunucusuna bağlanma.",
+    game: "cs16",
+    tags: ["bottles", "flatpak", "cluster"],
+    date: "2026-10",
+  },
+  {
     id: "dokuman-yazma",
     title: "Doküman nasıl yazılır?",
     file: "docs/dokuman-yazma.md",
