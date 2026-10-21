@@ -438,10 +438,240 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "ArrowRight") stepLightbox(1);
 });
 
+// ---- Dokümanlar (DOCS, js/config.js; içerik docs/*.md) ----
+const DOC_PREFIX = "dokuman/";
+const docHref = (d) => `#${DOC_PREFIX}${d.id}`;
+const docBase = (d) => d.file.slice(0, d.file.lastIndexOf("/") + 1);
+const isRelative = (u) => Boolean(u) && !/^([a-z][a-z0-9+.-]*:|\/|#)/i.test(u);
+const SHELL_LANGS = ["bash", "sh", "shell", "zsh", "console"];
+const CALLOUTS = {
+  NOTE: ["", "Not"],
+  IMPORTANT: ["", "Önemli"],
+  TIP: ["tip", "İpucu"],
+  WARNING: ["warn", "Uyarı"],
+  CAUTION: ["danger", "Dikkat"],
+};
+const docCache = new Map();
+let docToken = 0;
+let tocHeadings = [];
+let tocButtons = [];
+
+function renderHomeDocs() {
+  $("#home-docs").hidden = DOCS.length === 0;
+  const list = $("#home-docs-list");
+  list.innerHTML = "";
+  [...DOCS]
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .forEach((d, i) => {
+      const game = SERVERS.find((s) => s.id === d.game);
+      const row = document.createElement("a");
+      row.className = "doc-row";
+      row.href = docHref(d);
+      row.style.setProperty("--i", i);
+      row.innerHTML = `
+        <span class="doc-icon">md</span>
+        <span class="doc-text">
+          <span class="doc-title"></span>
+          <span class="doc-desc"></span>
+          <span class="doc-tags"></span>
+        </span>
+        <span class="doc-arrow">→</span>`;
+      row.querySelector(".doc-title").textContent = d.title;
+      row.querySelector(".doc-desc").textContent = d.description || "";
+      row.querySelector(".doc-tags").append(...docTags(d, game));
+      list.appendChild(row);
+    });
+}
+
+function docTags(d, game) {
+  const tags = [];
+  const tag = (text, cls = "") => {
+    const t = document.createElement("span");
+    t.className = `doc-tag ${cls}`.trim();
+    t.textContent = text;
+    tags.push(t);
+    return t;
+  };
+  if (game) tag(game.name, "doc-game").dataset.game = game.id;
+  (d.tags || []).forEach((t) => tag(t));
+  if (d.date) tag(d.date);
+  return tags;
+}
+
+function showDoc(d) {
+  const game = SERVERS.find((s) => s.id === d.game);
+  current = null;
+  banner.removeAttribute("src");
+  document.body.dataset.theme = "club42";
+  document.title = `${d.title} – ${CLUB.name}`;
+  setRailActive(game ? game.id : CLUB_ID);
+  showView("doc");
+
+  const page = $("#doc-page");
+  page.dataset.game = game ? game.id : "";
+  $("#dp-slug").textContent = d.id;
+  $("#dp-title").textContent = d.title;
+  $("#dp-lead").textContent = d.description || "";
+  const meta = $("#dp-meta");
+  meta.innerHTML = "";
+  meta.append(...docTags(d, game));
+  const body = $("#dp-body");
+  body.innerHTML = `<p class="dp-loading">Yükleniyor…</p>`;
+  $("#dp-toc-list").innerHTML = "";
+  log(`~/${CLUB_ID}/dokumanlar $ cat ${d.file}`);
+
+  const token = ++docToken;
+  const text = docCache.has(d.file)
+    ? Promise.resolve(docCache.get(d.file))
+    : fetch(d.file).then((r) => {
+        if (!r.ok) throw new Error(r.status);
+        return r.text();
+      });
+  text
+    .then((md) => {
+      docCache.set(d.file, md);
+      if (token !== docToken) return; // bu arada başka sayfaya geçildi
+      // .md dosyaları repo sahibine ait; marked yoksa düz metin gösterilir
+      if (window.marked) body.innerHTML = marked.parse(md);
+      else {
+        body.innerHTML = "<pre></pre>";
+        body.firstChild.textContent = md;
+      }
+      enhanceDoc(body, d);
+      const words = body.textContent.trim().split(/\s+/).length;
+      const read = document.createElement("span");
+      read.className = "doc-tag";
+      read.textContent = `~${Math.max(1, Math.round(words / 200))} dk okuma`;
+      meta.appendChild(read);
+    })
+    .catch(() => {
+      if (token !== docToken) return;
+      body.innerHTML = `<p class="dp-error">Doküman yüklenemedi: <code></code></p>
+        <p class="dp-error">Dosya yolu doğru mu? Site bir sunucu üzerinden açılmalı (ör. <code>./start.sh</code>); dosyaya çift tıklayarak açınca dokümanlar yüklenmez.</p>`;
+      body.querySelector("code").textContent = d.file;
+    });
+}
+
+function enhanceDoc(root, d) {
+  const base = docBase(d);
+
+  // sayfa başlığı zaten var: .md "# Başlık" ile başlıyorsa tekrar gösterme
+  if (root.firstElementChild && root.firstElementChild.tagName === "H1") root.firstElementChild.remove();
+
+  // başlıklara id ver (içindekiler ve #baslik linkleri için)
+  const used = new Set();
+  const headings = [...root.querySelectorAll("h1, h2, h3")];
+  headings.forEach((h) => {
+    let id = `h-${slugify(h.textContent) || "bolum"}`;
+    for (let n = 2; used.has(id); n++) id = `h-${slugify(h.textContent)}-${n}`;
+    used.add(id);
+    h.id = id;
+  });
+
+  // görseller ve linkler: göreli yollar .md dosyasının klasörüne göre
+  root.querySelectorAll("img").forEach((img) => {
+    const src = img.getAttribute("src");
+    if (isRelative(src)) img.src = base + src;
+    img.loading = "lazy";
+  });
+  root.querySelectorAll("a[href]").forEach((a) => {
+    const href = a.getAttribute("href");
+    if (href.startsWith("#")) {
+      const target = root.querySelector(`#${CSS.escape(`h-${slugify(decodeURIComponent(href.slice(1)))}`)}`);
+      if (target)
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth" });
+        });
+      return;
+    }
+    if (isRelative(href)) {
+      const other = DOCS.find((o) => o.file === base + href);
+      a.href = other ? docHref(other) : base + href;
+    }
+    if (/^https?:/.test(a.getAttribute("href"))) {
+      a.target = "_blank";
+      a.rel = "noopener";
+    }
+  });
+
+  // not kutuları: > [!NOTE] ... ya da > **Uyarı:** ...
+  root.querySelectorAll("blockquote").forEach((q) => {
+    const p = q.querySelector("p");
+    if (!p) return;
+    const m = p.innerHTML.match(/^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*(<br>)?/i);
+    if (m) {
+      const [cls, label] = CALLOUTS[m[1].toUpperCase()];
+      p.innerHTML = p.innerHTML.slice(m[0].length);
+      if (cls) q.classList.add(cls);
+      const title = document.createElement("span");
+      title.className = "callout-title";
+      title.textContent = label;
+      q.prepend(title);
+    } else if (/^\s*<strong>(uyarı|dikkat)/i.test(p.innerHTML)) q.classList.add("warn");
+    else if (/^\s*<strong>(ipucu)/i.test(p.innerHTML)) q.classList.add("tip");
+  });
+
+  // kod blokları: renklendirme, dil etiketi, kopyala butonu
+  root.querySelectorAll("pre > code").forEach((code) => {
+    const lang = (code.className.match(/language-([\w-]+)/) || [])[1] || "";
+    if (lang && window.hljs && hljs.getLanguage(lang)) hljs.highlightElement(code);
+    const pre = code.parentElement;
+    const block = document.createElement("div");
+    block.className = "code-block";
+    block.innerHTML = `<div class="code-head"><span></span><button class="code-copy" type="button">Kopyala</button></div>`;
+    block.querySelector("span").textContent = lang || "kod";
+    pre.replaceWith(block);
+    block.appendChild(pre);
+    const btn = block.querySelector("button");
+    btn.addEventListener("click", async () => {
+      let text = code.textContent.replace(/\n$/, "");
+      // kabuk örneklerindeki "$ " istemini kopyalama
+      if (SHELL_LANGS.includes(lang)) text = text.replace(/^\$ /gm, "");
+      await copyText(text);
+      btn.textContent = "Kopyalandı ✓";
+      btn.classList.add("done");
+      setTimeout(() => {
+        btn.textContent = "Kopyala";
+        btn.classList.remove("done");
+      }, 1600);
+    });
+  });
+
+  // içindekiler
+  const toc = $("#dp-toc-list");
+  toc.innerHTML = "";
+  tocHeadings = headings.filter((h) => h.tagName !== "H1");
+  tocButtons = [];
+  if (tocHeadings.length < 2) return (tocHeadings = []);
+  tocHeadings.forEach((h) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = h.textContent;
+    if (h.tagName === "H3") b.className = "sub";
+    b.addEventListener("click", () => h.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth" }));
+    toc.appendChild(b);
+    tocButtons.push(b);
+  });
+  updateToc();
+}
+
+// İçindekilerde okunan bölümü işaretle: ekranın üstünü geçen son başlık
+function updateToc() {
+  if (!tocHeadings.length || $("#doc-page").hidden) return;
+  let active = 0;
+  tocHeadings.forEach((h, i) => {
+    if (h.getBoundingClientRect().top < 140) active = i;
+  });
+  tocButtons.forEach((b, i) => b.classList.toggle("active", i === active));
+}
+window.addEventListener("scroll", () => requestAnimationFrame(updateToc), { passive: true });
+
 function showView(name) {
   $("#club-home").hidden = name !== "club";
   $("#server-window").hidden = name !== "game";
   $("#work-page").hidden = name !== "work";
+  $("#doc-page").hidden = name !== "doc";
   lightbox.hidden = true;
   window.scrollTo(0, 0);
 }
@@ -467,9 +697,13 @@ function fillList(el, items) {
 }
 
 // Linkler: #<oyun> → oyun sayfası, #yapim/<id> → yapım sayfası,
-// boş ya da bilinmeyen link → ana sayfa (42 kulüp sayfası)
+// #dokuman/<id> → doküman sayfası, boş ya da bilinmeyen link → ana sayfa (42 kulüp sayfası)
 function parseRoute(hash) {
   hash = decodeURIComponent(hash);
+  if (hash.startsWith(DOC_PREFIX)) {
+    const doc = DOCS.find((d) => d.id === hash.slice(DOC_PREFIX.length));
+    if (doc) return { key: hash, doc };
+  }
   if (hash.startsWith(WORK_PREFIX)) {
     const work = WORKS.find((w) => workId(w) === hash.slice(WORK_PREFIX.length));
     if (work && SERVERS.some((s) => s.id === work.game)) return { key: hash, work };
@@ -484,7 +718,8 @@ function route(hash) {
   const r = parseRoute(hash);
   if (r.key === activeKey) return;
   activeKey = r.key;
-  if (r.work) showWork(r.work);
+  if (r.doc) showDoc(r.doc);
+  else if (r.work) showWork(r.work);
   else if (r.game) selectGame(r.game);
   else showClub();
 }
@@ -547,22 +782,26 @@ function showTab(name) {
 }
 $$("[data-tab]").forEach((el) => el.addEventListener("click", () => showTab(el.dataset.tab)));
 
-// ---- IP kopyala ----
-async function copyAddress() {
-  if (!current) return log("Önce bir oyun seçin (games).");
-  if (!hasIp(current)) return log(`${current.name} için IP ayarlanmadı.`);
-  const address = addressOf(current);
+// ---- Kopyalama (IP, kod blokları) ----
+async function copyText(text) {
   try {
-    await navigator.clipboard.writeText(address);
+    await navigator.clipboard.writeText(text);
   } catch {
     // clipboard API yoksa eski yöntem
     const tmp = document.createElement("textarea");
-    tmp.value = address;
+    tmp.value = text;
     document.body.appendChild(tmp);
     tmp.select();
     document.execCommand("copy");
     tmp.remove();
   }
+}
+
+async function copyAddress() {
+  if (!current) return log("Önce bir oyun seçin (games).");
+  if (!hasIp(current)) return log(`${current.name} için IP ayarlanmadı.`);
+  const address = addressOf(current);
+  await copyText(address);
   toast(`IP kopyalandı: ${address}`);
   log(`IP panoya kopyalandı: ${address}`);
 }
@@ -638,7 +877,11 @@ document.addEventListener("keydown", (e) => {
 });
 
 const COMMANDS = {
-  help: () => log("Komutlar: help, status, games, game <id>, connect, copy, refresh, clear, 42, norminette"),
+  help: () => log("Komutlar: help, status, games, game <id>, docs, connect, copy, refresh, clear, 42, norminette"),
+  docs: () =>
+    DOCS.length
+      ? DOCS.forEach((d) => log(`  ${docHref(d).padEnd(28)} ${d.title}`))
+      : log("Henüz doküman yok (js/config.js → DOCS)."),
   status: () =>
     current
       ? log(`${current.name}: ${hasIp(current) ? addressOf(current) : "IP ayarlanmadı"}`)
@@ -688,6 +931,7 @@ log("Komut listesi için 'help' yazın.");
 renderRail();
 renderClub();
 renderHomeWorks();
+renderHomeDocs();
 showTab("status");
 route(location.hash.slice(1));
 $$(".reveal").forEach((el) => revealer.observe(el));

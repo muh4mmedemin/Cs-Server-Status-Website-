@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sunucu Durumu</title>
   <meta name="description" content="Oyun sunucularının anlık durumu (GameTracker).">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&family=Oswald:wght@400;600&family=Rajdhani:wght@500;700&family=VT323&display=swap">
@@ -38,6 +39,30 @@
         <h2 class="home-section"><span>$</span> ls yapimlar/</h2>
         <div class="work-cards" id="home-works-list"></div>
       </section>
+
+      <section class="home-docs reveal" id="home-docs" hidden>
+        <h2 class="home-section"><span>$</span> ls dokumanlar/</h2>
+        <div class="doc-list" id="home-docs-list"></div>
+      </section>
+    </main>
+
+    <!-- DOKÜMAN SAYFASI (#dokuman/<id>) -->
+    <main class="doc-page" id="doc-page" hidden>
+      <nav class="wp-crumbs">
+        <a href="#42">~</a><span>/</span><span>dokumanlar</span><span>/</span><span id="dp-slug"></span>
+      </nav>
+      <header class="wp-head">
+        <div class="dp-meta" id="dp-meta"></div>
+        <h1 class="wp-title" id="dp-title"></h1>
+        <p class="dp-lead" id="dp-lead"></p>
+      </header>
+      <div class="dp-layout">
+        <article class="dp-body md" id="dp-body"></article>
+        <aside class="dp-toc" id="dp-toc">
+          <div class="dp-toc-title">İçindekiler</div>
+          <nav id="dp-toc-list"></nav>
+        </aside>
+      </div>
     </main>
 
     <!-- YAPIM DETAY SAYFASI (#yapim/<id>) -->
@@ -180,6 +205,8 @@
     <div class="lb-count" id="lb-count"></div>
   </div>
 
+  <script src="js/vendor/marked.min.js"></script>
+  <script src="js/vendor/highlight.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/main.js"></script>
 </body>
