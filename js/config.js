@@ -73,7 +73,7 @@ const CLUB = {
 const WORKS = [
   {
     game: "cs16",
-    title: "de_haritam",
+    title: "istanbul_42",
     type: "Harita",
     description: "Kısa bir açıklama.",
     image: "works/cs16/istanbul_42.jpg",
