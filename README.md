@@ -28,6 +28,9 @@ arayüzüne benzeyen temalarla gösteren statik web sitesi.
    ./start.sh
    ```
 
+   Site zaten çalışıyorsa betik bunu söyler ve çıkar (ikinci kopya başlatmaz).
+   Yeniden başlatmak için: `./start.sh --restart`
+
 > Siteyi başkalarıyla paylaşmak için **Ports** sekmesinde 8080'e sağ tıklayıp
 > **Port Visibility → Public** yapın.
 
