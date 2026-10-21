@@ -40,6 +40,31 @@
       </section>
     </main>
 
+    <!-- YAPIM DETAY SAYFASI (#yapim/<id>) -->
+    <main class="work-page" id="work-page" hidden>
+      <nav class="wp-crumbs">
+        <a href="#42">~</a><span>/</span><a id="wp-game-link" href="#"></a><span>/</span><span id="wp-slug"></span>
+      </nav>
+      <header class="wp-head">
+        <div class="wp-meta"><span class="wp-type" id="wp-type"></span><span id="wp-date"></span></div>
+        <h1 class="wp-title" id="wp-title"></h1>
+        <p class="wp-lead" id="wp-lead"></p>
+      </header>
+      <div class="wp-layout">
+        <div class="wp-main">
+          <button class="wp-hero" id="wp-hero" type="button" aria-label="Görseli büyüt"><img id="wp-hero-img" alt=""></button>
+          <div class="wp-thumbs" id="wp-thumbs"></div>
+          <div class="wp-video" id="wp-video" hidden></div>
+          <section class="wp-details" id="wp-details"></section>
+        </div>
+        <aside class="wp-side">
+          <a class="home-btn primary wp-dl" id="wp-dl"></a>
+          <dl class="wp-specs" id="wp-specs"></dl>
+          <a class="home-btn" id="wp-server" href="#"></a>
+        </aside>
+      </div>
+    </main>
+
     <main class="vgui-window" id="server-window" hidden>
       <div class="title-bar">
         <span class="title" id="window-title" lang="en"></span>
@@ -145,6 +170,15 @@
   </div>
 
   <div class="toast" id="toast" hidden></div>
+
+  <!-- Tam ekran fotoğraf görüntüleyici -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-btn lb-close" id="lb-close" type="button" aria-label="Kapat">&times;</button>
+    <button class="lb-btn lb-prev" id="lb-prev" type="button" aria-label="Önceki">&lsaquo;</button>
+    <img id="lb-img" alt="">
+    <button class="lb-btn lb-next" id="lb-next" type="button" aria-label="Sonraki">&rsaquo;</button>
+    <div class="lb-count" id="lb-count"></div>
+  </div>
 
   <script src="js/config.js"></script>
   <script src="js/main.js"></script>

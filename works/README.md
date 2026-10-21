@@ -40,6 +40,43 @@ works/
 
 3. Commit + push. Hepsi bu.
 
+## Yapım sayfası (detaylı fotoğraflar, uzun açıklama)
+
+Kartlara tıklayınca yapımın kendi sayfası açılır (`#yapim/<id>`). O sayfayı
+zenginleştirmek için bloğa şu alanları ekleyin (hepsi isteğe bağlı):
+
+```js
+{
+  game: "cs16",
+  title: "de_kulup42",
+  id: "de_kulup42",              // link: #yapim/de_kulup42 (yoksa addan üretilir)
+  // ...
+  gallery: [                     // sayfadaki fotoğraflar; ilki kapak olur
+    "works/cs16/de_kulup42.jpg",
+    "works/cs16/de_kulup42-a.jpg",
+    "works/cs16/de_kulup42-b.jpg",
+  ],
+  video: "https://www.youtube.com/watch?v=XXXXXXXXXXX",
+  details: `
+    Haritayı kampüsün koridorlarından esinlenerek yaptık.
+
+    ## Bölgeler
+    - **A bölgesi:** cluster girişi
+    - **B bölgesi:** kafeterya
+
+    ## Kurulum
+    Zip'i açıp içindekileri cstrike klasörüne kopyalayın.
+  `,
+  specs: { "Oyuncu": "5v5", "Mod": "Bomba (de_)", "Boyut": "Orta" },
+}
+```
+
+`details` yazım kuralları: boş satır yeni paragraf, `## ` ara başlık,
+`- ` madde işareti, `**kalın**` kalın yazı.
+
+Sayfadaki büyük görsele tıklayınca fotoğraflar tam ekran açılır; ok tuşlarıyla
+gezilir, Esc ile kapanır.
+
 ## Büyük dosyalar
 
 GitHub 100 MB'tan büyük dosyaları kabul etmez (50 MB üstünde uyarı verir).

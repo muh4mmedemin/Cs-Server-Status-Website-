@@ -140,6 +140,32 @@ function renderClub() {
 
 // ---- Yapımlar (WORKS, js/config.js) ----
 const isExternal = (url) => /^https?:\/\//.test(url);
+const WORK_PREFIX = "yapim/";
+const TR_CHARS = { ç: "c", ğ: "g", ı: "i", ö: "o", ş: "s", ü: "u" };
+const slugify = (t) =>
+  t
+    .toLocaleLowerCase("tr-TR")
+    .replace(/[çğıöşü]/g, (c) => TR_CHARS[c])
+    .replace(/[^a-z0-9_]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+const workId = (w) => w.id || slugify(w.title);
+const workHref = (w) => `#${WORK_PREFIX}${workId(w)}`;
+const workImages = (w) => (w.gallery && w.gallery.length ? w.gallery : w.image ? [w.image] : []);
+const fallbackImg = (img, game) =>
+  img.addEventListener("error", () => (img.src = `img/bg/${game}.svg`), { once: true });
+
+function setDownload(a, w) {
+  if (!w.download) return a.remove();
+  a.href = w.download;
+  if (isExternal(w.download)) {
+    a.textContent = "Bağlantıya git ↗";
+    a.target = "_blank";
+    a.rel = "noopener";
+  } else {
+    a.textContent = "İndir";
+    a.setAttribute("download", "");
+  }
+}
 
 function workCard(w, showGame) {
   const game = SERVERS.find((s) => s.id === w.game);
@@ -150,31 +176,24 @@ function workCard(w, showGame) {
     <div class="work-img"><img alt="" loading="lazy"></div>
     <div class="work-body">
       <div class="work-meta"><span class="work-type"></span><span class="work-game"></span></div>
-      <h3 class="work-title"></h3>
+      <h3 class="work-title"><a></a></h3>
       <p class="work-desc"></p>
       <a class="vbtn primary work-dl"></a>
     </div>`;
   const img = card.querySelector("img");
-  img.src = w.image || `img/bg/${w.game}.svg`;
-  img.addEventListener("error", () => (img.src = `img/bg/${w.game}.svg`), { once: true });
+  img.src = workImages(w)[0] || `img/bg/${w.game}.svg`;
+  fallbackImg(img, w.game);
   card.querySelector(".work-type").textContent = w.type || "Yapım";
   card.querySelector(".work-game").textContent = showGame && game ? game.name : w.date || "";
-  card.querySelector(".work-title").textContent = w.title;
+  const title = card.querySelector(".work-title a");
+  title.textContent = w.title;
+  title.href = workHref(w);
   card.querySelector(".work-desc").textContent = w.description || "";
-  const dl = card.querySelector(".work-dl");
-  if (w.download) {
-    dl.href = w.download;
-    if (isExternal(w.download)) {
-      dl.textContent = "Bağlantıya git ↗";
-      dl.target = "_blank";
-      dl.rel = "noopener";
-    } else {
-      dl.textContent = "İndir";
-      dl.setAttribute("download", "");
-    }
-  } else {
-    dl.remove();
-  }
+  setDownload(card.querySelector(".work-dl"), w);
+  // kartın herhangi bir yerine tıklayınca detay sayfası (indirme butonu hariç)
+  card.addEventListener("click", (e) => {
+    if (!e.target.closest("a")) location.hash = workHref(w);
+  });
   return card;
 }
 
@@ -197,17 +216,180 @@ function renderHomeWorks() {
     .forEach((w) => list.appendChild(workCard(w, true)));
 }
 
-let onClub = false;
+// Uzun açıklama (details): boş satırla paragraf, "## " başlık, "- " madde, **kalın**
+function formatDetails(text) {
+  const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const inline = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  return text
+    .trim()
+    .split(/\n\s*\n/)
+    .map((block) => {
+      const lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+      const out = [];
+      if (lines[0].startsWith("## ")) out.push(`<h3>${inline(lines.shift().slice(3))}</h3>`);
+      if (!lines.length) return out.join("");
+      if (lines.every((l) => l.startsWith("- ")))
+        out.push(`<ul>${lines.map((l) => `<li>${inline(l.slice(2))}</li>`).join("")}</ul>`);
+      else out.push(`<p>${lines.map(inline).join("<br>")}</p>`);
+      return out.join("");
+    })
+    .join("");
+}
+
+function youtubeEmbed(url) {
+  const m = url.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{11})/);
+  return m ? `https://www.youtube-nocookie.com/embed/${m[1]}` : null;
+}
+
+let galleryImages = [];
+let galleryIndex = 0;
+
+function showGalleryImage(i) {
+  galleryIndex = (i + galleryImages.length) % galleryImages.length;
+  const img = $("#wp-hero-img");
+  img.src = galleryImages[galleryIndex];
+  $$(".wp-thumb").forEach((t, n) => t.classList.toggle("active", n === galleryIndex));
+}
+
+function showWork(w) {
+  const game = SERVERS.find((s) => s.id === w.game);
+  current = null;
+  banner.removeAttribute("src");
+  document.body.dataset.theme = "club42";
+  document.title = `${w.title} – ${CLUB.name}`;
+  $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === w.game));
+  showView("work");
+
+  const page = $("#work-page");
+  page.dataset.game = w.game;
+  $("#wp-game-link").textContent = game.id;
+  $("#wp-game-link").href = `#${game.id}`;
+  $("#wp-slug").textContent = workId(w);
+  $("#wp-type").textContent = w.type || "Yapım";
+  $("#wp-date").textContent = [game.name, w.date].filter(Boolean).join("  ·  ");
+  $("#wp-title").textContent = w.title;
+  $("#wp-lead").textContent = w.description || "";
+
+  // galeri
+  galleryImages = workImages(w);
+  if (!galleryImages.length) galleryImages = [`img/bg/${w.game}.svg`];
+  const heroImg = $("#wp-hero-img");
+  heroImg.alt = w.title;
+  heroImg.onerror = () => (heroImg.src = `img/bg/${w.game}.svg`);
+  const thumbs = $("#wp-thumbs");
+  thumbs.innerHTML = "";
+  if (galleryImages.length > 1)
+    galleryImages.forEach((src, i) => {
+      const b = document.createElement("button");
+      b.className = "wp-thumb";
+      b.type = "button";
+      b.setAttribute("aria-label", `Görsel ${i + 1}`);
+      b.innerHTML = `<img alt="" loading="lazy">`;
+      b.querySelector("img").src = src;
+      fallbackImg(b.querySelector("img"), w.game);
+      b.addEventListener("click", () => showGalleryImage(i));
+      thumbs.appendChild(b);
+    });
+  showGalleryImage(0);
+
+  // video
+  const video = $("#wp-video");
+  video.innerHTML = "";
+  video.hidden = !w.video;
+  if (w.video) {
+    const embed = youtubeEmbed(w.video);
+    if (embed) {
+      const f = document.createElement("iframe");
+      f.src = embed;
+      f.title = `${w.title} videosu`;
+      f.allow = "accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen";
+      f.loading = "lazy";
+      video.appendChild(f);
+    } else {
+      const a = document.createElement("a");
+      a.href = w.video;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = "Videoyu izle ↗";
+      video.appendChild(a);
+    }
+  }
+
+  $("#wp-details").innerHTML = w.details ? formatDetails(w.details) : "";
+
+  // yan panel: indirme + özellikler
+  const side = $(".wp-side");
+  const oldDl = $("#wp-dl");
+  const dl = document.createElement("a");
+  dl.className = "home-btn primary wp-dl";
+  dl.id = "wp-dl";
+  if (oldDl) oldDl.replaceWith(dl);
+  else side.prepend(dl);
+  setDownload(dl, w);
+
+  const specs = $("#wp-specs");
+  specs.innerHTML = "";
+  const rows = { Oyun: game.name, Tür: w.type || "Yapım", ...(w.date ? { Tarih: w.date } : {}), ...(w.specs || {}) };
+  Object.entries(rows).forEach(([k, v]) => {
+    const dt = document.createElement("dt");
+    const dd = document.createElement("dd");
+    dt.textContent = k;
+    dd.textContent = v;
+    specs.append(dt, dd);
+  });
+  $("#wp-server").textContent = `${game.name} sunucusu →`;
+  $("#wp-server").href = `#${game.id}`;
+
+  log(`~/${CLUB_ID}/yapimlar $ cat ${workId(w)}`);
+}
+
+// ---- Tam ekran görüntüleyici ----
+const lightbox = $("#lightbox");
+function openLightbox(i) {
+  galleryIndex = i;
+  lightbox.hidden = false;
+  updateLightbox();
+}
+function updateLightbox() {
+  $("#lb-img").src = galleryImages[galleryIndex];
+  $("#lb-count").textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
+  const many = galleryImages.length > 1;
+  $("#lb-prev").hidden = !many;
+  $("#lb-next").hidden = !many;
+}
+function stepLightbox(d) {
+  showGalleryImage(galleryIndex + d);
+  updateLightbox();
+}
+$("#wp-hero").addEventListener("click", () => openLightbox(galleryIndex));
+$("#lb-close").addEventListener("click", () => (lightbox.hidden = true));
+$("#lb-prev").addEventListener("click", () => stepLightbox(-1));
+$("#lb-next").addEventListener("click", () => stepLightbox(1));
+lightbox.addEventListener("click", (e) => {
+  if (e.target === lightbox) lightbox.hidden = true;
+});
+document.addEventListener("keydown", (e) => {
+  if (lightbox.hidden) return;
+  if (e.key === "Escape") lightbox.hidden = true;
+  else if (e.key === "ArrowLeft") stepLightbox(-1);
+  else if (e.key === "ArrowRight") stepLightbox(1);
+});
+
+function showView(name) {
+  $("#club-home").hidden = name !== "club";
+  $("#server-window").hidden = name !== "game";
+  $("#work-page").hidden = name !== "work";
+  lightbox.hidden = true;
+  window.scrollTo(0, 0);
+}
 
 function showClub() {
-  onClub = true;
   current = null;
   banner.removeAttribute("src");
   document.body.dataset.theme = "club42";
   document.title = `${CLUB.name} – Sunucular`;
   $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === CLUB_ID));
-  $("#server-window").hidden = true;
-  $("#club-home").hidden = false;
+  showView("club");
   log(`~/${CLUB_ID} $ cd kulup`);
 }
 
@@ -221,24 +403,34 @@ function fillList(el, items) {
   });
 }
 
-// Bilinmeyen ya da boş link → ana sayfa (42 kulüp sayfası)
-const resolveId = (id) => (SERVERS.some((s) => s.id === id) ? id : CLUB_ID);
-const activeId = () => (current ? current.id : CLUB_ID);
+// Linkler: #<oyun> → oyun sayfası, #yapim/<id> → yapım sayfası,
+// boş ya da bilinmeyen link → ana sayfa (42 kulüp sayfası)
+function parseRoute(hash) {
+  hash = decodeURIComponent(hash);
+  if (hash.startsWith(WORK_PREFIX)) {
+    const work = WORKS.find((w) => workId(w) === hash.slice(WORK_PREFIX.length));
+    if (work && SERVERS.some((s) => s.id === work.game)) return { key: hash, work };
+  }
+  if (SERVERS.some((s) => s.id === hash)) return { key: hash, game: hash };
+  return { key: CLUB_ID };
+}
+
+let activeKey = null;
+
+function route(hash) {
+  const r = parseRoute(hash);
+  if (r.key === activeKey) return;
+  activeKey = r.key;
+  if (r.work) showWork(r.work);
+  else if (r.game) selectGame(r.game);
+  else showClub();
+}
 
 function selectGame(id) {
-  id = resolveId(id);
-  if (id === CLUB_ID) {
-    if (!onClub) showClub();
-    return;
-  }
-  const next = SERVERS.find((s) => s.id === id);
-  if (current === next) return;
-  const fromClub = !current;
-  onClub = false;
-  current = next;
-  if (fromClub) {
-    $("#club-home").hidden = true;
-    $("#server-window").hidden = false;
+  const fromOtherView = !current;
+  current = SERVERS.find((s) => s.id === id);
+  if (fromOtherView) {
+    showView("game");
     showTab("status");
   }
 
@@ -272,13 +464,13 @@ function selectGame(id) {
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let switchTimer;
 
-function navigate(id) {
-  if (resolveId(id) === activeId()) return;
+function navigate(hash) {
+  if (parseRoute(hash).key === activeKey) return;
   clearTimeout(switchTimer);
-  if (reduceMotion.matches) return selectGame(id);
+  if (reduceMotion.matches) return route(hash);
   document.body.classList.add("switching");
   switchTimer = setTimeout(() => {
-    selectGame(id);
+    route(hash);
     requestAnimationFrame(() => document.body.classList.remove("switching"));
   }, 220);
 }
@@ -433,5 +625,5 @@ renderRail();
 renderClub();
 renderHomeWorks();
 showTab("status");
-selectGame(location.hash.slice(1));
+route(location.hash.slice(1));
 requestAnimationFrame(() => document.body.classList.add("ready"));
