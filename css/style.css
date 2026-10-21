@@ -19,7 +19,8 @@
   --primary-bg: var(--bg);
   --primary-text: var(--accent);
   --radius: 0;
-  --rail-width: 132px;
+  --rail-width: 152px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --page-bg:
     radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .15) 0%, rgba(0, 0, 0, .6) 100%),
     url("../img/bg/cs16.svg") center bottom / cover no-repeat;
@@ -40,9 +41,12 @@ body {
 body::before {
   content: "";
   position: fixed;
-  inset: 0;
+  inset: -4%;
   z-index: -1;
   background: var(--page-bg);
+  /* sahne çok yavaş kayar */
+  animation: bg-drift 60s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 a { color: var(--accent); }
@@ -69,20 +73,39 @@ a { color: var(--accent); }
   justify-content: center;
   gap: 4px;
   padding: 8px 0;
-  background: rgba(0, 0, 0, 0.35);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.38);
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px) saturate(140%);
   z-index: 5;
 }
 .rail-item {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  margin: 0 10px;
   padding: 10px 8px;
   color: rgba(255, 255, 255, 0.55);
   text-decoration: none;
-  border-left: 3px solid transparent;
+  border-radius: 10px;
   text-align: center;
+}
+/* seçili oyunun arkasında kayan gösterge (konumunu JS ayarlar) */
+.rail-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 3px 0 0 var(--accent), 0 0 24px color-mix(in srgb, var(--accent) 25%, transparent);
+  opacity: 0;
+  transition: top 0.5s var(--ease), left 0.5s var(--ease), width 0.5s var(--ease), height 0.5s var(--ease),
+    opacity 0.3s ease, box-shadow 0.4s ease;
+  pointer-events: none;
 }
 .rail-short {
   font: bold 15px/1 Verdana, Tahoma, sans-serif;
@@ -90,38 +113,35 @@ a { color: var(--accent); }
 }
 .rail-name { font: bold 13px/1.25 Tahoma, Verdana, sans-serif; }
 .rail-item:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
-.rail-item.active {
-  color: #fff;
-  border-left-color: var(--accent);
-  background: rgba(255, 255, 255, 0.08);
-}
+.rail-item.active { color: #fff; }
 
 /* ---------- Sayfa geçişleri ---------- */
 .fade-veil {
   position: fixed;
   inset: 0;
   z-index: 4; /* sol çubuğun altında, pencerelerin üstünde */
-  background: #000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.22s ease;
+  transition: opacity 0.25s ease;
 }
-body.switching .fade-veil { opacity: 0.9; }
-#server-window, #club-home, #work-page { transition: opacity 0.25s ease, transform 0.25s ease; }
+body.switching .fade-veil { opacity: 1; }
+#server-window, #club-home, #work-page {
+  transition: opacity 0.4s var(--ease), transform 0.5s var(--ease), filter 0.4s var(--ease);
+}
 body.switching #server-window,
 body.switching #club-home,
-body.switching #work-page { opacity: 0; transform: translateY(10px) scale(0.985); }
+body.switching #work-page { opacity: 0; transform: translateY(14px) scale(0.98); filter: blur(6px); }
 body:not(.ready) #server-window,
 body:not(.ready) #club-home,
-body:not(.ready) #work-page { opacity: 0; transform: translateY(10px); }
+body:not(.ready) #work-page { opacity: 0; transform: translateY(14px); }
 .game-rail, .rail-item { transition: background-color 0.3s ease, color 0.2s ease, border-color 0.3s ease; }
-.tab-content.active { animation: tab-in 0.2s ease; }
-@keyframes tab-in { from { opacity: 0; transform: translateY(4px); } }
+.tab-content.active { animation: tab-in 0.35s var(--ease); }
+@keyframes tab-in { from { opacity: 0; transform: translateY(6px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .fade-veil, #server-window, #club-home, #work-page, .game-rail, .rail-item,
-  .game-card, .card-art, .work-card { transition: none; }
-  .tab-content.active { animation: none; }
+  .fade-veil, #server-window, #club-home, #work-page, .game-rail, .rail-item { transition: none; }
 }
 
 /* ---------- VGUI pencere ---------- */
@@ -163,6 +183,7 @@ button.tbtn { cursor: pointer; }
 
 .tabs { display: flex; gap: 2px; padding: 4px 8px 0; }
 .tab {
+  transition: color 0.2s ease, background-color 0.2s ease;
   font: var(--font-size) var(--font);
   color: var(--text-dim);
   background: var(--bg);
@@ -269,6 +290,7 @@ button.tbtn { cursor: pointer; }
 /* Butonlar */
 .button-row { display: flex; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
 .vbtn {
+  transition: color 0.15s ease, background-color 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
   font: var(--font-size) var(--font);
   color: var(--btn-text);
   background: var(--btn-bg);
@@ -315,6 +337,7 @@ code {
   top: 0;
   width: min(480px, calc(100vw - 32px));
   z-index: 10;
+  animation: pop-in 0.3s var(--ease);
 }
 .console-window .title-bar {
   cursor: move;
@@ -360,6 +383,7 @@ code {
   border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
   box-shadow: 0 0 0 1px #000;
   z-index: 20;
+  animation: toast-in 0.4s var(--ease);
 }
 
 [hidden] { display: none !important; }
@@ -525,7 +549,8 @@ body[data-theme="arma3"] .vbtn:hover { background: #c48214; color: #fff; }
 body[data-theme="arma3"] .console-window .title-bar { background: #c48214; }
 body[data-theme="arma3"] .rail-name { font-family: "Barlow Condensed", sans-serif; }
 
-/* ---------- 42 kulüp sayfası: siyah-beyaz, monospace, turkuaz vurgu ---------- */
+
+/* ---------- 42 kulüp sayfaları: koyu cam yüzeyler, turkuaz vurgu ---------- */
 body[data-theme="club42"] {
   --bg: #000;
   --panel: #0b0b0b;
@@ -536,8 +561,8 @@ body[data-theme="club42"] {
   --text-dim: #8c8c8c;
   --accent: #00babc;
   --select: rgba(0, 186, 188, 0.18);
-  --font: "JetBrains Mono", Consolas, monospace;
-  --font-size: 13px;
+  --font: "Inter", "Segoe UI", sans-serif;
+  --font-size: 14px;
   --mono: "JetBrains Mono", Consolas, monospace;
   --title-bg: #fff;
   --title-text: #000;
@@ -549,76 +574,138 @@ body[data-theme="club42"] {
     url("../img/bg/club42.svg") center / cover no-repeat;
   --page-color: #050505;
 }
+
+/* 42 sayfalarının ortak tasarım değişkenleri */
+.club-home,
+.work-page,
+.lightbox {
+  --teal: #00babc;
+  --ink: #f5f7f7;
+  --muted: #9aa3a6;
+  --line: rgba(255, 255, 255, 0.09);
+  --glass: rgba(12, 14, 15, 0.62);
+  --r-lg: 20px;
+  --r-md: 14px;
+  --display: "Space Grotesk", "Inter", sans-serif;
+  --sans: "Inter", "Segoe UI", sans-serif;
+  --code: "JetBrains Mono", Consolas, monospace;
+}
+
 /* Kulüp ana sayfası: oyun pencerelerinden bağımsız, tam sayfa açılış */
 .club-home {
   width: 100%;
   max-width: 1360px;
-  font-family: "JetBrains Mono", Consolas, monospace;
-  color: #f2f2f2;
+  font-family: var(--sans);
+  color: var(--ink);
 }
 .home-hero {
   display: flex;
   align-items: center;
-  gap: 40px;
-  margin-bottom: 56px;
+  gap: 44px;
+  margin-bottom: 64px;
 }
 .home-logo {
+  position: relative;
   flex: none;
+  overflow: hidden;
   font: 700 150px/0.8 "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: -10px;
   color: #fff;
   border: 6px solid #fff;
+  border-radius: 22px;
   padding: 26px 34px 30px 24px;
-  box-shadow: 10px 10px 0 #00babc;
+  box-shadow: 10px 10px 0 var(--teal), 0 0 60px rgba(0, 186, 188, 0.35);
+  transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.home-logo:hover { transform: translate(-3px, -3px); box-shadow: 14px 14px 0 var(--teal), 0 0 80px rgba(0, 186, 188, 0.5); }
+/* logonun üzerinden geçen ışık */
+.home-logo::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.35) 50%, transparent 60%);
+  transform: translateX(-120%);
+  animation: sheen 7s var(--ease) 1.2s infinite;
 }
 .home-title {
   margin: 0;
-  font: 700 clamp(28px, 4.4vw, 52px)/1.05 "JetBrains Mono", Consolas, monospace;
-  letter-spacing: -1px;
+  font: 700 clamp(36px, 5vw, 68px)/1.02 var(--display);
+  letter-spacing: -2px;
+  background: linear-gradient(100deg, #fff 30%, #7ef2f3 75%, var(--teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-.home-about { margin: 14px 0 22px; max-width: 46ch; font-size: 15px; line-height: 1.6; color: #a8a8a8; }
-.home-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.home-about { margin: 16px 0 26px; max-width: 48ch; font-size: 17px; line-height: 1.65; color: var(--muted); }
+.home-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .home-btn {
-  font: 700 13px/1 "JetBrains Mono", Consolas, monospace;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font: 600 14px/1 var(--sans, "Inter", sans-serif);
   color: #fff;
-  background: transparent;
-  border: 1px solid #fff;
-  padding: 11px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 13px 20px;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  backdrop-filter: blur(8px);
+  transition: background-color 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease),
+    transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
 }
-.home-btn:hover { background: #fff; color: #000; }
-.home-btn.primary { background: #00babc; border-color: #00babc; color: #000; }
-.home-btn.primary:hover { background: #fff; border-color: #fff; }
+.home-btn:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
+.home-btn:active { transform: translateY(0) scale(0.98); }
+.home-btn.primary { background: var(--teal, #00babc); border-color: transparent; color: #001314; }
+.home-btn.primary:hover { background: #26d3d5; box-shadow: 0 10px 30px rgba(0, 186, 188, 0.45); }
 
 .home-section {
-  margin: 0 0 16px;
-  font: 400 14px/1 "JetBrains Mono", Consolas, monospace;
-  color: #a8a8a8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  font: 400 14px/1 var(--code);
+  color: var(--muted);
 }
-.home-section span { color: #00babc; }
+.home-section span { color: var(--teal); }
+/* terminal imleci */
+.home-section::after {
+  content: "";
+  width: 8px;
+  height: 16px;
+  background: var(--teal);
+  animation: caret 1.1s steps(1) infinite;
+}
 
 /* Oyun kartları */
 .game-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 @media (min-width: 1240px) {
   .game-cards { grid-template-columns: repeat(5, 1fr); }
 }
 .game-card {
   --card-accent: #00babc;
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 30%;
   position: relative;
   display: flex;
-  min-height: 400px;
+  min-height: 420px;
   overflow: hidden;
+  isolation: isolate;
   color: #fff;
   text-decoration: none;
   background: #0b0b0b;
-  border: 1px solid #2a2a2a;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.5s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
 }
 /* oyun renkleri (ana sayfa kartları ve yapım sayfası) */
 .game-card[data-game="cs16"], .work-page[data-game="cs16"] { --card-accent: #c4b550; }
@@ -629,9 +716,10 @@ body[data-theme="club42"] {
 .card-art {
   position: absolute;
   inset: 0;
+  z-index: -2;
   background: center bottom / cover no-repeat;
   filter: saturate(0.85);
-  transition: transform 0.4s ease, filter 0.4s ease;
+  transition: transform 0.8s var(--ease), filter 0.6s var(--ease);
 }
 /* uzun kartta her sahnenin en tanıdık kısmı görünsün */
 .game-card[data-game="cs16"] .card-art { background-position: 22% bottom; }
@@ -642,50 +730,78 @@ body[data-theme="club42"] {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.1) 22%, rgba(0, 0, 0, 0.55) 55%, rgba(0, 0, 0, 0.92) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.05) 24%, rgba(0, 0, 0, 0.5) 58%, rgba(0, 0, 0, 0.94) 100%);
+}
+/* fareyi takip eden ışık */
+.game-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(420px circle at var(--mx) var(--my), color-mix(in srgb, var(--card-accent) 32%, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+}
+/* altta büyüyen renk çizgisi */
+.game-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--card-accent);
+  box-shadow: 0 0 18px var(--card-accent);
+  transform: scaleX(0.35);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease);
 }
 .card-body {
-  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   gap: 6px;
   width: 100%;
-  padding: 20px;
-  border-bottom: 4px solid var(--card-accent);
+  padding: 22px;
 }
 .card-state {
   align-self: flex-start;
   margin-bottom: auto;
-  padding: 3px 8px;
-  font-size: 11px;
-  color: #bdbdbd;
-  background: rgba(0, 0, 0, 0.7);
+  padding: 5px 11px;
+  font: 500 11px/1 var(--code);
+  color: #d0d0d0;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
 }
-.card-state.on { color: #00babc; }
-.card-name { font-weight: 700; font-size: 22px; line-height: 1.2; }
-.card-addr { font-size: 14px; color: #bdbdbd; overflow-wrap: anywhere; }
+.card-state.on { color: #7ef2f3; border-color: rgba(0, 186, 188, 0.5); }
+.card-name { font: 700 24px/1.15 var(--display); letter-spacing: -0.5px; }
+.card-addr { font: 400 13px/1.4 var(--code); color: #c4c4c4; overflow-wrap: anywhere; }
 .game-card:hover,
 .game-card:focus-visible {
-  transform: translateY(-4px);
-  border-color: var(--card-accent);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6);
+  border-color: color-mix(in srgb, var(--card-accent) 60%, transparent);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px color-mix(in srgb, var(--card-accent) 30%, transparent);
+  outline: none;
 }
-.game-card:hover .card-art { transform: scale(1.06); filter: saturate(1.1); }
+.game-card:hover::before { opacity: 1; }
+.game-card:hover::after,
+.game-card:focus-visible::after { transform: scaleX(1); }
+.game-card:hover .card-art { transform: scale(1.08); filter: saturate(1.15); }
 
-/* Sol çubuktaki 42 rozeti */
-/* sol üst köşe */
+/* Sol çubuktaki 42 rozeti (sol üst köşe) */
 .rail-club {
   position: absolute;
   top: 14px;
-  left: 0;
-  right: 0;
+  left: 10px;
+  right: 10px;
   padding: 8px 0;
 }
 .game-rail .rail-club .rail-short {
   font: 700 20px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
   letter-spacing: -1px;
   border: 2px solid currentColor;
+  border-radius: 7px;
   padding: 3px 6px 4px 4px;
 }
 
@@ -703,106 +819,163 @@ body[data-theme="club42"] {
   border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
   border-radius: var(--radius);
   overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.35s var(--ease), border-color 0.35s var(--ease), box-shadow 0.35s var(--ease);
 }
+.work-card:hover { transform: translateY(-3px); border-color: var(--accent); }
 .work-img { aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
-.work-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.work-img img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease); }
+.work-card:hover .work-img img { transform: scale(1.06); }
 .work-body { display: flex; flex-direction: column; gap: 6px; flex: 1; padding: 10px 12px 12px; }
 .work-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85em; color: var(--text-dim); }
 .work-type { color: var(--accent); }
 .work-title { margin: 0; font-size: 1.15em; color: var(--text); }
+.work-title a { color: inherit; text-decoration: none; }
+.work-title a:hover { text-decoration: underline; }
 .work-desc { margin: 0 0 4px; color: var(--text-dim); flex: 1; }
 .work-dl { align-self: flex-start; }
 .works-empty { margin: 8px 0; color: var(--text-dim); text-align: center; padding: 24px 0; }
 
-/* Ana sayfadaki yapımlar: 42 görünümü */
-.home-works { margin-top: 48px; }
-.home-works .work-cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
-.home-works .work-card { background: #0b0b0b; border: 1px solid #2a2a2a; border-radius: 0; font-family: "JetBrains Mono", Consolas, monospace; }
-.home-works .work-body { padding: 16px; }
-.home-works .work-type { color: #00babc; }
-.home-works .work-title { color: #fff; font-size: 18px; }
-.home-works .work-desc,
-.home-works .work-meta { color: #a8a8a8; }
-.home-works .work-dl {
-  font: 700 13px/1 "JetBrains Mono", Consolas, monospace;
-  color: #000;
-  background: #00babc;
-  border: 1px solid #00babc;
-  padding: 10px 14px;
+/* Ana sayfadaki yapımlar */
+.home-works { margin-top: 64px; }
+.home-works .work-cards { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.home-works .work-card {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
-.home-works .work-dl:hover { background: #fff; border-color: #fff; color: #000; }
-
-/* Yapım kartları tıklanabilir (detay sayfası) */
-.work-card { cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease; }
-.work-card:hover { transform: translateY(-3px); border-color: var(--accent); }
-.work-title a { color: inherit; text-decoration: none; }
-.work-title a:hover { text-decoration: underline; }
-.home-works .work-card:hover { border-color: #00babc; }
+.home-works .work-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 186, 188, 0.5);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55), 0 0 40px rgba(0, 186, 188, 0.15);
+}
+.home-works .work-body { gap: 8px; padding: 18px 20px 20px; }
+.home-works .work-meta { font: 500 12px/1 var(--code); color: var(--muted); }
+.home-works .work-type { color: var(--teal); }
+.home-works .work-title { font: 700 21px/1.2 var(--display); color: #fff; }
+.home-works .work-title a:hover { text-decoration: none; color: #7ef2f3; }
+.home-works .work-desc { font-size: 14px; line-height: 1.55; color: var(--muted); }
+.home-works .work-dl {
+  margin-top: 4px;
+  font: 600 13px/1 var(--sans);
+  color: #001314;
+  background: var(--teal);
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  transition: background-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.home-works .work-dl:hover { background: #26d3d5; box-shadow: 0 8px 24px rgba(0, 186, 188, 0.4); }
 
 /* ---------- Yapım detay sayfası (42 görünümü, oyunun rengiyle) ---------- */
 .work-page {
   --card-accent: #00babc;
   width: 100%;
   max-width: 1200px;
-  font-family: "JetBrains Mono", Consolas, monospace;
-  color: #f2f2f2;
+  font-family: var(--sans);
+  color: var(--ink);
   align-self: center;
 }
-.wp-crumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; font-size: 14px; color: #6f6f6f; }
-.wp-crumbs a { color: #a8a8a8; text-decoration: none; }
+.wp-crumbs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+  padding: 8px 14px;
+  font: 400 13px/1.2 var(--code);
+  color: #6f6f6f;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+}
+.wp-crumbs a { color: #b4b4b4; text-decoration: none; transition: color 0.2s ease; }
 .wp-crumbs a:hover { color: #fff; }
 .wp-crumbs #wp-slug { color: var(--card-accent); }
-.wp-meta { display: flex; gap: 14px; font-size: 13px; color: #a8a8a8; }
-.wp-type { color: #000; background: var(--card-accent); padding: 2px 8px; font-weight: 700; }
+.wp-meta { display: flex; gap: 14px; }
+.wp-type {
+  font: 700 12px/1 var(--code);
+  color: #000;
+  background: var(--card-accent);
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--card-accent) 45%, transparent);
+}
 .wp-title {
-  margin: 12px 0 0;
-  font: 700 clamp(30px, 5vw, 60px)/1.05 "JetBrains Mono", Consolas, monospace;
-  letter-spacing: -1px;
+  margin: 16px 0 0;
+  font: 700 clamp(36px, 5.5vw, 72px)/1 var(--display);
+  letter-spacing: -2px;
   overflow-wrap: anywhere;
 }
-.wp-head { margin-bottom: 24px; }
-.wp-lead { margin: 20px 0 0; max-width: 70ch; font-size: 16px; line-height: 1.6; color: #d6d6d6; }
+.wp-head { margin-bottom: 28px; }
+.wp-lead { margin: 22px 0 0; max-width: 70ch; font-size: 17px; line-height: 1.7; color: #d8dcdd; }
 .wp-lead:empty { display: none; }
 
-.wp-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
+.wp-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; align-items: start; }
 .wp-hero {
+  position: relative;
   display: block;
   width: 100%;
   padding: 0;
-  border: 1px solid #2a2a2a;
-  border-bottom: 4px solid var(--card-accent);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
   background: #000;
   cursor: zoom-in;
   aspect-ratio: 16 / 9;
   overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px color-mix(in srgb, var(--card-accent) 18%, transparent);
+  transition: box-shadow 0.5s var(--ease), transform 0.5s var(--ease);
 }
-.wp-hero img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.wp-thumbs { display: flex; gap: 10px; margin-top: 10px; overflow-x: auto; padding-bottom: 4px; }
+.wp-hero::after {
+  content: "⤢  büyüt";
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  padding: 7px 12px;
+  font: 500 12px/1 var(--code);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.wp-hero:hover { box-shadow: 0 36px 80px rgba(0, 0, 0, 0.6), 0 0 50px color-mix(in srgb, var(--card-accent) 30%, transparent); }
+.wp-hero:hover::after { opacity: 1; transform: none; }
+.wp-hero img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+.wp-hero:hover img { transform: scale(1.03); }
+.wp-thumbs { display: flex; gap: 12px; margin-top: 14px; overflow-x: auto; padding: 2px 2px 6px; }
 .wp-thumbs:empty { display: none; }
 .wp-thumb {
   flex: none;
-  width: 128px;
+  width: 132px;
   aspect-ratio: 16 / 9;
   padding: 0;
   border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
   background: #000;
   cursor: pointer;
-  opacity: 0.6;
-  transition: opacity 0.2s ease, border-color 0.2s ease;
+  opacity: 0.55;
+  transition: opacity 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease);
 }
 .wp-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.wp-thumb:hover { opacity: 1; }
+.wp-thumb:hover { opacity: 1; transform: translateY(-2px); }
 .wp-thumb.active { opacity: 1; border-color: var(--card-accent); }
-.wp-video { margin-top: 20px; aspect-ratio: 16 / 9; border: 1px solid #2a2a2a; }
+.wp-video { margin-top: 24px; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
 .wp-video iframe { display: block; width: 100%; height: 100%; border: 0; }
 .wp-video a { display: block; padding: 16px; color: var(--card-accent); }
 
-.wp-details { margin-top: 28px; font-size: 15px; line-height: 1.75; color: #d6d6d6; }
+.wp-details { margin-top: 32px; font-size: 16px; line-height: 1.8; color: #d8dcdd; }
 .wp-details:empty { display: none; }
-.wp-details h3 { margin: 28px 0 8px; font-size: 18px; color: #fff; }
-.wp-details h3::before { content: "## "; color: var(--card-accent); }
-.wp-details p { margin: 0 0 14px; }
-.wp-details ul { margin: 0 0 14px; padding-left: 22px; }
+.wp-details h3 { margin: 32px 0 10px; font: 700 22px/1.2 var(--display); color: #fff; }
+.wp-details h3::before { content: "## "; font-family: var(--code); color: var(--card-accent); }
+.wp-details p { margin: 0 0 16px; }
+.wp-details ul { margin: 0 0 16px; padding-left: 22px; }
+.wp-details li { margin: 4px 0; }
 .wp-details li::marker { color: var(--card-accent); }
 .wp-details b { color: #fff; }
 
@@ -811,17 +984,19 @@ body[data-theme="club42"] {
   top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 18px;
-  background: rgba(11, 11, 11, 0.92);
-  border: 1px solid #2a2a2a;
+  gap: 18px;
+  padding: 22px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
-.wp-side .home-btn { text-align: center; }
-.wp-side .wp-dl { background: var(--card-accent); border-color: var(--card-accent); color: #000; }
-.wp-side .wp-dl:hover { background: #fff; border-color: #fff; }
-.wp-specs { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; font-size: 13px; }
-.wp-specs dt { color: #8c8c8c; }
-.wp-specs dd { margin: 0; color: #fff; overflow-wrap: anywhere; }
+.wp-side .wp-dl { background: var(--card-accent); color: #000; }
+.wp-side .wp-dl:hover { background: #fff; box-shadow: 0 10px 30px color-mix(in srgb, var(--card-accent) 45%, transparent); }
+.wp-specs { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 16px; font-size: 14px; }
+.wp-specs dt { color: #8c8c8c; font: 400 12px/1.6 var(--code); }
+.wp-specs dd { margin: 0; color: #fff; font-weight: 500; overflow-wrap: anywhere; }
 
 /* Tam ekran fotoğraf görüntüleyici */
 .lightbox {
@@ -831,29 +1006,99 @@ body[data-theme="club42"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.92);
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(14px);
+  animation: fade-in 0.3s var(--ease);
 }
-.lightbox img { max-width: calc(100vw - 140px); max-height: calc(100vh - 80px); object-fit: contain; box-shadow: 0 20px 60px #000; }
+.lightbox img {
+  max-width: calc(100vw - 160px);
+  max-height: calc(100vh - 100px);
+  object-fit: contain;
+  border-radius: var(--r-md);
+  box-shadow: 0 30px 80px #000;
+  animation: zoom-in 0.45s var(--ease);
+}
+.lightbox img.swap { animation: swap-in 0.35s var(--ease); }
 .lb-btn {
   position: absolute;
-  font: 40px/1 Arial, sans-serif;
+  display: grid;
+  place-items: center;
+  font: 32px/1 Arial, sans-serif;
   color: #fff;
   background: rgba(255, 255, 255, 0.08);
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
   width: 52px;
   height: 52px;
   cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background-color 0.2s ease, transform 0.2s var(--ease);
 }
-.lb-btn:hover { background: rgba(255, 255, 255, 0.2); }
-.lb-close { top: 16px; right: 16px; }
-.lb-prev { left: 16px; top: 50%; transform: translateY(-50%); }
-.lb-next { right: 16px; top: 50%; transform: translateY(-50%); }
-.lb-count { position: absolute; bottom: 16px; font: 13px "JetBrains Mono", monospace; color: #a8a8a8; }
+.lb-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.06); }
+.lb-close { top: 18px; right: 18px; }
+.lb-prev { left: 18px; top: 50%; margin-top: -26px; }
+.lb-next { right: 18px; top: 50%; margin-top: -26px; }
+.lb-count {
+  position: absolute;
+  bottom: 18px;
+  padding: 6px 12px;
+  font: 500 12px/1 var(--code);
+  color: #cfcfcf;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 999px;
+}
+
+/* =====================================================================
+   ANİMASYONLAR
+   ===================================================================== */
+/* Sayfaya girerken öğeler sırayla belirir (görünüm her açıldığında yeniden oynar) */
+.home-hero > *,
+.home-section,
+.game-card,
+.wp-crumbs,
+.wp-head,
+.wp-main,
+.wp-side { animation: rise 0.8s var(--ease) backwards; }
+.home-intro { animation-delay: 0.08s; }
+#club-home .home-section { animation-delay: 0.16s; }
+.game-card { animation-delay: calc(0.2s + var(--i, 0) * 0.07s); }
+.wp-head { animation-delay: 0.06s; }
+.wp-main { animation-delay: 0.12s; }
+.wp-side { animation-delay: 0.2s; }
+.home-logo { animation: logo-in 0.9s var(--ease) backwards; }
+
+/* Kaydırınca beliren bölümler */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* Kapak görseli değişirken */
+#wp-hero-img.swap { animation: swap-in 0.45s var(--ease); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(22px); } }
+@keyframes logo-in { from { opacity: 0; transform: scale(0.85) rotate(-4deg); } }
+@keyframes sheen { 0% { transform: translateX(-120%); } 35%, 100% { transform: translateX(120%); } }
+@keyframes caret { 50% { opacity: 0; } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes zoom-in { from { opacity: 0; transform: scale(0.94); } }
+@keyframes swap-in { from { opacity: 0.2; transform: scale(1.02); } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, -14px); } }
+@keyframes bg-drift {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.08) translate3d(-1.5%, -1%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .game-card, .card-art, .work-card, .work-img img, .wp-hero, .wp-hero img, .home-logo,
+  .rail-indicator, .home-btn { transition: none; }
+}
 
 /* ---------- Mobil ---------- */
 @media (max-width: 860px) {
   :root { --rail-width: 0px; }
-  .desktop { justify-content: flex-start; padding-top: 72px; }
+  .desktop { justify-content: flex-start; padding-top: 76px; }
   .game-rail {
     bottom: auto;
     right: 0;
@@ -861,25 +1106,26 @@ body[data-theme="club42"] {
     flex-direction: row;
     justify-content: flex-start;
     overflow-x: auto;
-    padding: 0 8px;
+    padding: 8px;
     border-right: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
-  .rail-item { border-left: 0; border-bottom: 3px solid transparent; padding: 12px 12px 9px; }
-  .rail-item.active { border-bottom-color: var(--accent); }
+  .rail-item { margin: 0; padding: 10px 14px; }
+  .rail-indicator { box-shadow: inset 0 -3px 0 var(--accent); }
   .rail-name { white-space: nowrap; }
-  .rail-club { position: static; padding: 9px 12px 6px; }
+  .rail-club { position: static; padding: 7px 12px; }
   .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
-  .home-hero { flex-direction: column; align-items: flex-start; gap: 24px; margin-bottom: 36px; }
-  .home-logo { font-size: 84px; letter-spacing: -6px; border-width: 4px; padding: 14px 20px 18px 14px; box-shadow: 6px 6px 0 #00babc; }
+  .home-hero { flex-direction: column; align-items: flex-start; gap: 26px; margin-bottom: 40px; }
+  .home-logo { font-size: 84px; letter-spacing: -6px; border-width: 4px; border-radius: 16px; padding: 14px 20px 18px 14px; box-shadow: 6px 6px 0 var(--teal), 0 0 40px rgba(0, 186, 188, 0.3); }
+  .home-about { font-size: 15px; }
   .game-cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-  .game-card { min-height: 260px; }
+  .game-card { min-height: 260px; border-radius: 16px; }
+  .card-body { padding: 14px; }
+  .card-name { font-size: 18px; }
+  .card-addr { font-size: 11px; }
   .wp-layout { grid-template-columns: minmax(0, 1fr); }
   .wp-side { position: static; }
-  .wp-thumb { width: 96px; }
-  .lightbox img { max-width: 100vw; }
-  .lb-prev, .lb-next { top: auto; bottom: 12px; transform: none; }
-  .card-body { padding: 14px; }
-  .card-name { font-size: 17px; }
-  .card-addr { font-size: 12px; }
+  .wp-thumb { width: 100px; }
+  .lightbox img { max-width: 100vw; border-radius: 0; }
+  .lb-prev, .lb-next { top: auto; bottom: 12px; margin-top: 0; }
 }
