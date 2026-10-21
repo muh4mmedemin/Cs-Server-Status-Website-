@@ -755,12 +755,14 @@ body[data-theme="club42"] {
 .wp-meta { display: flex; gap: 14px; font-size: 13px; color: #a8a8a8; }
 .wp-type { color: #000; background: var(--card-accent); padding: 2px 8px; font-weight: 700; }
 .wp-title {
-  margin: 12px 0 8px;
+  margin: 12px 0 0;
   font: 700 clamp(30px, 5vw, 60px)/1.05 "JetBrains Mono", Consolas, monospace;
   letter-spacing: -1px;
   overflow-wrap: anywhere;
 }
-.wp-lead { margin: 0 0 28px; max-width: 70ch; font-size: 16px; color: #bdbdbd; }
+.wp-head { margin-bottom: 24px; }
+.wp-lead { margin: 20px 0 0; max-width: 70ch; font-size: 16px; line-height: 1.6; color: #d6d6d6; }
+.wp-lead:empty { display: none; }
 
 .wp-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
 .wp-hero {
