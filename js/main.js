@@ -266,7 +266,6 @@ function showWork(w) {
   $("#wp-game-link").href = `#${game.id}`;
   $("#wp-slug").textContent = workId(w);
   $("#wp-type").textContent = w.type || "Yapım";
-  $("#wp-date").textContent = [game.name, w.date].filter(Boolean).join("  ·  ");
   $("#wp-title").textContent = w.title;
   $("#wp-lead").textContent = w.description || "";
 
