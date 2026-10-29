@@ -322,6 +322,7 @@ function showWork(w) {
   document.title = `${w.title} – ${CLUB.name}`;
   setRailActive(w.game);
   showView("work");
+  setGameCursor(w.game);
 
   const page = $("#work-page");
   page.dataset.game = w.game;
@@ -505,6 +506,7 @@ function showDoc(d) {
   document.title = `${d.title} – ${CLUB.name}`;
   setRailActive(game ? game.id : CLUB_ID);
   showView("doc");
+  setGameCursor(game ? game.id : null);
 
   const page = $("#doc-page");
   page.dataset.game = game ? game.id : "";
@@ -666,7 +668,14 @@ function updateToc() {
 }
 window.addEventListener("scroll", () => requestAnimationFrame(updateToc), { passive: true });
 
+// Oyuna ait yapım/doküman sayfalarında o oyunun imleci kullanılır
+function setGameCursor(gameId) {
+  if (gameId) document.body.dataset.cursor = gameId;
+  else delete document.body.dataset.cursor;
+}
+
 function showView(name) {
+  if (name !== "work" && name !== "doc") setGameCursor(null);
   $("#club-home").hidden = name !== "club";
   $("#server-window").hidden = name !== "game";
   $("#work-page").hidden = name !== "work";
