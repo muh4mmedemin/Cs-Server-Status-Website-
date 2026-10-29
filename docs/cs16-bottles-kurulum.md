@@ -44,7 +44,7 @@ $ ln -sfn "$GOINFRE/var-app" ~/.var/app
 >
 > Satır `d` ile başlıyorsa (klasörse) içindekileri yedekleyip kenara alın,
 > ör. `mv ~/.var/app ~/.var/app.yedek`, sonra yukarıdaki komutları tekrar
-> çalıştırın. Doğru kurulumda satırlar `l` ile başlar ve `-> /goinfre/...` gösterir.
+> çalıştırın. Doğru kurulumda satırlar `l` ile başlar ve sonunda `/goinfre/...` yolu görünür.
 
 > [!TIP]
 > `goinfre`'nin yolu ve ne zaman temizlendiği kampüse göre değişebilir. Emin
@@ -80,12 +80,12 @@ indirir. **İleri** diyerek kurulumu tamamlayın.
 1. `cs16` bottle'ını açın.
 2. **Programları Yükle** (Install Programs) bölümüne girin.
 3. Listeden **Steam**'i bulup **Yükle** deyin.
-4. Kurulum bitince bottle'ın **Programlar** listesinde Steam görünür; **▶** ile başlatın.
+4. Kurulum bitince bottle'ın **Programlar** listesinde Steam görünür; yanındaki **Çalıştır** butonuyla başlatın.
 5. Steam hesabınızla giriş yapın.
 
 > [!TIP]
 > Steam penceresi siyah ya da boş açılırsa: Programlar listesinde Steam'in
-> yanındaki **⋮ → Değiştir** (Change Launch Options) menüsüne girip komut
+> yanındaki **⋮** menüsünden **Değiştir** (Change Launch Options) seçeneğine girip komut
 > satırı argümanlarına `-no-cef-sandbox` ekleyin ve Steam'i yeniden başlatın.
 
 ## 5. Counter-Strike 1.6'yı kurma
@@ -97,7 +97,7 @@ indirir. **İleri** diyerek kurulumu tamamlayın.
 
 ### Önerilen oyun ayarları
 
-Oyun açıldıktan sonra **Options → Video**:
+Oyun açıldıktan sonra **Options** menüsünün **Video** sekmesinde:
 
 | Ayar         | Öneri                     |
 | ------------ | ------------------------- |
@@ -122,11 +122,11 @@ Oyun içinde `~` tuşuyla konsolu açıp yazın:
 connect 45.74.244.214:27015
 ```
 
-Ya da **Find Servers → Favorites → Add a Server** ile adresi favorilere ekleyin.
+Ya da **Find Servers** menüsünde **Favorites** sekmesine gidip **Add a Server** ile adresi favorilere ekleyin.
 
 ### Oyunu doğrudan sunucuya bağlanarak açma
 
-Steam'de **Counter-Strike → Özellikler → Başlatma seçenekleri** kutusuna:
+Steam'de **Counter-Strike** oyununun **Özellikler** penceresindeki **Başlatma seçenekleri** kutusuna:
 
 ```cfg
 +connect 45.74.244.214:27015
@@ -136,7 +136,7 @@ Bundan sonra **Oyna** dediğinizde oyun doğrudan sunucuya bağlanır.
 
 ## 7. Masaüstü kısayolu
 
-Bottles'ta Steam'in yanındaki **⋮ → Masaüstü girdisi ekle** (Add Desktop Entry)
+Bottles'ta Steam'in yanındaki **⋮** menüsünden **Masaüstü girdisi ekle** (Add Desktop Entry)
 ile uygulama menüsüne kısayol ekleyebilirsiniz. Terminalden açmak için:
 
 ```bash
@@ -176,7 +176,7 @@ Flatpak verileri home'a yazılıyor demektir. **1. adımı** kontrol edin:
 $ ls -l ~/.local/share/flatpak ~/.var/app
 ```
 
-Her iki satırda da `-> /goinfre/...` görmelisiniz.
+Her iki satırın sonunda da `/goinfre/...` yolunu görmelisiniz.
 
 ### `flatpak: command not found`
 
@@ -185,7 +185,7 @@ staff'a sorun.
 
 ### Oyun açılıyor ama çok yavaş
 
-- **Options → Video → Renderer** ayarını **OpenGL** yapın.
+- **Options** menüsünün **Video** sekmesinde **Renderer** ayarını **OpenGL** yapın.
 - Bottles'ta bottle ayarlarından **Ayrık GPU** (Discrete GPU) seçeneği varsa açın.
 - `fps_max 100` ayarlı olduğundan emin olun.
 

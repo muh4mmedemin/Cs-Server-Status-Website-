@@ -87,4 +87,4 @@ Releases'e yükleyip `download` alanına **linkini** yazın:
 download: "https://steamcommunity.com/sharedfiles/filedetails/?id=...",
 ```
 
-Link `http` ile başlıyorsa butonda "Bağlantıya git ↗" yazar ve yeni sekmede açılır.
+Link `http` ile başlıyorsa butonda "Bağlantıya git" yazar ve yeni sekmede açılır.

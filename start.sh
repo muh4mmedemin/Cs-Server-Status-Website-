@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Siteyi 8080 portunda yayınlar (Codespaces portu otomatik yönlendirir).
-#   ./start.sh            → site kapalıysa başlatır, açıksa haber verir
-#   ./start.sh --restart  → çalışan siteyi durdurup yeniden başlatır
+#   ./start.sh            site kapalıysa başlatır, açıksa haber verir
+#   ./start.sh --restart  çalışan siteyi durdurup yeniden başlatır
 cd "$(dirname "$0")"
 PORT="${PORT:-8080}"
 

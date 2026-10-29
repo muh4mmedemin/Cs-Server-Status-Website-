@@ -20,7 +20,7 @@ arayüzüne benzeyen temalarla gösteren statik web sitesi.
 
 ## GitHub Codespaces ile çalıştırma
 
-1. Depo sayfasında **Code → Codespaces → Create codespace on main** deyin.
+1. Depo sayfasında **Code** butonuna basıp **Codespaces** sekmesinde **Create codespace on main** deyin.
 2. Codespace açılınca site otomatik olarak **8080** portunda başlar ve
    tarayıcıda açılır (açılmazsa alttaki **Ports** sekmesinden 8080'e tıklayın).
 3. Otomatik başlamazsa terminalde:
@@ -33,7 +33,7 @@ arayüzüne benzeyen temalarla gösteren statik web sitesi.
    Yeniden başlatmak için: `./start.sh --restart`
 
 > Siteyi başkalarıyla paylaşmak için **Ports** sekmesinde 8080'e sağ tıklayıp
-> **Port Visibility → Public** yapın.
+> **Port Visibility** ayarını **Public** yapın.
 
 ## Sunucu adreslerini değiştirme
 
@@ -46,7 +46,7 @@ aynı dosyadadır.
 {
   id: "rust",
   name: "Rust",
-  ip: "1.2.3.4",   // ← buraya
+  ip: "1.2.3.4",   // IP'yi buraya yazın
   port: 28015,
   ...
 }
