@@ -877,17 +877,24 @@ body[data-theme="club42"] {
 }
 .work-card {
   --card-accent: var(--accent);
+  --work-radius: var(--radius);
   position: relative;
   display: flex;
   flex-direction: column;
   background: var(--panel-dark);
   border: 1px solid;
   border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
-  border-radius: var(--radius);
+  border-radius: var(--work-radius);
   cursor: pointer;
-  transition: transform 0.35s var(--ease), border-color 0.35s var(--ease), box-shadow 0.35s var(--ease);
 }
-.work-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+/* üzerine gelince kart hareket etmez, sadece kenarı oyunun rengini alır */
+.work-card:hover,
+.work-card:focus-within { border-color: var(--card-accent); }
+/* indir sekmesi açıkken sağ köşeler düzleşir, sekmeyle tek parça görünür */
+.work-card:has(.work-dl):is(:hover, :focus-within) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
 .work-img {
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -895,8 +902,7 @@ body[data-theme="club42"] {
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
 }
-.work-img img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease); }
-.work-card:hover .work-img img { transform: scale(1.06); }
+.work-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .work-body { display: flex; flex-direction: column; gap: 6px; flex: 1; padding: 10px 12px 12px; }
 .work-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85em; color: var(--text-dim); }
 .work-type { color: var(--accent); }
@@ -904,40 +910,41 @@ body[data-theme="club42"] {
 .work-title a { color: inherit; text-decoration: none; }
 .work-title a:hover { text-decoration: underline; }
 .work-desc { margin: 0 0 4px; color: var(--text-dim); flex: 1; }
-/* İndir: kartın üzerine gelince sağ kenardan açılan dikey sekme, oyunun renginde */
+/* İndir: kartın sağ kenarına yapışık, kart boyunda dikey sekme (oyunun renginde).
+   Kartın arkasından kayarak çıkar: sekme sola kaydırılıp aynı oranda soldan
+   kırpıldığı için kartın kenarından dışarı doğru uzuyormuş gibi görünür. */
 .work-dl {
   position: absolute;
-  top: 18px;
-  bottom: 18px;
+  top: -1px;
+  bottom: -1px;
   left: 100%;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  padding: 12px 0;
+  width: 42px;
   writing-mode: vertical-rl;
   text-orientation: upright;
   font: 700 13px/1 "JetBrains Mono", Consolas, monospace;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   white-space: nowrap;
   text-transform: uppercase;
   text-decoration: none;
   color: #0b0b0b;
   background: var(--card-accent);
-  border-radius: 0 12px 12px 0;
-  box-shadow: 6px 10px 24px color-mix(in srgb, var(--card-accent) 35%, transparent);
-  opacity: 0;
-  clip-path: inset(0 100% 0 0);
-  transform: translateX(-10px);
-  transition: clip-path 0.45s var(--ease), transform 0.45s var(--ease), opacity 0.25s ease, filter 0.2s ease;
+  border-radius: 0 var(--work-radius) var(--work-radius) 0;
+  box-shadow: 8px 0 24px color-mix(in srgb, var(--card-accent) 30%, transparent);
+  transform: translateX(-100%);
+  clip-path: inset(0 0 0 100%);
+  transition: transform 0.5s var(--ease), clip-path 0.5s var(--ease), filter 0.2s ease;
 }
 .work-card:hover .work-dl,
-.work-card:focus-within .work-dl { opacity: 1; clip-path: inset(0 -40px 0 0); transform: none; }
-.work-dl:hover { filter: brightness(1.15); }
+.work-card:focus-within .work-dl { transform: none; clip-path: inset(0 -40px 0 0); }
+.work-dl:hover { filter: brightness(1.12); }
 /* dokunmatik ekranda üzerine gelme yok: sekme hep açık */
 @media (hover: none) {
-  .work-dl { opacity: 1; clip-path: none; transform: none; }
+  .work-dl { transform: none; clip-path: none; }
+  .work-card:has(.work-dl) { border-top-right-radius: 0; border-bottom-right-radius: 0; }
 }
 .works-empty { margin: 8px 0; color: var(--text-dim); text-align: center; padding: 24px 0; }
 
@@ -945,17 +952,14 @@ body[data-theme="club42"] {
 .home-works { margin-top: 64px; }
 .home-works .work-cards { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px 60px; }
 .home-works .work-card {
+  --work-radius: var(--r-lg);
   background: var(--glass);
   border: 1px solid var(--line);
-  border-radius: var(--r-lg);
   backdrop-filter: blur(14px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
-.home-works .work-card:hover {
-  transform: translateY(-6px);
-  border-color: color-mix(in srgb, var(--card-accent) 55%, transparent);
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55), 0 0 40px color-mix(in srgb, var(--card-accent) 15%, transparent);
-}
+.home-works .work-card:hover,
+.home-works .work-card:focus-within { border-color: var(--card-accent); }
 .home-works .work-body { gap: 8px; padding: 18px 20px 20px; }
 .home-works .work-meta { font: 500 12px/1 var(--code); color: var(--muted); }
 .home-works .work-type { color: var(--teal); }
@@ -1390,7 +1394,7 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .game-card, .card-art, .work-card, .work-dl, .work-img img, .wp-hero, .wp-hero img, .home-logo,
+  .game-card, .card-art, .work-dl, .wp-hero, .wp-hero img, .home-logo,
   .home-btn, .doc-row { transition: none; }
 }
 
