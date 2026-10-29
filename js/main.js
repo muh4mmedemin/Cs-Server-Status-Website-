@@ -207,7 +207,7 @@ function renderClub() {
     const card = document.createElement("a");
     card.className = "game-card";
     card.style.setProperty("--i", i);
-    addTilt(card);
+    addTilt(card, 4);
     card.href = `#${s.id}`;
     card.dataset.game = s.id;
     card.innerHTML = `
