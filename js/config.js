@@ -24,7 +24,7 @@ const CLUB = {
 // kendi sayfası açılır (link: #yapim/<id>). Dosyaları works/<oyun>/ klasörüne
 // koyun (ayrıntılar: works/README.md).
 //
-// game:        hangi oyunun yapımı (aşağıdaki SERVERS içindeki id: cs16, cs2, minecraft, rust, arma3)
+// game:        hangi oyunun yapımı (aşağıdaki SERVERS içindeki id: cs16, cs2, minecraft, rust, arma3, squad)
 // title:       yapımın adı
 // id:          sayfa linki, ör. "de_kulup42" ise link #yapim/de_kulup42 (isteğe bağlı; yoksa addan üretilir)
 // type:        kısa etiket, ör. "Harita", "Mod", "Skin", "Plugin", "Build"
@@ -209,6 +209,26 @@ const SERVERS = [
       "Arma 3'ü açın, <b>Multiplayer</b> menüsünden <b>Server Browser</b> ekranına girin.",
       "<b>Direct Connect</b> butonuna basın.",
       "Adresi girin: <code>{address}</code> ve bağlanın.",
+    ],
+  },
+  {
+    id: "squad",
+    name: "Squad",
+    ip: "",
+    port: 7787,
+    connect: null,
+    rules: [
+      "Hile ve üçüncü parti yazılım kullanmak yasaktır.",
+      "Squad liderleri mikrofon kullanmak ve komutanla iletişimde olmak zorundadır.",
+      "Bilerek takım arkadaşına ateş etmek (team kill) yasaktır.",
+      "Araçları ve kitleri amacı dışında kullanmak (araç hırsızlığı, boşa harcama) yasaktır.",
+      "Squad'ınızı kilitlemeyin; sadece 2 kişiden az olan squad'lar kilitlenebilir.",
+      "Yetkililerin uyarılarına uyunuz.",
+    ],
+    howto: [
+      "Squad'ı açın ve ana menüden <b>Sunucu Tarayıcısı</b>'na (Server Browser) girin.",
+      "Arama kutusuna sunucunun adını yazın ya da listede adresi bulun: <code>{address}</code>",
+      "Sunucuyu seçip <b>Katıl</b> deyin; tekrar bulmak için yıldızla <b>favorilere</b> ekleyin.",
     ],
   },
 ];

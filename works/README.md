@@ -14,6 +14,7 @@ works/
   minecraft/   Minecraft           (ör. dünya .zip, datapack, skin)
   rust/        Rust                (ör. plugin .cs, harita .map)
   arma3/       Arma 3              (ör. görev .pbo)
+  squad/       Squad               (ör. mod, harita düzeni)
 ```
 
 ## Yapım ekleme

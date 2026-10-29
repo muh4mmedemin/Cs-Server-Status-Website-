@@ -377,7 +377,7 @@ code {
   font-family: var(--mono);
   background: var(--panel-dark);
   padding: 1px 6px;
-  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .code-line {
@@ -604,6 +604,52 @@ body[data-theme="arma3"] .vbtn { border: 0; text-transform: uppercase; padding: 
 body[data-theme="arma3"] .vbtn:hover { background: #c48214; color: #fff; }
 body[data-theme="arma3"] .console-window .title-bar { background: #c48214; }
 
+/* ---------- Squad: koyu lacivert-gri paneller, zeytin yeşili vurgu ---------- */
+body[data-theme="squad"] {
+  --bg: rgba(16, 21, 27, 0.9);
+  --panel: rgba(22, 28, 35, 0.85);
+  --panel-dark: rgba(10, 13, 17, 0.75);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --border-dark: rgba(255, 255, 255, 0.1);
+  --text: #e9ebe4;
+  --text-dim: #9aa39a;
+  --accent: #9aab52;
+  --select: rgba(154, 171, 82, 0.28);
+  --font: "Chakra Petch", "Rajdhani", sans-serif;
+  --font-size: 15px;
+  --title-bg: transparent;
+  --btn-bg: rgba(255, 255, 255, 0.06);
+  --primary-bg: #9aab52;
+  --primary-text: #10140a;
+  --radius: 2px;
+  --page-bg:
+    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .1) 0%, rgba(0, 0, 0, .55) 100%),
+    url("../img/bg/squad.svg") center bottom / cover no-repeat;
+  --page-color: #1b1e1a;
+}
+body[data-theme="squad"] .vgui-window {
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  border-top: 3px solid var(--accent);
+}
+body[data-theme="squad"] .title-bar { text-transform: uppercase; letter-spacing: 2px; font-weight: 700; padding: 9px 12px; }
+body[data-theme="squad"] .tbtn { color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+body[data-theme="squad"] .tab {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+body[data-theme="squad"] .tab.active { background: rgba(154, 171, 82, 0.14); border-bottom-color: var(--accent); color: #fff; }
+body[data-theme="squad"] .group-label { background: #12171d; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+body[data-theme="squad"] .server-list tr.selected td { color: #fff; }
+body[data-theme="squad"] .server-list tr.selected a { color: #d7e39a; }
+body[data-theme="squad"] .progress-bar { background: repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 13px); }
+body[data-theme="squad"] .vbtn { border: 1px solid rgba(255, 255, 255, 0.14); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; padding: 6px 18px; }
+body[data-theme="squad"] .vbtn:hover { border-color: var(--accent); color: #fff; }
+body[data-theme="squad"] .console-window .title-bar { background: rgba(154, 171, 82, 0.2); }
 
 /* ---------- 42 kulüp sayfaları: koyu cam yüzeyler, turkuaz vurgu ---------- */
 body[data-theme="club42"] {
@@ -788,6 +834,9 @@ body[data-theme="club42"] {
 .game-card[data-game="arma3"], .work-page[data-game="arma3"], .doc-page[data-game="arma3"],
 .doc-game[data-game="arma3"], .work-card[data-game="arma3"] { --card-accent: #c48214; }
 .rail-item[data-game="arma3"] { --c: #c48214; }
+.game-card[data-game="squad"], .work-page[data-game="squad"], .doc-page[data-game="squad"],
+.doc-game[data-game="squad"], .work-card[data-game="squad"] { --card-accent: #9aab52; }
+.rail-item[data-game="squad"] { --c: #9aab52; }
 .card-art {
   position: absolute;
   inset: 0;
@@ -1307,6 +1356,10 @@ body[data-cursor="rust"] :is(a, button, label, summary, select, .work-card, .doc
 body[data-cursor="arma3"] { cursor: url("../img/cursors/arma3.svg") 4 3, auto; }
 body[data-cursor="arma3"] :is(a, button, label, summary, select, .work-card, .doc-row, .wp-hero, .wp-thumb, .lightbox) {
   cursor: url("../img/cursors/arma3-link.svg") 4 3, pointer;
+}
+body[data-cursor="squad"] { cursor: url("../img/cursors/squad.svg") 4 3, auto; }
+body[data-cursor="squad"] :is(a, button, label, summary, select, .work-card, .doc-row, .wp-hero, .wp-thumb, .lightbox) {
+  cursor: url("../img/cursors/squad-link.svg") 4 3, pointer;
 }
 body[data-cursor] :is(input, textarea) { cursor: text; }
 
