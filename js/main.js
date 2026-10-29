@@ -278,8 +278,8 @@ function workCard(w, showGame) {
       <div class="work-meta"><span class="work-type"></span><span class="work-game"></span></div>
       <h3 class="work-title"><a></a></h3>
       <p class="work-desc"></p>
-      <a class="vbtn primary work-dl"></a>
-    </div>`;
+    </div>
+    <a class="work-dl"></a>`;
   const img = card.querySelector("img");
   img.src = workImages(w)[0] || `img/bg/${w.game}.svg`;
   fallbackImg(img, w.game);
@@ -289,7 +289,10 @@ function workCard(w, showGame) {
   title.textContent = w.title;
   title.href = workHref(w);
   card.querySelector(".work-desc").textContent = w.description || "";
-  setDownload(card.querySelector(".work-dl"), w);
+  const dl = card.querySelector(".work-dl");
+  setDownload(dl, w);
+  // dikey sekmeye tek kelime sığar
+  if (w.download && isExternal(w.download)) dl.textContent = "Bağlantı";
   // kartın herhangi bir yerine tıklayınca detay sayfası (indirme butonu hariç)
   card.addEventListener("click", (e) => {
     if (!e.target.closest("a")) location.hash = workHref(w);
