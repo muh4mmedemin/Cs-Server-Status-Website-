@@ -2,8 +2,8 @@
 // Her oyun için IP ve portu buradan girin. IP boş ("") bırakılırsa
 // o oyunun sayfasında "IP ayarlanmadı" uyarısı gösterilir.
 //
-// connect: "steam" → Bağlan butonu steam://connect/IP:PORT açar
-//          null    → Bağlan butonu gizlenir (oyun içinden bağlanılır)
+// connect: "steam": Bağlan butonu steam://connect/IP:PORT açar
+//          null:    Bağlan butonu gizlenir (oyun içinden bağlanılır)
 // howto:   "Nasıl Bağlanırım?" adımları. {address} yazan yere IP:PORT gelir.
 
 const REFRESH_SECONDS = 60; // GameTracker banner'ının yenilenme aralığı
@@ -26,7 +26,7 @@ const CLUB = {
 //
 // game:        hangi oyunun yapımı (aşağıdaki SERVERS içindeki id: cs16, cs2, minecraft, rust, arma3)
 // title:       yapımın adı
-// id:          sayfa linki, ör. "de_kulup42" → #yapim/de_kulup42 (isteğe bağlı; yoksa addan üretilir)
+// id:          sayfa linki, ör. "de_kulup42" ise link #yapim/de_kulup42 (isteğe bağlı; yoksa addan üretilir)
 // type:        kısa etiket, ör. "Harita", "Mod", "Skin", "Plugin", "Build"
 // description: kartta ve sayfanın başında görünen kısa açıklama (bir iki cümle)
 // image:       kapak görseli (isteğe bağlı; yoksa oyunun arka planı kullanılır)
@@ -34,10 +34,10 @@ const CLUB = {
 // video:       YouTube linki; sayfada oynatıcı olarak görünür (isteğe bağlı)
 // details:     yapım sayfasındaki uzun açıklama (isteğe bağlı). Ters tırnak (`) içinde
 //              birden fazla satır yazabilirsiniz:
-//                boş satır  → yeni paragraf
-//                ## Başlık  → ara başlık
-//                - madde    → madde işaretli liste
-//                **kalın**  → kalın yazı
+//                boş satır:  yeni paragraf
+//                ## Başlık:  ara başlık
+//                - madde:    madde işaretli liste
+//                **kalın**:  kalın yazı
 // specs:       yan paneldeki bilgi tablosu, ör. { "Oyuncu": "5v5", "Mod": "Bomba" } (isteğe bağlı)
 // download:    indirme dosyası (works/ altında) ya da harici link (isteğe bağlı)
 // date:        "YYYY-AA" biçiminde tarih; ana sayfada yeniden eskiye sıralanır
@@ -88,7 +88,7 @@ const WORKS = [
 // açılır (link: #dokuman/<id>). Nasıl yazılacağı: docs/dokuman-yazma.md
 // Yeni doküman için şablon: docs/_sablon.md (kopyalayıp yeniden adlandırın)
 //
-// id:          sayfa linki, ör. "cs16-cluster-kurulum" → #dokuman/cs16-cluster-kurulum
+// id:          sayfa linki, ör. "cs16-cluster-kurulum" ise link #dokuman/cs16-cluster-kurulum
 // title:       dokümanın adı
 // file:        Markdown dosyasının yolu, ör. "docs/cs16-cluster-kurulum.md"
 // description: listede ve sayfanın başında görünen kısa açıklama (isteğe bağlı)
@@ -133,7 +133,7 @@ const SERVERS = [
     howto: [
       "Yukarıdaki <b>Bağlan</b> butonuna basın (Steam yüklü olmalı).",
       "Oyunu açın, <b>~</b> tuşuyla konsolu açın ve şunu yazın: <code>connect {address}</code>",
-      "<i>Find Servers &rarr; Favorites &rarr; Add a Server</i> ile IP'yi favorilere ekleyin.",
+      "<i>Find Servers</i> menüsünde <i>Favorites</i> sekmesine gidip <i>Add a Server</i> ile IP'yi favorilere ekleyin.",
     ],
   },
   {
@@ -206,7 +206,7 @@ const SERVERS = [
       "Yetkililerin uyarılarına uyunuz.",
     ],
     howto: [
-      "Arma 3'ü açın ve <b>Multiplayer &rarr; Server Browser</b> menüsüne girin.",
+      "Arma 3'ü açın, <b>Multiplayer</b> menüsünden <b>Server Browser</b> ekranına girin.",
       "<b>Direct Connect</b> butonuna basın.",
       "Adresi girin: <code>{address}</code> ve bağlanın.",
     ],

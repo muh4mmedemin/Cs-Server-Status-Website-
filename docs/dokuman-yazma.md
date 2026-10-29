@@ -42,11 +42,14 @@ göründüğü için tekrar gösterilmez.
 
 ### Metin
 
-- `**kalın**` → **kalın**
-- `*eğik*` → *eğik*
-- `` `komut` `` → `komut`
-- `[bağlantı](https://github.com)` → [bağlantı](https://github.com)
-- Başka bir dokümana bağlantı: `[şablon](_sablon.md)` gibi dosya adını yazmanız yeterli.
+| Yazılan                          | Görünen                          |
+| -------------------------------- | -------------------------------- |
+| `**kalın**`                      | **kalın**                        |
+| `*eğik*`                         | *eğik*                           |
+| `` `komut` ``                    | `komut`                          |
+| `[bağlantı](https://github.com)` | [bağlantı](https://github.com)   |
+
+Başka bir dokümana bağlantı vermek için `[şablon](_sablon.md)` gibi dosya adını yazmanız yeterli.
 
 ### Kod blokları
 

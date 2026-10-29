@@ -220,7 +220,7 @@ function setDownload(a, w) {
   if (!w.download) return a.remove();
   a.href = w.download;
   if (isExternal(w.download)) {
-    a.textContent = "Bağlantıya git ↗";
+    a.textContent = "Bağlantıya git";
     a.target = "_blank";
     a.rel = "noopener";
   } else {
@@ -372,7 +372,7 @@ function showWork(w) {
       a.href = w.video;
       a.target = "_blank";
       a.rel = "noopener";
-      a.textContent = "Videoyu izle ↗";
+      a.textContent = "Videoyu izle";
       video.appendChild(a);
     }
   }
@@ -399,7 +399,7 @@ function showWork(w) {
     dd.textContent = v;
     specs.append(dt, dd);
   });
-  $("#wp-server").textContent = `${game.name} sunucusu →`;
+  $("#wp-server").textContent = `${game.name} sunucusu`;
   $("#wp-server").href = `#${game.id}`;
 
   log(`~/${CLUB_ID}/yapimlar $ cat ${workId(w)}`);
@@ -474,8 +474,7 @@ function renderHomeDocs() {
           <span class="doc-title"></span>
           <span class="doc-desc"></span>
           <span class="doc-tags"></span>
-        </span>
-        <span class="doc-arrow">→</span>`;
+        </span>`;
       row.querySelector(".doc-title").textContent = d.title;
       row.querySelector(".doc-desc").textContent = d.description || "";
       row.querySelector(".doc-tags").append(...docTags(d, game));
@@ -696,8 +695,8 @@ function fillList(el, items) {
   });
 }
 
-// Linkler: #<oyun> → oyun sayfası, #yapim/<id> → yapım sayfası,
-// #dokuman/<id> → doküman sayfası, boş ya da bilinmeyen link → ana sayfa (42 kulüp sayfası)
+// Linkler: #<oyun> oyun sayfası, #yapim/<id> yapım sayfası, #dokuman/<id> doküman
+// sayfası; boş ya da bilinmeyen link ana sayfa (42 kulüp sayfası)
 function parseRoute(hash) {
   hash = decodeURIComponent(hash);
   if (hash.startsWith(DOC_PREFIX)) {
@@ -881,7 +880,7 @@ const COMMANDS = {
   docs: () =>
     DOCS.length
       ? DOCS.forEach((d) => log(`  ${docHref(d).padEnd(28)} ${d.title}`))
-      : log("Henüz doküman yok (js/config.js → DOCS)."),
+      : log("Henüz doküman yok (js/config.js içindeki DOCS listesi)."),
   status: () =>
     current
       ? log(`${current.name}: ${hasIp(current) ? addressOf(current) : "IP ayarlanmadı"}`)
