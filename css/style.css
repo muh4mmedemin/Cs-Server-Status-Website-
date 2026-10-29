@@ -735,13 +735,24 @@ body[data-theme="club42"] {
 }
 
 /* Oyun kartları */
+/* yatay kartlar: 6 sütunluk ızgarada her kart 2 sütun (satırda 3 kart);
+   son satır eksik kalırsa kartlar satırı doldurur */
 .game-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 20px;
 }
-@media (min-width: 1240px) {
-  .game-cards { grid-template-columns: repeat(5, 1fr); }
+.game-card { grid-column: span 2; }
+.game-card:nth-child(3n + 1):nth-last-child(2),
+.game-card:nth-child(3n + 2):last-child { grid-column: span 3; }
+.game-card:nth-child(3n + 1):last-child { grid-column: 1 / -1; }
+@media (max-width: 1180px) {
+  .game-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .game-card,
+  .game-card:nth-child(3n + 1):nth-last-child(2),
+  .game-card:nth-child(3n + 2):last-child,
+  .game-card:nth-child(3n + 1):last-child { grid-column: auto; }
+  .game-card:nth-child(odd):last-child { grid-column: 1 / -1; }
 }
 .game-card {
   --card-accent: #00babc;
@@ -751,7 +762,7 @@ body[data-theme="club42"] {
   --my: 30%;
   position: relative;
   display: flex;
-  min-height: 420px;
+  min-height: 200px;
   overflow: hidden;
   isolation: isolate;
   color: #fff;
@@ -783,21 +794,21 @@ body[data-theme="club42"] {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: center bottom / cover no-repeat;
+  background: center 72% / cover no-repeat;
   filter: saturate(0.85);
   transition: transform 0.8s var(--ease), filter 0.6s var(--ease);
 }
-/* uzun kartta her sahnenin en tanıdık kısmı görünsün */
-.game-card[data-game="cs16"] .card-art { background-position: 22% bottom; }
-.game-card[data-game="minecraft"] .card-art { background-position: 10% bottom; }
-.game-card[data-game="rust"] .card-art { background-position: 88% bottom; }
-.game-card[data-game="arma3"] .card-art { background-position: 76% bottom; }
 .card-art::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.05) 24%, rgba(0, 0, 0, 0.5) 58%, rgba(0, 0, 0, 0.94) 100%);
+  /* yazılar solda: sol koyu, sağda sahne görünür */
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.72) 32%, rgba(0, 0, 0, 0.15) 70%, rgba(0, 0, 0, 0.05) 100%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.45) 0%, transparent 45%);
 }
+/* Arma 3 sahnesinde helikopter ve dağlar birlikte görünsün */
+.game-card[data-game="arma3"] .card-art { background-position: center 22%; }
 /* fareyi takip eden ışık */
 .game-card::before {
   content: "";
@@ -808,18 +819,18 @@ body[data-theme="club42"] {
   opacity: 0;
   transition: opacity 0.4s var(--ease);
 }
-/* altta büyüyen renk çizgisi */
+/* sol kenarda büyüyen renk çizgisi */
 .game-card::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  top: 0;
   bottom: 0;
-  height: 3px;
+  left: 0;
+  width: 3px;
   background: var(--card-accent);
   box-shadow: 0 0 18px var(--card-accent);
-  transform: scaleX(0.35);
-  transform-origin: left;
+  transform: scaleY(0.35);
+  transform-origin: bottom;
   transition: transform 0.6s var(--ease);
 }
 .card-body {
@@ -828,7 +839,8 @@ body[data-theme="club42"] {
   justify-content: flex-end;
   gap: 6px;
   width: 100%;
-  padding: 22px;
+  max-width: 62%;
+  padding: 22px 24px;
 }
 .card-state {
   align-self: flex-start;
@@ -842,7 +854,7 @@ body[data-theme="club42"] {
   backdrop-filter: blur(10px);
 }
 .card-state.on { color: #7ef2f3; border-color: rgba(0, 186, 188, 0.5); }
-.card-name { font: 700 24px/1.15 var(--display); letter-spacing: -0.5px; }
+.card-name { font: 700 26px/1.15 var(--display); letter-spacing: -0.5px; }
 .card-addr { font: 400 13px/1.4 var(--code); color: #c4c4c4; overflow-wrap: anywhere; }
 .game-card:hover,
 .game-card:focus-visible {
@@ -852,8 +864,8 @@ body[data-theme="club42"] {
 }
 .game-card:hover::before { opacity: 1; }
 .game-card:hover::after,
-.game-card:focus-visible::after { transform: scaleX(1); }
-.game-card:hover .card-art { transform: scale(1.08); filter: saturate(1.15); }
+.game-card:focus-visible::after { transform: scaleY(1); }
+.game-card:hover .card-art { transform: scale(1.06) translateX(-1.5%); filter: saturate(1.15); }
 
 /* ---------- Yapımlar (harita, mod...) ---------- */
 .work-cards {
@@ -1380,11 +1392,12 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
   .home-hero { flex-direction: column; align-items: flex-start; gap: 26px; margin-bottom: 40px; }
   .home-logo { font-size: 84px; letter-spacing: -6px; border-width: 4px; border-radius: 16px; padding: 14px 20px 18px 14px; box-shadow: 6px 6px 0 var(--teal), 0 0 40px rgba(0, 186, 188, 0.3); }
   .home-about { font-size: 15px; }
-  .game-cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-  .game-card { min-height: 260px; border-radius: 16px; }
-  .card-body { padding: 14px; }
-  .card-name { font-size: 18px; }
-  .card-addr { font-size: 11px; }
+  .game-cards { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .game-card,
+  .game-card:nth-child(odd):last-child { grid-column: auto; min-height: 150px; border-radius: 16px; }
+  .card-body { max-width: 75%; padding: 16px 18px; }
+  .card-name { font-size: 20px; }
+  .card-addr { font-size: 11.5px; }
   .wp-layout { grid-template-columns: minmax(0, 1fr); }
   .dp-layout { grid-template-columns: minmax(0, 1fr); }
   .dp-toc { position: static; order: -1; }
