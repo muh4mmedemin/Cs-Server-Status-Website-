@@ -61,7 +61,7 @@ a { color: var(--accent); }
   padding: 32px 16px 32px calc(var(--rail-width) + 16px);
 }
 
-/* ---------- Sol menü: 42 terminali + oyun dosya ağacı ---------- */
+/* ---------- Sol menü: 42 terminali + oyun listesi ---------- */
 .game-rail {
   position: fixed;
   top: 0;
@@ -122,41 +122,26 @@ a { color: var(--accent); }
   background: #00babc;
   animation: caret 1.1s steps(1) infinite;
 }
-.rail-tree-head { padding: 0 18px 6px; color: #6f787b; }
 
-/* dosya ağacı */
+/* oyun listesi */
 .rail-tree { display: flex; flex-direction: column; }
 .rail-item {
   --c: #00babc;
   position: relative;
-  display: grid;
-  grid-template-columns: 20px 20px 10px 1fr;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 14px 8px 10px;
+  display: block;
+  padding: 8px 14px 8px 18px;
   color: #b4bcbe;
   text-decoration: none;
   border-left: 2px solid transparent;
   transition: background-color 0.25s ease, color 0.2s ease, border-color 0.25s ease;
 }
-.rail-ln { color: #4c5456; text-align: right; font-size: 11px; }
-.rail-branch { color: #4c5456; }
-.rail-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--c);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--c) 60%, transparent);
-}
 .rail-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rail-item:hover { color: #fff; background: rgba(255, 255, 255, 0.04); }
-.rail-item:hover .rail-ln { color: #9aa3a6; }
 .rail-item.active {
   color: #fff;
   border-left-color: var(--c);
   background: linear-gradient(90deg, color-mix(in srgb, var(--c) 22%, transparent), transparent 85%);
 }
-.rail-item.active .rail-ln { color: var(--c); }
 .rail-item.active .rail-name::after {
   content: "";
   display: inline-block;
@@ -1383,11 +1368,11 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
   .game-rail { align-items: center; gap: 2px; }
   .rail-club { margin: 0 6px 0 0; }
   .rail-club .rail-short { font-size: 18px; }
-  .rail-term, .rail-tree-head, .rail-status, .rail-ln, .rail-branch { display: none; }
+  .rail-term, .rail-status { display: none; }
   .rail-tree { flex-direction: row; flex: none; }
   .rail-item { flex: none; }
   .rail-name { overflow: visible; text-overflow: clip; }
-  .rail-item { grid-template-columns: 10px auto; padding: 10px 12px; border-left: 0; border-bottom: 2px solid transparent; }
+  .rail-item { padding: 10px 12px; border-left: 0; border-bottom: 2px solid transparent; }
   .rail-item.active { border-bottom-color: var(--c); background: color-mix(in srgb, var(--c) 16%, transparent); }
   .rail-item.active .rail-name::after { display: none; }
   .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
