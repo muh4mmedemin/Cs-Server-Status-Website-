@@ -1182,6 +1182,32 @@ body[data-theme="club42"] {
 .dp-loading, .dp-error { color: var(--muted); }
 .dp-error code { color: #ffb43c; }
 
+/* ---------- Oyun imleçleri ----------
+   Bir oyunun yapım/doküman sayfasında gezinirken imleç o oyunun arayüzündeki
+   imlece benzer (img/cursors/<oyun>.svg; tıklanabilir öğelerde <oyun>-link.svg).
+   JS, body'ye data-cursor="<oyun>" verir. Yazı kutuları normal imleci korur. */
+body[data-cursor="cs16"] { cursor: url("../img/cursors/cs16.svg") 1 1, auto; }
+body[data-cursor="cs16"] :is(a, button, label, summary, select, .work-card, .doc-row, .wp-hero, .wp-thumb, .lightbox) {
+  cursor: url("../img/cursors/cs16-link.svg") 1 1, pointer;
+}
+body[data-cursor="cs2"] { cursor: url("../img/cursors/cs2.svg") 4 3, auto; }
+body[data-cursor="cs2"] :is(a, button, label, summary, select, .work-card, .doc-row, .wp-hero, .wp-thumb, .lightbox) {
+  cursor: url("../img/cursors/cs2-link.svg") 4 3, pointer;
+}
+body[data-cursor="minecraft"] { cursor: url("../img/cursors/minecraft.svg") 16 16, auto; }
+body[data-cursor="minecraft"] :is(a, button, label, summary, select, .work-card, .doc-row, .wp-hero, .wp-thumb, .lightbox) {
+  cursor: url("../img/cursors/minecraft-link.svg") 16 16, pointer;
+}
+body[data-cursor="rust"] { cursor: url("../img/cursors/rust.svg") 4 3, auto; }
+body[data-cursor="rust"] :is(a, button, label, summary, select, .work-card, .doc-row, .wp-hero, .wp-thumb, .lightbox) {
+  cursor: url("../img/cursors/rust-link.svg") 4 3, pointer;
+}
+body[data-cursor="arma3"] { cursor: url("../img/cursors/arma3.svg") 4 3, auto; }
+body[data-cursor="arma3"] :is(a, button, label, summary, select, .work-card, .doc-row, .wp-hero, .wp-thumb, .lightbox) {
+  cursor: url("../img/cursors/arma3-link.svg") 4 3, pointer;
+}
+body[data-cursor] :is(input, textarea) { cursor: text; }
+
 /* Tam ekran fotoğraf görüntüleyici */
 .lightbox {
   position: fixed;

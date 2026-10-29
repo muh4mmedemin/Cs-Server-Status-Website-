@@ -84,6 +84,7 @@ docs/*.md, docs/img/           Dokümanlar ve görselleri (docs/_sablon.md: şab
 js/vendor/                     Markdown ve kod renklendirme kütüphaneleri (marked, highlight.js)
 js/main.js                     Oyun geçişi, banner yenileme, sekmeler, konsol
 img/bg/*.svg                   Arka planlar (Dust2, Mirage, Minecraft, Rust, Altis, oyun oynanan 42 cluster)
+img/cursors/*.svg              Oyun imleçleri (yapım ve doküman sayfalarında o oyunun imleci)
 tools/gen-backgrounds.py       Arka plan SVG'lerini üreten betik
 start.sh                       Yerel sunucu (python3 http.server, port 8080)
 .devcontainer/devcontainer.json Codespaces ayarı
