@@ -758,8 +758,6 @@ body[data-theme="club42"] {
   --card-accent: #00babc;
   --rx: 0deg;
   --ry: 0deg;
-  --mx: 50%;
-  --my: 30%;
   position: relative;
   display: flex;
   min-height: 200px;
@@ -795,8 +793,6 @@ body[data-theme="club42"] {
   inset: 0;
   z-index: -2;
   background: center 72% / cover no-repeat;
-  filter: saturate(0.85);
-  transition: transform 0.8s var(--ease), filter 0.6s var(--ease);
 }
 .card-art::after {
   content: "";
@@ -809,17 +805,27 @@ body[data-theme="club42"] {
 }
 /* Arma 3 sahnesinde helikopter ve dağlar birlikte görünsün */
 .game-card[data-game="arma3"] .card-art { background-position: center 22%; }
-/* fareyi takip eden ışık */
-.game-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(420px circle at var(--mx) var(--my), color-mix(in srgb, var(--card-accent) 32%, transparent), transparent 60%);
-  opacity: 0;
-  transition: opacity 0.4s var(--ease);
+/* Üzerine gelince renklenme: alttaki soluk sahnenin üstünde renkli kopya
+   soldan sağa açılır, açılan kenarda oyunun renginde bir tarama çizgisi kayar. */
+.card-art-base { filter: saturate(0.2) brightness(0.7); }
+.card-art-color {
+  filter: saturate(1.1);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.7s var(--ease);
 }
-/* sol kenarda büyüyen renk çizgisi */
+.card-scan {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  width: 2px;
+  background: var(--card-accent);
+  box-shadow: 0 0 14px 2px var(--card-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+/* sol kenarda sabit renk çizgisi */
 .game-card::after {
   content: "";
   position: absolute;
@@ -829,9 +835,6 @@ body[data-theme="club42"] {
   width: 3px;
   background: var(--card-accent);
   box-shadow: 0 0 18px var(--card-accent);
-  transform: scaleY(0.35);
-  transform-origin: bottom;
-  transition: transform 0.6s var(--ease);
 }
 .card-body {
   display: flex;
@@ -862,10 +865,19 @@ body[data-theme="club42"] {
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px color-mix(in srgb, var(--card-accent) 30%, transparent);
   outline: none;
 }
-.game-card:hover::before { opacity: 1; }
-.game-card:hover::after,
-.game-card:focus-visible::after { transform: scaleY(1); }
-.game-card:hover .card-art { transform: scale(1.06) translateX(-1.5%); filter: saturate(1.15); }
+.game-card:hover .card-art-color,
+.game-card:focus-visible .card-art-color { clip-path: inset(0 0 0 0); }
+.game-card:hover .card-scan,
+.game-card:focus-visible .card-scan { animation: card-scan 0.7s var(--ease) forwards; }
+@keyframes card-scan {
+  0% { left: 0; opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: calc(100% - 2px); opacity: 0; }
+}
+/* dokunmatik ekranda üzerine gelme yok: sahne hep renkli */
+@media (hover: none) {
+  .card-art-color { clip-path: none; }
+}
 
 /* ---------- Yapımlar (harita, mod...) ---------- */
 /* sağdaki boşluklar, karttan dışarı açılan indir sekmesine yer bırakır */
@@ -1394,7 +1406,7 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .game-card, .card-art, .work-dl, .wp-hero, .wp-hero img, .home-logo,
+  .game-card, .card-art-color, .work-dl, .wp-hero, .wp-hero img, .home-logo,
   .home-btn, .doc-row { transition: none; }
 }
 
