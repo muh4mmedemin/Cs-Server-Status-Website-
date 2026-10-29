@@ -77,47 +77,92 @@ setInterval(() => {
   else updateCountdown();
 }, 1000);
 
-// ---- Oyun seçimi ----
+// ---- Sol menü: 42 terminali + oyun dosya ağacı ----
+// Seçimde terminal satırına komut harf harf yazılır, satır kısa bir glitch
+// ile parlar; üzerine gelince oyunun adı rastgele karakterlerden çözülür.
+const SCRAMBLE_CHARS = "01<>/#$%&*+=?42";
+let railTypeTimer;
+
 function renderRail() {
   const rail = $("#game-rail");
-  const indicator = document.createElement("span");
-  indicator.className = "rail-indicator";
-  rail.appendChild(indicator);
-  const club = document.createElement("a");
-  club.className = "rail-item rail-club";
-  club.href = `#${CLUB_ID}`;
-  club.dataset.game = CLUB_ID;
+  rail.innerHTML = `
+    <a class="rail-club" href="#${CLUB_ID}" data-game="${CLUB_ID}"><span class="rail-short">42</span></a>
+    <div class="rail-term" aria-hidden="true">
+      <span class="rail-prompt">~/42 $</span>
+      <span class="rail-cmd"></span><span class="rail-caret"></span>
+    </div>
+    <div class="rail-tree-head" aria-hidden="true">oyunlar/</div>
+    <div class="rail-tree"></div>
+    <div class="rail-status" aria-hidden="true">
+      <span class="rail-mode">NORMAL</span><span class="rail-file"></span>
+    </div>`;
+  const club = $(".rail-club");
   club.title = CLUB.name;
-  club.innerHTML = `<span class="rail-short">42</span>`;
-  rail.appendChild(club);
-  SERVERS.forEach((s) => {
+  club.setAttribute("aria-label", CLUB.name);
+
+  const tree = $(".rail-tree");
+  SERVERS.forEach((s, i) => {
     const a = document.createElement("a");
     a.className = "rail-item";
     a.href = `#${s.id}`;
     a.dataset.game = s.id;
     a.title = s.name;
-    a.innerHTML = `<span class="rail-name"></span>`;
+    a.setAttribute("aria-label", s.name);
+    a.innerHTML = `
+      <span class="rail-ln" aria-hidden="true"></span>
+      <span class="rail-branch" aria-hidden="true"></span>
+      <span class="rail-dot" aria-hidden="true"></span>
+      <span class="rail-name"></span>`;
+    a.querySelector(".rail-ln").textContent = String(i + 1).padStart(2, "0");
+    a.querySelector(".rail-branch").textContent = i === SERVERS.length - 1 ? "└─" : "├─";
     a.querySelector(".rail-name").textContent = s.name;
-    rail.appendChild(a);
+    a.addEventListener("pointerenter", () => scrambleText(a.querySelector(".rail-name"), s.name));
+    tree.appendChild(a);
   });
 }
 
-// Sol menüde seçili öğe; gösterge yeni öğeye kayarak gider
-function setRailActive(id) {
-  $$(".rail-item").forEach((a) => a.classList.toggle("active", a.dataset.game === id));
-  updateRailIndicator();
+// Yazı önce rastgele karakterlere dönüşür, sonra soldan sağa asıl haline çözülür
+function scrambleText(el, text) {
+  if (reduceMotion.matches) return;
+  cancelAnimationFrame(el._scramble);
+  const start = performance.now();
+  const duration = 420;
+  const step = (now) => {
+    const done = Math.min(1, (now - start) / duration);
+    const fixed = Math.floor(done * text.length);
+    el.textContent = [...text]
+      .map((ch, i) =>
+        i < fixed || ch === " " ? ch : SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
+      )
+      .join("");
+    if (done < 1) el._scramble = requestAnimationFrame(step);
+  };
+  el._scramble = requestAnimationFrame(step);
 }
 
-function updateRailIndicator() {
-  const item = $(".rail-item.active");
-  const ind = $(".rail-indicator");
-  if (!ind) return;
-  ind.style.opacity = item ? 1 : 0;
-  if (!item) return;
-  ind.style.top = `${item.offsetTop}px`;
-  ind.style.left = `${item.offsetLeft}px`;
-  ind.style.width = `${item.offsetWidth}px`;
-  ind.style.height = `${item.offsetHeight}px`;
+// Terminal satırına komutu harf harf yaz
+function typeCommand(text) {
+  const out = $(".rail-cmd");
+  clearTimeout(railTypeTimer);
+  if (reduceMotion.matches) return (out.textContent = text);
+  out.textContent = "";
+  let i = 0;
+  const next = () => {
+    out.textContent = text.slice(0, ++i);
+    if (i < text.length) railTypeTimer = setTimeout(next, 16 + Math.random() * 26);
+  };
+  railTypeTimer = setTimeout(next, 80);
+}
+
+// Sol menüde seçili öğe. cmd: terminal satırına yazılacak komut
+function setRailActive(id, cmd) {
+  const changed = !$(`.game-rail [data-game="${id}"].active`);
+  $$(".game-rail [data-game]").forEach((a) => a.classList.toggle("active", a.dataset.game === id));
+  const item = $(`.game-rail [data-game="${id}"]`);
+  $(".rail-file").textContent = id === CLUB_ID ? "~/42" : `${id}/`;
+  if (cmd) typeCommand(cmd);
+  if (!item || !changed) return;
+  replay(item, "glitch");
   item.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
@@ -320,7 +365,7 @@ function showWork(w) {
   banner.removeAttribute("src");
   document.body.dataset.theme = "club42";
   document.title = `${w.title} – ${CLUB.name}`;
-  setRailActive(w.game);
+  setRailActive(w.game, `open yapimlar/${workId(w)}`);
   showView("work");
   setGameCursor(w.game);
 
@@ -504,7 +549,7 @@ function showDoc(d) {
   banner.removeAttribute("src");
   document.body.dataset.theme = "club42";
   document.title = `${d.title} – ${CLUB.name}`;
-  setRailActive(game ? game.id : CLUB_ID);
+  setRailActive(game ? game.id : CLUB_ID, `less dokumanlar/${d.id}.md`);
   showView("doc");
   setGameCursor(game ? game.id : null);
 
@@ -689,7 +734,7 @@ function showClub() {
   banner.removeAttribute("src");
   document.body.dataset.theme = "club42";
   document.title = `${CLUB.name} – Sunucular`;
-  setRailActive(CLUB_ID);
+  setRailActive(CLUB_ID, "cd ~/42");
   showView("club");
   log(`~/${CLUB_ID} $ cd kulup`);
 }
@@ -742,7 +787,7 @@ function selectGame(id) {
 
   document.body.dataset.theme = current.id;
   document.title = `${current.name} Sunucu Durumu`;
-  setRailActive(current.id);
+  setRailActive(current.id, `cd oyunlar/${current.id}`);
 
   const address = hasIp(current) ? addressOf(current) : "IP ayarlanmadı";
   const gtUrl = hasIp(current) ? `https://www.gametracker.com/server_info/${addressOf(current)}/` : "#";
@@ -869,7 +914,6 @@ consoleTitle.addEventListener("pointerdown", (e) => {
 });
 
 window.addEventListener("resize", () => {
-  updateRailIndicator();
   if (!consoleWindow.hidden) {
     const r = consoleWindow.getBoundingClientRect();
     moveConsole(r.left, r.top);
@@ -943,5 +987,4 @@ renderHomeDocs();
 showTab("status");
 route(location.hash.slice(1));
 $$(".reveal").forEach((el) => revealer.observe(el));
-document.fonts.ready.then(updateRailIndicator);
 requestAnimationFrame(() => document.body.classList.add("ready"));
