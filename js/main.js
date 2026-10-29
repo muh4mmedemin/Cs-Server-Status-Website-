@@ -77,7 +77,7 @@ setInterval(() => {
   else updateCountdown();
 }, 1000);
 
-// ---- Sol menü: 42 terminali + oyun dosya ağacı ----
+// ---- Sol menü: 42 terminali + oyun listesi ----
 // Seçimde terminal satırına komut harf harf yazılır, satır kısa bir glitch
 // ile parlar; üzerine gelince oyunun adı rastgele karakterlerden çözülür.
 const SCRAMBLE_CHARS = "01<>/#$%&*+=?42";
@@ -91,7 +91,6 @@ function renderRail() {
       <span class="rail-prompt">~/42 $</span>
       <span class="rail-cmd"></span><span class="rail-caret"></span>
     </div>
-    <div class="rail-tree-head" aria-hidden="true">oyunlar/</div>
     <div class="rail-tree"></div>
     <div class="rail-status" aria-hidden="true">
       <span class="rail-mode">NORMAL</span><span class="rail-file"></span>
@@ -101,20 +100,14 @@ function renderRail() {
   club.setAttribute("aria-label", CLUB.name);
 
   const tree = $(".rail-tree");
-  SERVERS.forEach((s, i) => {
+  SERVERS.forEach((s) => {
     const a = document.createElement("a");
     a.className = "rail-item";
     a.href = `#${s.id}`;
     a.dataset.game = s.id;
     a.title = s.name;
     a.setAttribute("aria-label", s.name);
-    a.innerHTML = `
-      <span class="rail-ln" aria-hidden="true"></span>
-      <span class="rail-branch" aria-hidden="true"></span>
-      <span class="rail-dot" aria-hidden="true"></span>
-      <span class="rail-name"></span>`;
-    a.querySelector(".rail-ln").textContent = String(i + 1).padStart(2, "0");
-    a.querySelector(".rail-branch").textContent = i === SERVERS.length - 1 ? "└─" : "├─";
+    a.innerHTML = `<span class="rail-name"></span>`;
     a.querySelector(".rail-name").textContent = s.name;
     a.addEventListener("pointerenter", () => scrambleText(a.querySelector(".rail-name"), s.name));
     tree.appendChild(a);
