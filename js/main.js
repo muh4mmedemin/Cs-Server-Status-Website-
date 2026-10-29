@@ -159,7 +159,7 @@ function setRailActive(id, cmd) {
   item.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
-// Kartlar fareye doğru hafifçe eğilir, ışık imleci takip eder
+// Kartlar fareye doğru hafifçe eğilir
 const canHover = window.matchMedia("(hover: hover)");
 function addTilt(el, max = 7) {
   el.addEventListener("pointermove", (e) => {
@@ -167,8 +167,6 @@ function addTilt(el, max = 7) {
     const r = el.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width;
     const y = (e.clientY - r.top) / r.height;
-    el.style.setProperty("--mx", `${x * 100}%`);
-    el.style.setProperty("--my", `${y * 100}%`);
     el.style.setProperty("--rx", `${(0.5 - y) * max}deg`);
     el.style.setProperty("--ry", `${(x - 0.5) * max}deg`);
   });
@@ -211,13 +209,15 @@ function renderClub() {
     card.href = `#${s.id}`;
     card.dataset.game = s.id;
     card.innerHTML = `
-      <span class="card-art"></span>
+      <span class="card-art card-art-base"></span>
+      <span class="card-art card-art-color"></span>
+      <span class="card-scan"></span>
       <span class="card-body">
         <span class="card-state"></span>
         <span class="card-name"></span>
         <span class="card-addr"></span>
       </span>`;
-    card.querySelector(".card-art").style.backgroundImage = `url("img/bg/${s.id}.svg")`;
+    card.querySelectorAll(".card-art").forEach((el) => (el.style.backgroundImage = `url("img/bg/${s.id}.svg")`));
     card.querySelector(".card-name").textContent = s.name;
     card.querySelector(".card-addr").textContent = hasIp(s) ? addressOf(s) : "IP ayarlanmadı";
     const state = card.querySelector(".card-state");
