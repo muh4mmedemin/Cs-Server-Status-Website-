@@ -300,6 +300,79 @@ def arma3():
     b += topo
     save("arma3.svg", svg("\n".join(b), defs))
 
+# ------------------------------------------------------------------ Squad – akşam üstü FOB
+# HESCO bariyerleri, kum torbaları, radyo anteni, lojistik kamyonu; üstte HUD pusula şeridi.
+def squad():
+    r = random.Random(77)
+    defs = '''
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+ <stop offset="0" stop-color="#0f141a"/><stop offset=".42" stop-color="#2a3644"/>
+ <stop offset=".64" stop-color="#7a7466"/><stop offset=".74" stop-color="#c9a46e"/></linearGradient>
+<radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+ <stop offset="0" stop-color="#ffd59a" stop-opacity=".75"/><stop offset="1" stop-color="#c9a46e" stop-opacity="0"/></radialGradient>
+<filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18"/></filter>
+<pattern id="mesh" width="12" height="12" patternUnits="userSpaceOnUse">
+ <rect width="12" height="12" fill="#3b3a2c"/><path d="M0 0H12M0 0V12" stroke="#23231a" stroke-width="1.5"/></pattern>'''
+    sil = "#0c0f12"
+    b = ['<rect width="1600" height="900" fill="url(#sky)"/>',
+         '<circle cx="1180" cy="640" r="360" fill="url(#sun)"/>',
+         '<circle cx="1180" cy="640" r="36" fill="#ffe0b0" opacity=".8"/>']
+    # dağ ve tepe katmanları
+    for y0, amp, col in [(600, 60, "#3c4148"), (680, 45, "#2a2e2b"), (760, 30, "#1b1e1a")]:
+        pts = [(x, round(y0 - amp*abs(math.sin(x/280 + r.random()*.5)) - r.uniform(0, amp*.35))) for x in range(-40, W+80, 40)]
+        b.append(poly_to_bottom(pts, col))
+    # duman
+    for i in range(6):
+        b.append(f'<ellipse cx="{260 + i*18 + r.randint(-15,15)}" cy="{640 - i*70}" rx="{45 + i*12}" ry="{34 + i*7}" '
+                 f'fill="#141619" opacity="{.5 - i*.07:.2f}" filter="url(#blur)"/>')
+    # radyo anteni (FOB radyosu) + kırmızı ikaz ışığı
+    b.append(f'<path d="M1010,880 L1030,470 L1050,880 M1016,760 L1044,700 M1044,760 L1016,700 M1020,640 L1040,590 M1040,640 L1020,590" '
+             f'stroke="{sil}" stroke-width="5" fill="none"/>')
+    b.append('<circle cx="1030" cy="466" r="5" fill="#ff4a3d"/><circle cx="1030" cy="466" r="14" fill="#ff4a3d" opacity=".25"/>')
+    # bayrak direği
+    b.append(f'<rect x="1300" y="560" width="5" height="320" fill="{sil}"/>'
+             '<path d="M1305,566 q40,-8 76,6 q-36,10 -76,26 Z" fill="#5d6b3a"/>')
+    # HESCO bariyer sıraları
+    def hesco(x, y, n, w=70, h=78):
+        out = []
+        for i in range(n):
+            xx = x + i*w
+            out.append(f'<rect x="{xx}" y="{y}" width="{w-2}" height="{h}" fill="url(#mesh)"/>'
+                       f'<rect x="{xx}" y="{y}" width="{w-2}" height="10" fill="#4b4836"/>')
+        return "".join(out)
+    b.append(hesco(120, 742, 6))
+    b.append(hesco(1240, 760, 5, 66, 70))
+    # kum torbaları
+    for row in range(3):
+        for i in range(9 - row):
+            x = 600 + i*46 + row*23
+            y = 840 - row*22
+            b.append(f'<rect x="{x}" y="{y}" width="44" height="22" rx="10" fill="#4e4935" stroke="#2a2719" stroke-width="2"/>')
+    # lojistik kamyonu silueti
+    b.append(f'<g fill="{sil}" transform="translate(760,760)">'
+             '<rect x="0" y="0" width="190" height="70" rx="4"/><path d="M190,18 h44 l26,26 v26 h-70 Z"/>'
+             '<rect x="200" y="24" width="28" height="18" fill="#2a3644"/>'
+             '<circle cx="40" cy="78" r="16"/><circle cx="90" cy="78" r="16"/><circle cx="220" cy="78" r="16"/></g>')
+    b.append(f'<rect x="0" y="872" width="1600" height="28" fill="{sil}"/>')
+    # HUD pusula şeridi (üstte; ekran kenarında kırpılmasın diye biraz aşağıda)
+    hud = ['<g font-family="monospace" fill="#ffffff" fill-opacity=".55">',
+           '<rect x="450" y="92" width="700" height="34" fill="#000" fill-opacity=".35"/>']
+    labels = {0: "N", 45: "NE", 90: "E", 135: "SE", 180: "S", 225: "SW", 270: "W", 315: "NW"}
+    for i, deg in enumerate(range(240, 360 + 120 + 1, 15)):
+        x = 470 + i*(660/16)
+        d = deg % 360
+        if d in labels:
+            hud.append(f'<text x="{x:.0f}" y="116" text-anchor="middle" font-size="15" font-weight="700">{labels[d]}</text>')
+        else:
+            hud.append(f'<rect x="{x-1:.0f}" y="102" width="2" height="10"/>'
+                       f'<text x="{x:.0f}" y="122" text-anchor="middle" font-size="9" fill-opacity=".7">{d:03d}</text>')
+    hud.append('<rect x="798" y="128" width="4" height="10" fill="#ffffff" fill-opacity=".8"/></g>')
+    b += hud
+    # squad işaretleri (HUD tarzı mavi baklavalar)
+    for x, y in [(330, 690), (520, 715), (1150, 700), (1460, 720)]:
+        b.append(f'<g transform="translate({x},{y}) rotate(45)"><rect x="-7" y="-7" width="14" height="14" fill="#4aa3ff" opacity=".8"/></g>')
+    save("squad.svg", svg("\n".join(b), defs))
+
 # ------------------------------------------------------------------ 42 – oyun oynanan cluster
 # iMac ekranlarında kulübün oyunları açık; kenarlarda oyun HUD'ları,
 # kill feed'de oyuncu adı olarak 42 koltuk adları.
@@ -391,4 +464,4 @@ def club42():
              '<text x="232" y="33"><tspan fill="#5aa9ff">CT 13</tspan>  :  <tspan fill="#ffb43c">T 08</tspan>   ⏱ 1:42</text></g>')
     save("club42.svg", svg("\n".join(b), defs))
 
-for f in (cs16, cs2, minecraft, rust, arma3, club42): f()
+for f in (cs16, cs2, minecraft, rust, arma3, squad, club42): f()

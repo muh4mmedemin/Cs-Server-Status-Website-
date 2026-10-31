@@ -3,9 +3,9 @@
 Oyun sunucularının GameTracker üzerindeki anlık durumunu, her oyunun kendi
 arayüzüne benzeyen temalarla gösteren statik web sitesi.
 
-- Oyunlar: **Counter-Strike 1.6**, **Counter-Strike 2**, **Minecraft**, **Rust**, **Arma 3**
+- Oyunlar: **Counter-Strike 1.6**, **Counter-Strike 2**, **Minecraft**, **Rust**, **Arma 3**, **Squad**
 - Soldaki menüden oyun seçilir (mobilde üstte). Her oyunun kendi linki vardır:
-  `#cs16`, `#cs2`, `#minecraft`, `#rust`, `#arma3`
+  `#cs16`, `#cs2`, `#minecraft`, `#rust`, `#arma3`, `#squad`
 - Her oyunun kendine ait çizim arka planı var (`img/bg/`)
 - **Ana sayfa 42 kulüp sayfasıdır** (sol üstteki **42** butonu, `#42`): oyun pencerelerinden
   bağımsız, tam sayfa bir açılış; büyük 42 başlığı, kulüp tanıtımı ve her oyun için kendi sahnesini
