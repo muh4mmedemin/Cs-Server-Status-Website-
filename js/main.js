@@ -42,7 +42,7 @@ function loadBanner() {
   updateCountdown();
   if (!hasIp(current)) {
     banner.removeAttribute("src");
-    showBannerError(`${current.name} sunucusunun IP adresi henüz ayarlanmadı (js/config.js).`);
+    showBannerError(`${current.name} sunucusu henüz açılmadı. Adresi hazır olunca burada görünecek.`);
     return;
   }
   // Önbelleği atlatmak için zaman damgası ekle
@@ -176,17 +176,6 @@ function addTilt(el, max = 7) {
   });
 }
 
-// Kaydırınca görünür olan bölümler yumuşakça belirir
-const revealer = new IntersectionObserver(
-  (entries) =>
-    entries.forEach((e) => {
-      if (e.isIntersecting) {
-        e.target.classList.add("in");
-        revealer.unobserve(e.target);
-      }
-    }),
-  { threshold: 0.12 }
-);
 
 // Animasyonu baştan oynat (aynı öğede sınıfı kaldırıp geri ekleyerek)
 function replay(el, cls) {
@@ -211,7 +200,6 @@ function renderClub() {
     card.innerHTML = `
       <span class="card-art card-art-base"></span>
       <span class="card-art card-art-color"></span>
-      <span class="card-scan"></span>
       <span class="card-body">
         <span class="card-state"></span>
         <span class="card-name"></span>
@@ -219,12 +207,40 @@ function renderClub() {
       </span>`;
     card.querySelectorAll(".card-art").forEach((el) => (el.style.backgroundImage = `url("img/bg/${s.id}.svg")`));
     card.querySelector(".card-name").textContent = s.name;
-    card.querySelector(".card-addr").textContent = hasIp(s) ? addressOf(s) : "IP ayarlanmadı";
+    card.querySelector(".card-addr").textContent = hasIp(s) ? addressOf(s) : "Adres yakında";
+    card.querySelector(".card-addr").classList.toggle("soon", !hasIp(s));
     const state = card.querySelector(".card-state");
     state.textContent = hasIp(s) ? "● açık" : "○ yakında";
     state.classList.toggle("on", hasIp(s));
     cards.appendChild(card);
   });
+
+  // Şu an açık sunucular: başlığın altında adres + Bağlan / IP kopyala
+  const live = $("#club-live");
+  live.innerHTML = "";
+  SERVERS.filter(hasIp).forEach((s) => {
+    const row = document.createElement("div");
+    row.className = "live-row";
+    row.dataset.game = s.id;
+    row.innerHTML = `
+      <span class="live-text"><span class="live-name"></span><code class="live-addr"></code></span>
+      <span class="live-actions">
+        <a class="home-btn primary live-connect">Bağlan</a>
+        <button class="home-btn live-copy" type="button">IP kopyala</button>
+      </span>`;
+    row.querySelector(".live-name").textContent = `${s.name} açık`;
+    row.querySelector(".live-addr").textContent = addressOf(s);
+    const connect = row.querySelector(".live-connect");
+    if (s.connect === "steam") connect.href = `steam://connect/${addressOf(s)}`;
+    else connect.remove();
+    row.querySelector(".live-copy").addEventListener("click", async () => {
+      await copyText(addressOf(s));
+      toast(`IP kopyalandı: ${addressOf(s)}`);
+      log(`IP panoya kopyalandı: ${addressOf(s)}`);
+    });
+    live.appendChild(row);
+  });
+  live.hidden = !live.children.length;
 
   const links = $("#club-links");
   CLUB.links.forEach((l) => {
@@ -508,10 +524,10 @@ function renderHomeDocs() {
       const game = SERVERS.find((s) => s.id === d.game);
       const row = document.createElement("a");
       row.className = "doc-row";
+      if (game) row.dataset.game = game.id;
       row.href = docHref(d);
       row.style.setProperty("--i", i);
       row.innerHTML = `
-        <span class="doc-icon">md</span>
         <span class="doc-text">
           <span class="doc-title"></span>
           <span class="doc-desc"></span>
@@ -785,9 +801,9 @@ function selectGame(id) {
   document.title = `${current.name} Sunucu Durumu`;
   setRailActive(current.id, `cd oyunlar/${current.id}`);
 
-  const address = hasIp(current) ? addressOf(current) : "IP ayarlanmadı";
+  const address = hasIp(current) ? addressOf(current) : "Adres yakında";
   const gtUrl = hasIp(current) ? `https://www.gametracker.com/server_info/${addressOf(current)}/` : "#";
-  $("#window-title").textContent = `${current.name} – ${address}`;
+  $("#window-title").textContent = hasIp(current) ? `${current.name} – ${address}` : current.name;
   $$(".js-address").forEach((el) => (el.textContent = address));
   $("#game-name").textContent = current.name;
   $("#gt-url").href = gtUrl;
@@ -982,5 +998,4 @@ renderHomeWorks();
 renderHomeDocs();
 showTab("status");
 route(location.hash.slice(1));
-$$(".reveal").forEach((el) => revealer.observe(el));
 requestAnimationFrame(() => document.body.classList.add("ready"));
