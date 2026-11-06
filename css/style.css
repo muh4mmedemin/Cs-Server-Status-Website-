@@ -912,12 +912,13 @@ body[data-theme="club42"] {
 }
 
 /* ---------- Yapımlar (harita, mod...) ---------- */
-/* sağdaki boşluklar, karttan dışarı açılan indir sekmesine yer bırakır */
+/* Kartın tamamı yapımın fotoğrafıdır; tür, ad ve "ls -l" satırı fotoğrafın
+   üstünde durur. Sağdaki boşluklar, karttan dışarı açılan indir sekmesine yer bırakır. */
 .work-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px 56px;
-  padding-right: 44px;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: 14px 60px;
+  padding-right: 48px;
 }
 .work-card {
   --card-accent: var(--accent);
@@ -925,35 +926,89 @@ body[data-theme="club42"] {
   position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--panel-dark);
-  border: 1px solid;
-  border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+  min-height: 210px;
+  padding: 16px 14px 12px;
+  isolation: isolate;
+  container-type: inline-size;
+  color: #fff;
+  background: #000;
+  border: 1px solid var(--border-light);
   border-radius: var(--work-radius);
   cursor: pointer;
+  transition: border-color 0.3s var(--ease), filter 0.3s var(--ease);
 }
-/* üzerine gelince kart hareket etmez, sadece kenarı oyunun rengini alır */
+/* üzerine gelince kart hareket etmez: 42 logosundaki sert gölgeyi oyunun renginde alır
+   (drop-shadow, gölge dışarı açılan sekmeyi de kapsasın diye) */
 .work-card:hover,
-.work-card:focus-within { border-color: var(--card-accent); }
+.work-card:focus-within {
+  border-color: var(--card-accent);
+  filter: drop-shadow(6px 6px 0 var(--card-accent));
+}
 /* indir sekmesi açıkken sağ köşeler düzleşir, sekmeyle tek parça görünür */
 .work-card:has(.work-dl):is(:hover, :focus-within) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-.work-img {
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: #000;
-  border-top-left-radius: inherit;
-  border-top-right-radius: inherit;
+.work-img { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; }
+.work-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.66) 42%, transparent 82%);
 }
-.work-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.work-body { display: flex; flex-direction: column; gap: 6px; flex: 1; padding: 10px 12px 12px; }
-.work-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85em; color: var(--text-dim); }
-.work-type { color: var(--accent); }
-.work-title { margin: 0; font-size: 1.15em; color: var(--text); }
+/* oyun kartlarındaki gibi soluk durur, üzerine gelince renklenir */
+.work-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.25) brightness(0.72);
+  transition: filter 1.2s ease;
+}
+.work-card:hover .work-img img,
+.work-card:focus-within .work-img img { filter: saturate(1.05) brightness(0.95); }
+@media (hover: none) {
+  .work-img img { filter: saturate(1.05) brightness(0.95); }
+}
+.work-type { font: 600 13px/1.2 var(--font); color: var(--card-accent); }
+.work-title {
+  margin: 0;
+  font: 800 clamp(22px, 7.4cqi, 36px)/1.05 "Archivo", var(--font);
+  font-variation-settings: "wdth" 125;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
 .work-title a { color: inherit; text-decoration: none; }
-.work-title a:hover { text-decoration: underline; }
-.work-desc { margin: 0 0 4px; color: var(--text-dim); flex: 1; }
+
+/* ls -l satırı */
+.work-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 1ch;
+  min-width: 0;
+  margin-top: 4px;
+  padding: 0;
+  font: 400 11.5px/1.4 "JetBrains Mono", Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  color: #c3c9cb;
+  background: none;
+}
+.ls-name { color: #fff; overflow-wrap: anywhere; }
+/* imleç sol menüdeki terminalle aynı */
+.work-card:is(:hover, :focus-within) .ls-name::after {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 13px;
+  margin-left: 4px;
+  vertical-align: -2px;
+  background: var(--card-accent);
+  animation: caret 1.1s steps(1) infinite;
+}
 /* İndir: kartın sağ kenarına yapışık, kart boyunda dikey sekme (oyunun renginde).
    Kartın arkasından kayarak çıkar: sekme sola kaydırılıp aynı oranda soldan
    kırpıldığı için kartın kenarından dışarı doğru uzuyormuş gibi görünür. */
@@ -989,29 +1044,26 @@ body[data-theme="club42"] {
   .work-dl { transform: none; clip-path: none; }
   .work-card:has(.work-dl) { border-top-right-radius: 0; border-bottom-right-radius: 0; }
 }
+/* çok dar kartta satırın tek satıra sığması için izinler gizlenir */
+@container (max-width: 365px) {
+  .ls-perm { display: none; }
+}
 .works-empty { margin: 8px 0; color: var(--text-dim); text-align: center; padding: 24px 0; }
 
 /* Ana sayfadaki yapımlar */
 .home-works { margin-top: 64px; }
-.home-works .work-cards { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px 60px; }
-.home-works .work-card {
-  --work-radius: var(--r-lg);
-  background: var(--glass);
-  border: 1px solid var(--line);
-  backdrop-filter: blur(14px);
-}
+.home-works .work-cards { gap: 20px 60px; }
+.home-works .work-card { --work-radius: var(--r-lg); border-color: var(--line); }
 .home-works .work-card:hover,
 .home-works .work-card:focus-within { border-color: var(--card-accent); }
-.home-works .work-body { gap: 8px; padding: 18px 20px 20px; }
-.home-works .work-meta { font: 500 13px/1 var(--sans); color: var(--muted); }
-.home-works .work-type { color: var(--card-accent); font-weight: 600; }
-.home-works .work-title { font: 800 21px/1.2 var(--display); font-variation-settings: var(--wide); color: #fff; }
-.home-works .work-title a:hover { text-decoration: none; color: #7ef2f3; }
-.home-works .work-desc { font-size: 14px; line-height: 1.55; color: var(--muted); }
 
 /* ---------- Yapım detay sayfası (42 görünümü, oyunun rengiyle) ---------- */
+/* Kartın büyümüş hali gibi açılır, altında metin bir man sayfası gibi dizilir:
+   büyük harfli bölüm başlıkları, girintili metin ve altta ISTANBUL_42(6) satırı.
+   Parantez içindeki 6, man'de oyunların bölümüdür. */
 .work-page {
   --card-accent: #00babc;
+  --indent: 56px;
   width: 100%;
   max-width: 1200px;
   font-family: var(--sans);
@@ -1034,14 +1086,6 @@ body[data-theme="club42"] {
 .wp-crumbs a { color: #b4b4b4; text-decoration: none; transition: color 0.2s ease; }
 .wp-crumbs a:hover { color: #fff; }
 .wp-crumbs #wp-slug { color: var(--card-accent); }
-.wp-meta { display: flex; gap: 14px; }
-.wp-type {
-  font: 700 13px/1 var(--sans);
-  color: #000;
-  background: var(--card-accent);
-  padding: 6px 10px;
-  border-radius: 6px;
-}
 .wp-title {
   margin: 16px 0 0;
   font: 800 clamp(34px, 5vw, 64px)/1 var(--display);
@@ -1050,27 +1094,38 @@ body[data-theme="club42"] {
   overflow-wrap: anywhere;
 }
 .wp-head { margin-bottom: 28px; }
-.wp-lead { margin: 22px 0 0; max-width: 70ch; font-size: 17px; line-height: 1.7; color: #d8dcdd; }
-.wp-lead:empty { display: none; }
 
-.wp-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; align-items: start; }
-.wp-hero {
+/* Kapak: 42 logosundaki sert gölge, oyunun renginde */
+.wp-cover {
   position: relative;
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  background: #000;
-  cursor: zoom-in;
-  aspect-ratio: 16 / 9;
+  height: clamp(300px, 42vw, 520px);
   overflow: hidden;
+  background: #000;
+  border-radius: var(--r-lg);
+  box-shadow: 10px 10px 0 var(--card-accent);
 }
+.wp-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.6) 34%, transparent 70%);
+  pointer-events: none;
+}
+.wp-hero {
+  position: absolute;
+  inset: 0;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+.wp-hero:focus-visible { outline-offset: -4px; }
 .wp-hero::after {
   content: "Büyüt";
   position: absolute;
+  top: 14px;
   right: 14px;
-  bottom: 14px;
   padding: 7px 12px;
   font: 600 13px/1 var(--sans);
   color: #fff;
@@ -1078,12 +1133,45 @@ body[data-theme="club42"] {
   border-radius: 6px;
   backdrop-filter: blur(8px);
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateY(-6px);
   transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
 }
-.wp-hero:hover::after { opacity: 1; transform: none; }
+.wp-hero:hover::after,
+.wp-hero:focus-visible::after { opacity: 1; transform: none; }
 .wp-hero img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.wp-thumbs { display: flex; gap: 12px; margin-top: 14px; overflow-x: auto; padding: 2px 2px 6px; }
+/* yazılar tıklamayı engellemez: kapağın her yeri görseli büyütür */
+.wp-cover-text {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 24px 28px 20px;
+  pointer-events: none;
+}
+.wp-meta { display: flex; gap: 14px; }
+.wp-type {
+  font: 700 13px/1 var(--sans);
+  color: #000;
+  background: var(--card-accent);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.wp-cover-text .wp-title { margin-top: 12px; font-size: clamp(34px, 6.4vw, 84px); }
+.wp-cover-text .work-line { margin-top: 12px; font-size: 14px; }
+#wp-line .ls-name::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  margin-left: 4px;
+  vertical-align: -2px;
+  background: var(--card-accent);
+  animation: caret 1.1s steps(1) infinite;
+}
+
+.wp-thumbs { display: flex; gap: 12px; margin-top: 24px; overflow-x: auto; padding: 2px 2px 6px; }
 .wp-thumbs:empty { display: none; }
 .wp-thumb {
   flex: none;
@@ -1101,26 +1189,62 @@ body[data-theme="club42"] {
 .wp-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .wp-thumb:hover { opacity: 1; }
 .wp-thumb.active { opacity: 1; border-color: var(--card-accent); }
-.wp-video { margin-top: 24px; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
-.wp-video iframe { display: block; width: 100%; height: 100%; border: 0; }
-.wp-video a { display: block; padding: 16px; color: var(--card-accent); }
 
-.wp-details { margin-top: 32px; font-size: 16px; line-height: 1.8; color: #d8dcdd; }
-.wp-details:empty { display: none; }
-.wp-details h3 { margin: 32px 0 10px; font: 800 22px/1.2 var(--display); font-variation-settings: var(--wide); color: #fff; }
-.wp-details h3::before { content: "## "; font-family: var(--code); color: var(--card-accent); }
-.wp-details p { margin: 0 0 16px; }
-.wp-details ul { margin: 0 0 16px; padding-left: 22px; }
+.wp-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; margin-top: 34px; }
+
+/* Man sayfası */
+.wp-main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+  padding: 22px 32px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(16px);
+}
+.wp-manbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font: 400 12.5px/1.4 var(--code);
+  color: var(--muted);
+}
+.wp-sec,
+.wp-details h3 {
+  margin: 0 0 10px;
+  font: 700 14px/1.3 var(--code);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--card-accent);
+}
+.wp-lead,
+.wp-details p,
+.wp-details ul {
+  max-width: 66ch;
+  margin: 0 0 16px var(--indent);
+  font-size: 16px;
+  line-height: 1.75;
+  color: #d8dcdd;
+}
+.wp-lead { margin-bottom: 0; color: #fff; }
+.wp-details h3 { margin-top: 28px; }
+.wp-details > :last-child { margin-bottom: 0; }
+.wp-details ul { padding-left: 20px; }
 .wp-details li { margin: 4px 0; }
 .wp-details li::marker { color: var(--card-accent); }
 .wp-details b { color: #fff; }
+.wp-video { aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+.wp-video iframe { display: block; width: 100%; height: 100%; border: 0; }
+.wp-video a { display: block; padding: 16px; color: var(--card-accent); }
 
 .wp-side {
   position: sticky;
   top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
   padding: 22px;
   background: var(--glass);
   border: 1px solid var(--line);
@@ -1129,9 +1253,12 @@ body[data-theme="club42"] {
 }
 .wp-side .wp-dl { background: var(--card-accent); color: #000; }
 .wp-side .wp-dl:hover { background: #fff; }
-.wp-specs { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 16px; font-size: 14px; }
-.wp-specs dt { color: var(--muted); font: 400 14px/1.5 var(--sans); }
-.wp-specs dd { margin: 0; color: #fff; font-weight: 500; overflow-wrap: anywhere; }
+.wp-stat { font: 400 13px/1.4 var(--code); color: #c3c9cb; overflow-wrap: anywhere; }
+.wp-stat span { color: var(--teal); }
+.wp-stat b { font-weight: 400; color: #fff; }
+.wp-specs { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 16px; font: 400 13px/1.5 var(--code); }
+.wp-specs dt { color: var(--muted); }
+.wp-specs dd { margin: 0; color: #fff; overflow-wrap: anywhere; }
 
 /* ---------- Dokümanlar ---------- */
 /* Ana sayfadaki liste */
@@ -1399,7 +1526,7 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; }
-  .game-card, .card-art-color, .work-dl, .home-btn, .doc-row { transition: none; }
+  .game-card, .card-art-color, .work-card, .work-img img, .work-dl, .home-btn, .doc-row { transition: none; }
 }
 
 /* ---------- Mobil ---------- */
@@ -1441,6 +1568,11 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
   .card-name { font-size: 20px; }
   .card-addr { font-size: 11.5px; }
   .wp-layout { grid-template-columns: minmax(0, 1fr); }
+  .work-page { --indent: 0px; }
+  .wp-cover { box-shadow: 6px 6px 0 var(--card-accent); }
+  .wp-cover-text { padding: 18px 16px 14px; }
+  .wp-cover-text .work-line { font-size: 12px; }
+  .wp-main { padding: 18px; }
   .dp-layout { grid-template-columns: minmax(0, 1fr); }
   .dp-toc { position: static; order: -1; }
   .dp-body { padding: 22px 18px; }

@@ -283,32 +283,65 @@ function setDownload(a, w) {
   }
 }
 
-function workCard(w, showGame) {
-  const game = SERVERS.find((s) => s.id === w.game);
+// Kart, bölüm başlığındaki "$ ls yapimlar/" komutunun çıktısı gibidir: altındaki
+// satır yapımın gerçek bilgileriyle yazılmış bir "ls -l" satırıdır.
+const lsPerms = (w) => (!w.download ? "drwxr-xr-x" : isExternal(w.download) ? "lrwxrwxrwx" : "-rw-r--r--");
+const lsName = (w) =>
+  w.download && !isExternal(w.download) ? w.download.split("/").pop() : workId(w);
+const lsSize = (bytes) =>
+  bytes < 1048576 ? `${Math.ceil(bytes / 1024)}K` : `${Math.ceil(bytes / 104857.6) / 10}M`;
+
+// Dosya boyutu config'e yazılmaz, sunucudan okunur; okunamazsa sütun gizli kalır
+function fillSize(el, url) {
+  if (!url || isExternal(url)) return;
+  fetch(url, { method: "HEAD" })
+    .then((r) => {
+      const bytes = Number(r.headers.get("content-length"));
+      if (!r.ok || !bytes) return;
+      el.textContent = lsSize(bytes);
+      el.hidden = false;
+    })
+    .catch(() => {});
+}
+
+// Kartta ve yapım sayfasında aynı "ls -l" satırı
+function fillLsLine(root, w) {
+  root.querySelector(".ls-perm").textContent = lsPerms(w);
+  root.querySelector(".ls-owner").textContent = `42 ${w.game}`;
+  root.querySelector(".ls-date").textContent = w.date || "";
+  root.querySelector(".ls-name").textContent = lsName(w);
+  const size = root.querySelector(".ls-size");
+  size.hidden = true;
+  fillSize(size, w.download);
+}
+
+function workCard(w) {
   const card = document.createElement("article");
   card.className = "work-card";
   card.dataset.game = w.game;
   card.innerHTML = `
     <div class="work-img"><img alt="" loading="lazy"></div>
-    <div class="work-body">
-      <div class="work-meta"><span class="work-type"></span><span class="work-game"></span></div>
-      <h3 class="work-title"><a></a></h3>
-      <p class="work-desc"></p>
-    </div>
-    <a class="work-dl"></a>`;
+    <a class="work-dl"></a>
+    <span class="work-type"></span>
+    <h3 class="work-title"><a></a></h3>
+    <code class="work-line">
+      <span class="ls-perm"></span><span class="ls-owner"></span>
+      <span class="ls-size" hidden></span><span class="ls-date"></span><span class="ls-name"></span>
+    </code>`;
   const img = card.querySelector("img");
   img.src = workImages(w)[0] || `img/bg/${w.game}.svg`;
   fallbackImg(img, w.game);
   card.querySelector(".work-type").textContent = w.type || "Yapım";
-  card.querySelector(".work-game").textContent = showGame && game ? game.name : w.date || "";
   const title = card.querySelector(".work-title a");
   title.textContent = w.title;
   title.href = workHref(w);
-  card.querySelector(".work-desc").textContent = w.description || "";
+  fillLsLine(card, w);
   const dl = card.querySelector(".work-dl");
   setDownload(dl, w);
   // dikey sekmeye tek kelime sığar
   if (w.download && isExternal(w.download)) dl.textContent = "Bağlantı";
+  // sol menüdeki oyun adlarıyla aynı çözülme efekti
+  card.addEventListener("pointerenter", () => scrambleText(title, w.title));
   // kartın herhangi bir yerine tıklayınca detay sayfası (indirme butonu hariç)
   card.addEventListener("click", (e) => {
     if (!e.target.closest("a")) location.hash = workHref(w);
@@ -320,7 +353,7 @@ function renderWorks() {
   const list = $("#works-list");
   list.innerHTML = "";
   const mine = WORKS.filter((w) => w.game === current.id);
-  mine.forEach((w) => list.appendChild(workCard(w, false)));
+  mine.forEach((w) => list.appendChild(workCard(w)));
   $("#works-empty").hidden = mine.length > 0;
   $('.tab[data-tab="works"]').textContent = mine.length ? `Yapımlar (${mine.length})` : "Yapımlar";
 }
@@ -332,7 +365,7 @@ function renderHomeWorks() {
   list.innerHTML = "";
   [...known]
     .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
-    .forEach((w) => list.appendChild(workCard(w, true)));
+    .forEach((w) => list.appendChild(workCard(w)));
 }
 
 // Uzun açıklama (details): boş satırla paragraf, "## " başlık, "- " madde, **kalın**
@@ -389,6 +422,13 @@ function showWork(w) {
   $("#wp-type").textContent = w.type || "Yapım";
   $("#wp-title").textContent = w.title;
   $("#wp-lead").textContent = w.description || "";
+  $("#wp-name").hidden = !w.description;
+  $("#wp-about").hidden = !w.details;
+  fillLsLine($("#wp-line"), w);
+  // man sayfası başlığı; 6, man'de oyunların bölümü
+  $$(".wp-man-title").forEach((el) => (el.textContent = `${workId(w).toUpperCase()}(6)`));
+  $("#wp-man-date").textContent = w.date || "";
+  $("#wp-stat-name").textContent = lsName(w);
 
   // galeri
   galleryImages = workImages(w);

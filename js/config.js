@@ -28,7 +28,7 @@ const CLUB = {
 // title:       yapımın adı
 // id:          sayfa linki, ör. "de_kulup42" ise link #yapim/de_kulup42 (isteğe bağlı; yoksa addan üretilir)
 // type:        kısa etiket, ör. "Harita", "Mod", "Skin", "Plugin", "Build"
-// description: kartta ve sayfanın başında görünen kısa açıklama (bir iki cümle)
+// description: yapım sayfasının başında görünen kısa açıklama (isteğe bağlı)
 // image:       kapak görseli (isteğe bağlı; yoksa oyunun arka planı kullanılır)
 // gallery:     yapım sayfasındaki fotoğraflar listesi; ilki kapak olur (isteğe bağlı)
 // video:       YouTube linki; sayfada oynatıcı olarak görünür (isteğe bağlı)
@@ -75,8 +75,22 @@ const WORKS = [
     game: "cs16",
     title: "istanbul_42",
     type: "Harita",
-    description: "Kısa bir açıklama.",
+    description: "42 Vadistanbul kampüsünü Counter-Strike 1.6'ya taşıyan harita.",
     image: "works/cs16/istanbul_42.jpg",
+    details: `
+      Her gün kahve almaya yürüdüğümüz koridor artık bir çatışma hattı. istanbul_42, 42 Vadistanbul kampüsünü Counter-Strike 1.6'ya taşıyor: halı kaplı koridorlar, tavan boyunca uzanan spot ışıkları ve cluster'a açılan kapılar burada da yerinde duruyor.
+
+      Kampüsü bilen biri haritada yolunu kolayca bulur. Bilmeyen ise ilk turda kafeteryayı ararken vurulur. Exam günü sessizce geçtiğiniz koridorlarda bu sefer sessiz kalmanın başka bir sebebi var.
+
+      ## Neler var
+      - **Koridorlar:** halı zemin, sıra sıra spot ışıkları ve uzun görüş hatları
+      - **Renkli odalar:** kapı aralıklarından görünen turkuaz ve sarı duvarlar
+      - **Tanıdık köşeler:** kampüste her gün önünden geçtiğiniz masalar ve duvarlar
+
+      ## Kurulum
+      Zip'i açın ve **istanbul_42.bsp** dosyasını oyunun **cstrike/maps** klasörüne kopyalayın. Sonra oyunda konsolu açıp **map istanbul_42** yazın.
+    `,
+    specs: { "Dosya": "istanbul_42.bsp", "Klasör": "cstrike/maps", "Konsol": "map istanbul_42" },
     download: "works/cs16/istanbul_42.zip",
     date: "2026-11",
   },
