@@ -129,6 +129,21 @@ const DOCS = [
   },
 ];
 
+// ---- Sunucu sayfası arka plan fotoğrafları ----
+// Fotoğrafı img/photos/<oyun>/ klasörüne koyup dosya adını aşağıya yazın; sayfa
+// her açıldığında listeden biri rastgele seçilir. Liste boşsa oyunun normal arka
+// planı görünür. Ayrıntılar: img/photos/README.md
+//
+// Örnek: cs16: ["kampus.jpg", "lan-gecesi.jpg"],
+const BACKGROUNDS = {
+  cs16: ["1.jpg", "2.jpg", "3.jpg", "4.jpg"],
+  cs2: [],
+  minecraft: [],
+  rust: [],
+  arma3: [],
+  squad: [],
+};
+
 const SERVERS = [
   {
     id: "cs16",

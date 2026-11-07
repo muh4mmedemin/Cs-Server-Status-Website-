@@ -392,6 +392,8 @@ code {
   z-index: 10;
   animation: pop-in 0.3s var(--ease);
 }
+#server-window { position: relative; }
+#server-window .title-bar,
 .console-window .title-bar {
   cursor: move;
   user-select: none;

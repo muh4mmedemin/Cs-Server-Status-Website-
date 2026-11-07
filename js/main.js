@@ -771,8 +771,43 @@ function setGameCursor(gameId) {
   else delete document.body.dataset.cursor;
 }
 
+// Sunucu sayfası arka planı: BACKGROUNDS listesinden rastgele bir fotoğraf
+// (js/config.js, img/photos/README.md). Fotoğraf yüklenene kadar ya da
+// yüklenemezse temanın normal arka planı görünür.
+const lastPhoto = {};
+let photoToken = 0;
+
+function clearPhoto() {
+  photoToken++;
+  document.body.style.removeProperty("--page-bg");
+}
+
+function showRandomPhoto(game) {
+  clearPhoto();
+  const files = BACKGROUNDS[game] || [];
+  if (!files.length) return;
+  // aynı fotoğraf art arda gelmesin
+  const pool = files.length > 1 ? files.filter((f) => f !== lastPhoto[game]) : files;
+  const file = pool[Math.floor(Math.random() * pool.length)];
+  lastPhoto[game] = file;
+  const token = photoToken;
+  // tam adres: göreli adres stil dosyasına göre çözülürdü
+  const url = new URL(`img/photos/${game}/${file}`, location.href).href;
+  const img = new Image();
+  img.onload = () => {
+    if (token !== photoToken) return; // bu arada başka sayfaya geçildi
+    document.body.style.setProperty(
+      "--page-bg",
+      `radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, .25) 0%, rgba(0, 0, 0, .65) 100%), url("${url}") center / cover no-repeat`
+    );
+  };
+  img.onerror = () => log(`HATA: arka plan fotoğrafı yüklenemedi (${game}/${file})`);
+  img.src = url;
+}
+
 function showView(name) {
   if (name !== "work" && name !== "doc") setGameCursor(null);
+  if (name !== "game") clearPhoto();
   $("#club-home").hidden = name !== "club";
   $("#server-window").hidden = name !== "game";
   $("#work-page").hidden = name !== "work";
@@ -838,6 +873,7 @@ function selectGame(id) {
   }
 
   document.body.dataset.theme = current.id;
+  showRandomPhoto(current.id);
   document.title = `${current.name} Sunucu Durumu`;
   setRailActive(current.id, `cd oyunlar/${current.id}`);
 
@@ -948,27 +984,58 @@ consoleTab.addEventListener("click", () => setConsoleOpen(consoleWindow.hidden))
 $("#home-console").addEventListener("click", () => setConsoleOpen(consoleWindow.hidden));
 $("#console-close").addEventListener("click", () => setConsoleOpen(false));
 
-// Başlık çubuğundan mouse (veya dokunmatik) ile sürükleme
-const consoleTitle = consoleWindow.querySelector(".title-bar");
-consoleTitle.addEventListener("pointerdown", (e) => {
-  if (e.target.closest("button")) return;
-  const r = consoleWindow.getBoundingClientRect();
-  const dx = e.clientX - r.left;
-  const dy = e.clientY - r.top;
-  consoleTitle.setPointerCapture(e.pointerId);
-  const onMove = (ev) => moveConsole(ev.clientX - dx, ev.clientY - dy);
-  const onUp = () => {
-    consoleTitle.removeEventListener("pointermove", onMove);
-    consoleTitle.removeEventListener("pointerup", onUp);
-  };
-  consoleTitle.addEventListener("pointermove", onMove);
-  consoleTitle.addEventListener("pointerup", onUp);
-});
+// Sunucu penceresi ortalanmış durur; sürüklenince ortalanmış yerine göre
+// left/top ile kayar (transform sayfa geçişi animasyonunda kullanılıyor)
+const serverWindow = $("#server-window");
+const serverOffset = { x: 0, y: 0 };
+
+function moveServerWindow(x, y) {
+  const r = serverWindow.getBoundingClientRect();
+  const rail = $("#game-rail").getBoundingClientRect();
+  // sol menü geniş ekranda solda, mobilde üstte durur
+  const railOnTop = window.matchMedia("(max-width: 860px)").matches;
+  const minX = railOnTop ? 0 : rail.right;
+  const minY = railOnTop ? rail.bottom : 0;
+  // Pencere ekran dışına ve sol menünün altına taşmasın
+  x = Math.min(Math.max(minX, x), Math.max(minX, window.innerWidth - r.width));
+  // Ekrandan uzun pencere dikeyde kaydırılmaz, sayfa zaten kayar
+  y = r.height > window.innerHeight - minY ? r.top : Math.min(Math.max(minY, y), window.innerHeight - r.height);
+  serverOffset.x += x - r.left;
+  serverOffset.y += y - r.top;
+  serverWindow.style.left = `${serverOffset.x}px`;
+  serverWindow.style.top = `${serverOffset.y}px`;
+}
+
+// Başlık çubuğundan mouse (veya dokunmatik) ile sürükleme.
+// moveTo(x, y): pencerenin yeni sol üst köşesini alır
+function makeDraggable(win, moveTo) {
+  const title = win.querySelector(".title-bar");
+  title.addEventListener("pointerdown", (e) => {
+    if (e.target.closest("button")) return;
+    const r = win.getBoundingClientRect();
+    const dx = e.clientX - r.left;
+    const dy = e.clientY - r.top;
+    title.setPointerCapture(e.pointerId);
+    const onMove = (ev) => moveTo(ev.clientX - dx, ev.clientY - dy);
+    const onUp = () => {
+      title.removeEventListener("pointermove", onMove);
+      title.removeEventListener("pointerup", onUp);
+    };
+    title.addEventListener("pointermove", onMove);
+    title.addEventListener("pointerup", onUp);
+  });
+}
+makeDraggable(consoleWindow, moveConsole);
+makeDraggable(serverWindow, moveServerWindow);
 
 window.addEventListener("resize", () => {
   if (!consoleWindow.hidden) {
     const r = consoleWindow.getBoundingClientRect();
     moveConsole(r.left, r.top);
+  }
+  if (!serverWindow.hidden) {
+    const r = serverWindow.getBoundingClientRect();
+    moveServerWindow(r.left, r.top);
   }
 });
 
