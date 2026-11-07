@@ -71,20 +71,38 @@
       <nav class="wp-crumbs">
         <a href="#42">~</a><span>/</span><a id="wp-game-link" href="#"></a><span>/</span><span id="wp-slug"></span>
       </nav>
-      <header class="wp-head">
-        <div class="wp-meta"><span class="wp-type" id="wp-type"></span></div>
-        <h1 class="wp-title" id="wp-title"></h1>
-      </header>
+      <!-- Kapak: karttaki gibi fotoğrafın üstünde tür, ad ve ls satırı -->
+      <div class="wp-cover">
+        <button class="wp-hero" id="wp-hero" type="button" aria-label="Görseli büyüt"><img id="wp-hero-img" alt=""></button>
+        <header class="wp-head wp-cover-text">
+          <div class="wp-meta"><span class="wp-type" id="wp-type"></span></div>
+          <h1 class="wp-title" id="wp-title"></h1>
+          <code class="work-line" id="wp-line">
+            <span class="ls-perm"></span><span class="ls-owner"></span>
+            <span class="ls-size" hidden></span><span class="ls-date"></span><span class="ls-name"></span>
+          </code>
+        </header>
+      </div>
+      <div class="wp-thumbs" id="wp-thumbs"></div>
       <div class="wp-layout">
-        <div class="wp-main">
-          <button class="wp-hero" id="wp-hero" type="button" aria-label="Görseli büyüt"><img id="wp-hero-img" alt=""></button>
-          <div class="wp-thumbs" id="wp-thumbs"></div>
-          <p class="wp-lead" id="wp-lead"></p>
+        <!-- Metin bir man sayfası gibi dizilir: bölüm başlıkları ve alt satır -->
+        <article class="wp-main">
+          <section id="wp-name">
+            <h2 class="wp-sec">Ad</h2>
+            <p class="wp-lead" id="wp-lead"></p>
+          </section>
           <div class="wp-video" id="wp-video" hidden></div>
-          <section class="wp-details" id="wp-details"></section>
-        </div>
+          <section id="wp-about">
+            <h2 class="wp-sec">Açıklama</h2>
+            <div class="wp-details" id="wp-details"></div>
+          </section>
+          <div class="wp-manbar" aria-hidden="true">
+            <span>42 Oyun Kulübü</span><span id="wp-man-date"></span><span class="wp-man-title"></span>
+          </div>
+        </article>
         <aside class="wp-side">
           <a class="home-btn primary wp-dl" id="wp-dl"></a>
+          <div class="wp-stat"><span>$</span> stat <b id="wp-stat-name"></b></div>
           <dl class="wp-specs" id="wp-specs"></dl>
           <a class="home-btn" id="wp-server" href="#"></a>
         </aside>
