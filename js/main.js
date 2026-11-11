@@ -190,9 +190,14 @@ function renderClub() {
 
   const cards = $("#club-servers");
   cards.innerHTML = "";
-  SERVERS.forEach((s, i) => {
+  // açık sunucular önce ve büyük; satır başına en çok 3 açık, 5 bekleyen kart
+  const liveServers = SERVERS.filter(hasIp);
+  const soon = SERVERS.filter((x) => !hasIp(x));
+  const perRow = (n, max) => Math.min(Math.max(n, 1), max);
+  [...liveServers, ...soon].forEach((s, i) => {
     const card = document.createElement("a");
-    card.className = "game-card";
+    card.className = `game-card ${hasIp(s) ? "is-live" : "is-soon"}`;
+    card.style.setProperty("--per", hasIp(s) ? perRow(liveServers.length, 3) : perRow(soon.length, 5));
     card.style.setProperty("--i", i);
     addTilt(card, 4);
     card.href = `#${s.id}`;
