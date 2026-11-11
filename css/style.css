@@ -684,8 +684,9 @@ body[data-theme="club42"] {
   --line: rgba(255, 255, 255, 0.12);
   --glass: rgba(16, 18, 19, 0.82);
   /* köşeler hiyerarşiye göre: büyük yüzey > kart > buton > etiket */
-  --r-lg: 16px;
-  --r-md: 12px;
+  /* terminal penceresi köşeleri: hafif, yuvarlak kart görünümünden uzak */
+  --r-lg: 6px;
+  --r-md: 4px;
   --r-sm: 8px;
   /* tek aile: başlıkta geniş kesim (cluster tabelaları), metinde normal */
   --display: "Archivo", "Segoe UI", sans-serif;
@@ -794,24 +795,19 @@ body[data-theme="club42"] {
 .home-section span { color: var(--teal); }
 
 /* Oyun kartları */
-/* yatay kartlar: 6 sütunluk ızgarada her kart 2 sütun (satırda 3 kart);
-   son satır eksik kalırsa kartlar satırı doldurur */
-.game-cards {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 20px;
-}
-.game-card { grid-column: span 2; }
-.game-card:nth-child(3n + 1):nth-last-child(2),
-.game-card:nth-child(3n + 2):last-child { grid-column: span 3; }
-.game-card:nth-child(3n + 1):last-child { grid-column: 1 / -1; }
+/* Sunucu kartları: açık sunucular büyük, henüz açılmamış olanlar küçük.
+   Satırdaki kart sayısını (--per) JS gruptaki kart sayısına göre verir;
+   kartlar esneyerek satırı doldurur. */
+.game-cards { display: flex; flex-wrap: wrap; gap: 16px; }
+.game-card { flex: 1 1 calc((100% - (var(--per, 3) - 1) * 16px) / var(--per, 3)); min-width: 0; }
+.game-card.is-live { min-height: 260px; }
+.game-card.is-soon { min-height: 132px; }
+.game-card.is-soon .card-body { max-width: 100%; padding: 14px 16px; }
+.game-card.is-soon .card-name { font-size: 17px; }
+.game-card.is-soon .card-addr { display: none; }
+.game-card.is-live .card-name { font-size: clamp(26px, 3vw, 40px); }
 @media (max-width: 1180px) {
-  .game-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .game-card,
-  .game-card:nth-child(3n + 1):nth-last-child(2),
-  .game-card:nth-child(3n + 2):last-child,
-  .game-card:nth-child(3n + 1):last-child { grid-column: auto; }
-  .game-card:nth-child(odd):last-child { grid-column: 1 / -1; }
+  .game-card.is-soon { --per: 3; }
 }
 .game-card {
   --card-accent: #00babc;
@@ -819,7 +815,6 @@ body[data-theme="club42"] {
   --ry: 0deg;
   position: relative;
   display: flex;
-  min-height: 200px;
   overflow: hidden;
   isolation: isolate;
   color: #fff;
@@ -892,13 +887,12 @@ body[data-theme="club42"] {
 .card-state {
   align-self: flex-start;
   margin-bottom: auto;
-  padding: 5px 9px;
-  font: 600 12px/1 var(--sans);
+  padding: 4px 7px;
+  font: 500 11.5px/1 var(--code);
   color: #d0d0d0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 6px;
-  backdrop-filter: blur(10px);
+  border-radius: 2px;
 }
 .card-state.on { color: #7dedac; border-color: rgba(61, 220, 132, 0.5); }
 .card-name { font: 800 24px/1.1 var(--display); font-variation-settings: "wdth" 108; letter-spacing: -0.01em; }
@@ -1558,15 +1552,19 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
   .server-list th:nth-child(2), .server-list td:nth-child(2) { display: none; }
   .tabs { flex-wrap: wrap; row-gap: 4px; }
   .home-hero { flex-direction: column; align-items: flex-start; gap: 26px; margin-bottom: 40px; }
-  .home-logo { font-size: 84px; letter-spacing: -6px; border-width: 4px; border-radius: 16px; padding: 14px 20px 18px 14px; box-shadow: 6px 6px 0 var(--teal); }
+  .home-logo { font-size: 84px; letter-spacing: -6px; border-width: 4px; border-radius: 10px; padding: 14px 20px 18px 14px; box-shadow: 6px 6px 0 var(--teal); }
   .live-row { padding: 12px; }
   .live-actions { width: 100%; }
   .live-actions .home-btn { flex: 1; }
   .home-about { font-size: 15px; }
-  .game-cards { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .game-card,
-  .game-card:nth-child(odd):last-child { grid-column: auto; min-height: 150px; border-radius: 16px; }
-  .card-body { max-width: 75%; padding: 16px 18px; }
+  .game-cards { gap: 10px; }
+  .game-card { flex-basis: calc((100% - 10px) / 2); }
+  .game-card.is-live { flex-basis: 100%; min-height: 170px; }
+  .game-card.is-soon { min-height: 104px; }
+  .card-body { max-width: 80%; padding: 16px 18px; }
+  /* parmakla basılan öğeler en az 36px */
+  .tab, .vbtn { min-height: 36px; }
+  .code-copy { min-height: 32px; }
   .card-name { font-size: 20px; }
   .card-addr { font-size: 11.5px; }
   .wp-layout { grid-template-columns: minmax(0, 1fr); }
