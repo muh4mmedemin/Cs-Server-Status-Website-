@@ -73,6 +73,27 @@ not kutuları, tablolar ve otomatik içindekiler.
 2. Yazın (kurallar: sitedeki **Doküman nasıl yazılır?** sayfası / `docs/dokuman-yazma.md`).
 3. `js/config.js` içindeki `DOCS` listesine ekleyin, commit + push.
 
+## Etkinlik ekleme (takvim)
+
+Ana sayfadaki `$ cal` bölümü bir ay takvimi ve etkinlik listesidir. Etkinlik eklemek
+için `js/config.js` içindeki `EVENTS` listesine bir blok yazın (dosyada örnek var):
+
+```js
+{
+  date: "2026-11-21",
+  time: "20:00",
+  end: "23:30",
+  title: "CS 1.6 LAN gecesi",
+  game: "cs16",
+  place: "Cluster c2",
+  description: "5v5 karışık takımlar.",
+},
+```
+
+Saatler İstanbul saatidir. Etkinlik, takvimde o günün altında oyunun renginde
+işaretlenir; listede açılınca ziyaretçi **Takvime ekle** ile `.ics` dosyası indirip
+kendi takvimine kaydedebilir. En yakın etkinliğe canlı geri sayım gösterilir.
+
 ## Dosyalar
 
 ```

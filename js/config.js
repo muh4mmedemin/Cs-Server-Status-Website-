@@ -129,6 +129,32 @@ const DOCS = [
   },
 ];
 
+// ---- Etkinlik takvimi: ana sayfadaki "$ cal" bölümü ----
+// Her etkinlik için listeye bir blok ekleyin. Saatler İstanbul saatiyle yazılır.
+// Etkinlik hem ay takviminde (o günün altında oyunun renginde işaret) hem de
+// yanındaki listede görünür; ziyaretçiler "Takvime ekle" ile kendi takvimlerine
+// (.ics) kaydedebilir. Tarihi geçen etkinlikler listede soluk görünür.
+//
+// date:        "YYYY-AA-GG" biçiminde gün, ör. "2026-11-21"
+// time:        başlangıç saati "SS:DD", ör. "20:00" (isteğe bağlı; yoksa tüm gün)
+// end:         bitiş saati "SS:DD" (isteğe bağlı)
+// title:       etkinliğin adı
+// game:        ilgili oyun (SERVERS içindeki id; isteğe bağlı, etkinlik o oyunun renginde olur)
+// place:       yer, ör. "Cluster c2" ya da "Discord" (isteğe bağlı)
+// description: bir iki cümlelik açıklama (isteğe bağlı)
+//
+// Örnek (başındaki // işaretlerini kaldırıp düzenleyin):
+//   {
+//     date: "2026-11-21",
+//     time: "20:00",
+//     end: "23:30",
+//     title: "CS 1.6 LAN gecesi",
+//     game: "cs16",
+//     place: "Cluster c2",
+//     description: "5v5 karışık takımlar, istanbul_42 haritasında açılış maçı.",
+//   },
+const EVENTS = [];
+
 // ---- Sunucu sayfası arka plan fotoğrafları ----
 // Fotoğrafı img/photos/<oyun>/ klasörüne koyup dosya adını aşağıya yazın; sayfa
 // her açıldığında listeden biri rastgele seçilir. Liste boşsa oyunun normal arka
