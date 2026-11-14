@@ -830,26 +830,32 @@ body[data-theme="club42"] {
 .game-card[data-game="cs16"], .work-page[data-game="cs16"], .doc-page[data-game="cs16"],
 .doc-game[data-game="cs16"], .work-card[data-game="cs16"] { --card-accent: #c4b550; }
 .rail-item[data-game="cs16"] { --c: #c4b550; }
+.cal-item[data-game="cs16"], .cal-mark[data-game="cs16"], .cal-legend-item[data-game="cs16"], .cal-next[data-game="cs16"] { --card-accent: #c4b550; }
 .live-row[data-game="cs2"], .doc-row[data-game="cs2"],
 .game-card[data-game="cs2"], .work-page[data-game="cs2"], .doc-page[data-game="cs2"],
 .doc-game[data-game="cs2"], .work-card[data-game="cs2"] { --card-accent: #6db3f2; }
 .rail-item[data-game="cs2"] { --c: #6db3f2; }
+.cal-item[data-game="cs2"], .cal-mark[data-game="cs2"], .cal-legend-item[data-game="cs2"], .cal-next[data-game="cs2"] { --card-accent: #6db3f2; }
 .live-row[data-game="minecraft"], .doc-row[data-game="minecraft"],
 .game-card[data-game="minecraft"], .work-page[data-game="minecraft"], .doc-page[data-game="minecraft"],
 .doc-game[data-game="minecraft"], .work-card[data-game="minecraft"] { --card-accent: #6db33e; }
 .rail-item[data-game="minecraft"] { --c: #6db33e; }
+.cal-item[data-game="minecraft"], .cal-mark[data-game="minecraft"], .cal-legend-item[data-game="minecraft"], .cal-next[data-game="minecraft"] { --card-accent: #6db33e; }
 .live-row[data-game="rust"], .doc-row[data-game="rust"],
 .game-card[data-game="rust"], .work-page[data-game="rust"], .doc-page[data-game="rust"],
 .doc-game[data-game="rust"], .work-card[data-game="rust"] { --card-accent: #cd412b; }
 .rail-item[data-game="rust"] { --c: #cd412b; }
+.cal-item[data-game="rust"], .cal-mark[data-game="rust"], .cal-legend-item[data-game="rust"], .cal-next[data-game="rust"] { --card-accent: #cd412b; }
 .live-row[data-game="arma3"], .doc-row[data-game="arma3"],
 .game-card[data-game="arma3"], .work-page[data-game="arma3"], .doc-page[data-game="arma3"],
 .doc-game[data-game="arma3"], .work-card[data-game="arma3"] { --card-accent: #c48214; }
 .rail-item[data-game="arma3"] { --c: #c48214; }
+.cal-item[data-game="arma3"], .cal-mark[data-game="arma3"], .cal-legend-item[data-game="arma3"], .cal-next[data-game="arma3"] { --card-accent: #c48214; }
 .live-row[data-game="squad"], .doc-row[data-game="squad"],
 .game-card[data-game="squad"], .work-page[data-game="squad"], .doc-page[data-game="squad"],
 .doc-game[data-game="squad"], .work-card[data-game="squad"] { --card-accent: #9aab52; }
 .rail-item[data-game="squad"] { --c: #9aab52; }
+.cal-item[data-game="squad"], .cal-mark[data-game="squad"], .cal-legend-item[data-game="squad"], .cal-next[data-game="squad"] { --card-accent: #9aab52; }
 .card-art {
   position: absolute;
   inset: 0;
@@ -898,8 +904,6 @@ body[data-theme="club42"] {
 .card-name { font: 800 24px/1.1 var(--display); font-variation-settings: "wdth" 108; letter-spacing: -0.01em; }
 .card-addr { font: 400 13px/1.4 var(--code); color: #c4c4c4; overflow-wrap: anywhere; }
 .card-addr.soon { font: 400 14px/1.4 var(--sans); color: #a9b0b2; }
-.game-card:hover,
-.game-card:focus-visible { border-color: rgba(255, 255, 255, 0.24); }
 .game-card:hover .card-art-color,
 .game-card:focus-visible .card-art-color { opacity: 1; }
 /* dokunmatik ekranda üzerine gelme yok: sahne hep renkli */
@@ -936,13 +940,10 @@ body[data-theme="club42"] {
   cursor: pointer;
   transition: border-color 0.3s var(--ease), filter 0.3s var(--ease);
 }
-/* üzerine gelince kart hareket etmez: 42 logosundaki sert gölgeyi oyunun renginde alır
-   (drop-shadow, gölge dışarı açılan sekmeyi de kapsasın diye) */
+/* üzerine gelince kart hareket etmez, kenarlığı değişmez: 42 logosundaki sert
+   gölgeyi oyunun renginde alır (drop-shadow, açılan sekmeyi de kapsasın diye) */
 .work-card:hover,
-.work-card:focus-within {
-  border-color: var(--card-accent);
-  filter: drop-shadow(6px 6px 0 var(--card-accent));
-}
+.work-card:focus-within { filter: drop-shadow(6px 6px 0 var(--card-accent)); }
 /* indir sekmesi açıkken sağ köşeler düzleşir, sekmeyle tek parça görünür */
 .work-card:has(.work-dl):is(:hover, :focus-within) {
   border-top-right-radius: 0;
@@ -1050,8 +1051,140 @@ body[data-theme="club42"] {
 .home-works { margin-top: 64px; }
 .home-works .work-cards { gap: 20px 60px; }
 .home-works .work-card { --work-radius: var(--r-lg); border-color: var(--line); }
-.home-works .work-card:hover,
-.home-works .work-card:focus-within { border-color: var(--card-accent); }
+
+/* ---------- Etkinlik takvimi ($ cal) ----------
+   Sol: Unix `cal` çıktısı gibi monospace ay tablosu; bugün ters renkte (cal'daki
+   gibi), etkinlik günlerinin altında oyunun renginde kareler.
+   Sağ: en yakın etkinliğe geri sayım ve ayın etkinlik listesi. */
+.home-cal { margin-top: 64px; }
+.cal-arg { color: var(--muted); }
+.home-section .cal-arg { color: var(--muted); }
+.cal-shell {
+  display: grid;
+  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(14px);
+}
+.cal-month { padding: 20px 22px 18px; border-right: 1px solid var(--line); }
+.cal-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.cal-title { font: 800 22px/1.1 var(--display); font-variation-settings: var(--wide); color: var(--ink); }
+.cal-nav { display: flex; gap: 6px; }
+.cal-btn {
+  font: 500 12px/1 var(--code);
+  color: #cfd6d8;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 7px 9px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.cal-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+.cal-btn:focus-visible, .cal-day:focus-visible, .cal-row:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+  font: 400 15px/1 var(--code);
+  font-variant-numeric: tabular-nums;
+}
+.cal-dow { padding: 0 0 8px; text-align: center; font-size: 12px; color: var(--muted); }
+.cal-dow.weekend { color: #5f6769; }
+.cal-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  padding: 7px 0 6px;
+  font: inherit;
+  color: #d8dcdd;
+  background: none;
+  border: 0;
+  border-radius: 2px;
+}
+.cal-day.weekend { color: #9aa3a6; }
+.cal-day.gone { color: #5f6769; }
+.cal-day.today { color: #000; background: #fff; font-weight: 700; }
+.cal-day.has-events { cursor: pointer; color: #fff; }
+.cal-day.has-events.gone { color: #9aa3a6; }
+.cal-day.has-events:hover { background: rgba(255, 255, 255, 0.08); }
+.cal-day.today.has-events:hover { background: #e6e6e6; }
+.cal-day.selected { box-shadow: inset 0 0 0 1px var(--teal); }
+.cal-marks { display: flex; gap: 3px; min-height: 5px; }
+.cal-mark { width: 5px; height: 5px; background: var(--card-accent, var(--teal)); }
+.cal-day.gone .cal-mark { opacity: 0.45; }
+.cal-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 14px 0 0; font: 400 12px/1.4 var(--code); color: var(--muted); }
+.cal-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+
+.cal-agenda { min-width: 0; padding: 20px 22px; }
+.cal-next {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 2px 16px;
+  padding: 0 0 18px;
+  margin-bottom: 6px;
+  border-bottom: 1px dashed var(--line);
+}
+.cal-next-label { grid-column: 1 / -1; font: 400 12px/1.4 var(--code); color: var(--muted); }
+.cal-next-title { min-width: 0; font: 700 17px/1.25 var(--sans); color: var(--ink); }
+.cal-countdown {
+  font: 700 clamp(20px, 2.4vw, 30px)/1 var(--code);
+  font-variant-numeric: tabular-nums;
+  color: var(--card-accent, var(--teal));
+  white-space: nowrap;
+}
+.cal-list { margin: 0; padding: 0; list-style: none; }
+.cal-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  font: 400 13px/1.4 var(--code);
+  color: #cfd6d8;
+  border-bottom: 1px solid var(--line);
+}
+.cal-empty { padding: 4px 0; font: 400 14px/1.9 var(--code); color: var(--muted); }
+.cal-empty .cal-btn { margin-top: 6px; }
+.cal-item { --card-accent: var(--teal); border-bottom: 1px solid var(--line); }
+.cal-item:last-child { border-bottom: 0; }
+.cal-row {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.cal-date { display: flex; flex-direction: column; align-items: flex-start; border-left: 3px solid var(--card-accent); padding-left: 10px; }
+.cal-date b { font: 800 26px/1 var(--display); font-variation-settings: var(--wide); color: var(--ink); font-variant-numeric: tabular-nums; }
+.cal-date small { margin-top: 3px; font: 400 11.5px/1 var(--code); color: var(--muted); }
+.cal-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.cal-what { font: 700 16px/1.3 var(--sans); color: var(--ink); }
+.cal-meta { font: 400 12.5px/1.4 var(--code); color: #aab2b4; white-space: pre-wrap; }
+.cal-status { font: 500 12px/1 var(--code); color: var(--muted); white-space: nowrap; }
+.cal-item.soon .cal-status { color: var(--card-accent); }
+.cal-item.now .cal-status { color: #000; background: var(--card-accent); padding: 4px 6px; }
+.cal-item.past .cal-date b,
+.cal-item.past .cal-what { color: #7d8587; }
+.cal-item.past .cal-date { border-left-color: #3b4143; }
+.cal-row:hover .cal-what { text-decoration: underline; text-underline-offset: 3px; }
+.cal-detail { padding: 0 0 14px 72px; }
+.cal-desc { margin: 0 0 12px; max-width: 62ch; font-size: 15px; line-height: 1.6; color: #c3c9cb; }
+.cal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* ---------- Yapım detay sayfası (42 görünümü, oyunun rengiyle) ---------- */
 /* Kartın büyümüş hali gibi açılır, altında metin bir man sayfası gibi dizilir:
@@ -1272,7 +1405,7 @@ body[data-theme="club42"] {
   backdrop-filter: blur(14px);
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
-.doc-row:hover { border-color: rgba(255, 255, 255, 0.24); background: color-mix(in srgb, var(--card-accent) 7%, rgba(16, 18, 19, 0.82)); }
+.doc-row:hover { background: color-mix(in srgb, var(--card-accent) 7%, rgba(16, 18, 19, 0.82)); }
 .doc-text { display: block; min-width: 0; }
 .doc-title { display: block; font: 800 18px/1.25 var(--display); font-variation-settings: var(--wide); }
 .doc-desc { display: block; margin-top: 6px; max-width: 60ch; font-size: 15px; line-height: 1.5; color: #c3c9cb; }
@@ -1568,6 +1701,15 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
   .card-name { font-size: 20px; }
   .card-addr { font-size: 11.5px; }
   .wp-layout { grid-template-columns: minmax(0, 1fr); }
+  .cal-shell { grid-template-columns: minmax(0, 1fr); }
+  .cal-month { padding: 16px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .cal-agenda { padding: 16px; }
+  .cal-btn { min-height: 36px; }
+  .cal-day { min-height: 40px; }
+  .cal-row { grid-template-columns: 50px minmax(0, 1fr); }
+  .cal-status { grid-column: 2; justify-self: start; }
+  .cal-detail { padding-left: 0; }
+  .cal-next { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .work-page { --indent: 0px; }
   .wp-cover { box-shadow: 6px 6px 0 var(--card-accent); }
   .wp-cover-text { padding: 18px 16px 14px; }

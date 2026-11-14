@@ -36,6 +36,33 @@
         <div class="game-cards" id="club-servers"></div>
       </section>
 
+      <!-- ETKİNLİK TAKVİMİ (js/config.js içindeki EVENTS) -->
+      <section class="home-cal" id="home-cal" aria-labelledby="cal-heading">
+        <h2 class="home-section" id="cal-heading"><span>$</span> cal <span class="cal-arg" id="cal-arg"></span></h2>
+        <div class="cal-shell">
+          <div class="cal-month">
+            <div class="cal-head">
+              <span class="cal-title" id="cal-title" aria-live="polite"></span>
+              <span class="cal-nav">
+                <button class="cal-btn" id="cal-prev" type="button">Önceki ay</button>
+                <button class="cal-btn" id="cal-today" type="button">Bugün</button>
+                <button class="cal-btn" id="cal-next" type="button">Sonraki ay</button>
+              </span>
+            </div>
+            <div class="cal-grid" id="cal-grid" role="grid" aria-labelledby="cal-title"></div>
+            <p class="cal-legend" id="cal-legend"></p>
+          </div>
+          <div class="cal-agenda">
+            <div class="cal-next" id="cal-next-box" hidden>
+              <span class="cal-next-label">sonraki etkinlik</span>
+              <span class="cal-next-title" id="cal-next-title"></span>
+              <span class="cal-countdown" id="cal-countdown"></span>
+            </div>
+            <ol class="cal-list" id="cal-list"></ol>
+          </div>
+        </div>
+      </section>
+
       <section class="home-works" id="home-works" hidden>
         <h2 class="home-section"><span>$</span> ls yapimlar/</h2>
         <div class="work-cards" id="home-works-list"></div>
