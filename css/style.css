@@ -1050,7 +1050,9 @@ body[data-theme="club42"] {
 /* Ana sayfadaki yapımlar */
 .home-works { margin-top: 64px; }
 .home-works .work-cards { gap: 20px 60px; }
-.home-works .work-card { --work-radius: var(--r-lg); border-color: var(--line); }
+/* ana sayfadaki yapım kartları kenarlıksız; görsel kartın sınırını çiziyor */
+.home-works .work-card { --work-radius: var(--r-lg); border: 0; }
+.home-works .work-dl { top: 0; bottom: 0; }
 
 /* ---------- Etkinlik takvimi ($ cal) ----------
    Sol: Unix `cal` çıktısı gibi monospace ay tablosu; bugün ters renkte (cal'daki

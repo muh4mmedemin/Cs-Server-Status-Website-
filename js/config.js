@@ -153,7 +153,43 @@ const DOCS = [
 //     place: "Cluster c2",
 //     description: "5v5 karışık takımlar, istanbul_42 haritasında açılış maçı.",
 //   },
-const EVENTS = [];
+// ÖRNEK etkinlikler: takvimin nasıl göründüğünü göstermek için eklendi.
+// Kendi etkinliklerinizi ekledikten sonra bunları silin ya da düzenleyin.
+const EVENTS = [
+  {
+    date: "2026-11-08",
+    time: "19:00",
+    end: "21:00",
+    title: "Minecraft sunucusu tanıtımı",
+    game: "minecraft",
+    place: "Discord",
+    description: "Kulübün Minecraft sunucusunun ilk turu: spawn alanı, kurallar ve ilk build yarışmasının duyurusu.",
+  },
+  {
+    date: "2026-11-21",
+    time: "20:00",
+    end: "23:30",
+    title: "CS 1.6 LAN gecesi",
+    game: "cs16",
+    place: "Cluster",
+    description: "5v5 karışık takımlar. Açılış maçı istanbul_42 haritasında; haritayı önceden indirip cstrike/maps klasörüne koyun.",
+  },
+  {
+    date: "2026-11-28",
+    title: "Kulüp tanışma günü",
+    place: "Kafeterya",
+    description: "Yeni gelenlerle tanışma, kulübün sunucularının ve yapımlarının kısa tanıtımı.",
+  },
+  {
+    date: "2026-12-05",
+    time: "21:00",
+    end: "01:00",
+    title: "Squad deneme operasyonu",
+    game: "squad",
+    place: "Discord",
+    description: "İlk kulüp operasyonu. Squad liderleri mikrofonla katılmalı.",
+  },
+];
 
 // ---- Sunucu sayfası arka plan fotoğrafları ----
 // Fotoğrafı img/photos/<oyun>/ klasörüne koyup dosya adını aşağıya yazın; sayfa
