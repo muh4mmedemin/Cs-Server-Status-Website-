@@ -12,11 +12,12 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-theme="club42">
+  <a class="skip-link" href="#icerik">İçeriğe geç</a>
   <!-- Sol: oyun geçiş çubuğu -->
   <nav class="game-rail" id="game-rail" aria-label="Oyunlar"></nav>
   <div class="fade-veil" aria-hidden="true"></div>
 
-  <div class="desktop">
+  <div class="desktop" id="icerik" tabindex="-1">
     <!-- 42 KULÜP ANA SAYFASI -->
     <main class="club-home" id="club-home" hidden>
       <header class="home-hero">
@@ -138,7 +139,7 @@
 
     <main class="vgui-window" id="server-window" hidden>
       <div class="title-bar">
-        <span class="title" id="window-title" lang="en"></span>
+        <h1 class="title" id="window-title" lang="en"></h1>
         <span class="title-buttons">
           <span class="tbtn" aria-hidden="true">_</span>
           <span class="tbtn" aria-hidden="true">x</span>

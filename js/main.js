@@ -150,13 +150,20 @@ function typeCommand(text) {
 // Sol menüde seçili öğe. cmd: terminal satırına yazılacak komut
 function setRailActive(id, cmd) {
   const changed = !$(`.game-rail [data-game="${id}"].active`);
-  $$(".game-rail [data-game]").forEach((a) => a.classList.toggle("active", a.dataset.game === id));
+  $$(".game-rail [data-game]").forEach((a) => {
+    a.classList.toggle("active", a.dataset.game === id);
+    // ekran okuyucular hangi sayfada olunduğunu duysun
+    if (a.dataset.game === id) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  });
   const item = $(`.game-rail [data-game="${id}"]`);
   $(".rail-file").textContent = id === CLUB_ID ? "~/42" : `${id}/`;
   if (cmd) typeCommand(cmd);
   if (!item || !changed) return;
   replay(item, "glitch");
-  item.scrollIntoView({ block: "nearest", inline: "nearest" });
+  // ilk açılışta kaydırma yok: kaydırma, klavyede Tab'ın başlangıç noktasını menüye taşıyıp
+  // "İçeriğe geç" bağlantısını atlatıyor
+  if (document.body.classList.contains("ready")) item.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
 // Kartlar fareye doğru hafifçe eğilir
@@ -1145,6 +1152,17 @@ function route(hash) {
   else if (r.work) showWork(r.work);
   else if (r.game) selectGame(r.game);
   else showClub();
+  focusOpenView();
+}
+
+// sayfa değişince (oyundan oyuna geçiş dahil) odak açık içeriğe geçer;
+// ekran okuyucu yeni sayfayı baştan okur. İlk açılışta odak yerinde kalır.
+function focusOpenView() {
+  if (!document.body.classList.contains("ready")) return;
+  const el = ["#club-home", "#server-window", "#work-page", "#doc-page"].map((s) => $(s)).find((v) => !v.hidden);
+  if (!el) return;
+  el.setAttribute("tabindex", "-1");
+  el.focus({ preventScroll: true });
 }
 
 function selectGame(id) {
@@ -1198,6 +1216,15 @@ function navigate(hash) {
 }
 
 window.addEventListener("hashchange", () => navigate(location.hash.slice(1)));
+
+// "İçeriğe geç": adresi değiştirmeden (yönlendirme tetiklenmesin) odağı açık içeriğe taşı
+$(".skip-link").addEventListener("click", (e) => {
+  e.preventDefault();
+  const open = ["#club-home", "#server-window", "#work-page", "#doc-page"].map((s) => $(s)).find((el) => !el.hidden);
+  const target = open || $("#icerik");
+  target.setAttribute("tabindex", "-1");
+  target.focus();
+});
 
 // ---- Sekmeler ----
 function showTab(name) {

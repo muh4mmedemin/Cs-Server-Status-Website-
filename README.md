@@ -94,6 +94,17 @@ Saatler İstanbul saatidir. Etkinlik, takvimde o günün altında oyunun rengind
 işaretlenir; listede açılınca ziyaretçi **Takvime ekle** ile `.ics` dosyası indirip
 kendi takvimine kaydedebilir. En yakın etkinliğe canlı geri sayım gösterilir.
 
+## Tasarım skill'i (ui-ux-pro-max)
+
+`.claude/skills/ui-ux-pro-max/` altında [UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
+skill'i kurulu (MIT lisanslı). Claude Code bu klasördeki skill'i otomatik tanır; arayüz
+değişikliklerinde erişilebilirlik, dokunma alanı, kontrast ve animasyon kurallarını
+buradan uygular. Arama aracı yereldir, internete bağlanmaz:
+
+```bash
+python3 .claude/skills/ui-ux-pro-max/scripts/search.py "focus not obscured" --domain ux
+```
+
 ## Dosyalar
 
 ```
