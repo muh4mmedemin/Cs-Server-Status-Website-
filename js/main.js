@@ -596,7 +596,7 @@ function calStatus(e) {
   if (eventStart(e) <= now) return { cls: "now", text: "şimdi" };
   if (e.date === istanbulToday()) return { cls: "soon", text: "bugün" };
   const days = Math.round((new Date(`${e.date}T12:00:00Z`) - new Date(`${istanbulToday()}T12:00:00Z`)) / 864e5);
-  return { cls: "soon", text: days === 1 ? "yarın" : `${days} gün sonra` };
+  return { cls: "soon", text: days === 1 ? "yarın" : "" };
 }
 
 // .ics dosyası: Google Takvim, Apple Takvim ve Outlook içe aktarabilir
@@ -643,7 +643,32 @@ function renderEvents() {
   list.innerHTML = "";
   $("#home-cal").hidden = all.length === 0;
   [...upcoming, ...past].forEach((e, i) => list.appendChild(eventCard(e, i)));
+  fitEvList();
 }
+
+// 5 etkinlikten fazlası varsa liste ilk 5 satır yüksekliğinde kalır, gerisi kaydırılır
+const EV_VISIBLE = 5;
+function fitEvList() {
+  const list = $("#ev-list");
+  const items = list.children;
+  list.classList.toggle("scroll", items.length > EV_VISIBLE);
+  if (items.length <= EV_VISIBLE) list.style.maxHeight = "";
+  if (items.length <= EV_VISIBLE || list.offsetParent === null) return updateEvMore();
+  // satırların konumu max-height'tan bağımsız; sıfırlamadan ölçülür ki kaydırma yeri korunsun
+  const last = items[EV_VISIBLE - 1];
+  list.style.maxHeight = `${last.offsetTop + last.offsetHeight - items[0].offsetTop}px`;
+  updateEvMore();
+}
+
+// listenin altında kaç etkinliğin kaydırınca göründüğünü yazar; en alta inince gizlenir
+function updateEvMore() {
+  const list = $("#ev-list");
+  const more = $("#ev-more");
+  const rest = list.children.length - EV_VISIBLE;
+  more.textContent = `${rest} etkinlik daha var, görmek için listeyi kaydırın.`;
+  more.hidden = rest <= 0 || list.scrollTop + list.clientHeight >= list.scrollHeight - 2;
+}
+$("#ev-list").addEventListener("scroll", updateEvMore, { passive: true });
 
 function eventCard(e, i) {
   const [y, m, d] = e.date.split("-").map(Number);
@@ -655,29 +680,37 @@ function eventCard(e, i) {
   if (game) li.dataset.game = game.id;
   li.innerHTML = `
     <button class="ev-card" type="button" aria-haspopup="dialog">
-      <span class="ev-head">
+      <span class="ev-date">
         <span class="ev-day"></span>
-        <span class="ev-mon"><b></b><small></small></span>
+        <span class="ev-mon"></span>
+        <span class="ev-dow"></span>
       </span>
       <span class="ev-body">
-        <span class="ev-status"></span>
         <span class="ev-title"></span>
         <span class="ev-meta"></span>
       </span>
+      <span class="ev-status"></span>
     </button>`;
   li.querySelector(".ev-day").textContent = d;
-  li.querySelector(".ev-mon b").textContent = MONTHS[m - 1];
-  li.querySelector(".ev-mon small").textContent = `${DAYS_LONG[weekdayOf(e.date)]}${y !== Number(istanbulToday().slice(0, 4)) ? ` ${y}` : ""}`;
+  li.querySelector(".ev-mon").textContent = `${MONTHS[m - 1]}${y !== Number(istanbulToday().slice(0, 4)) ? ` ${y}` : ""}`;
+  li.querySelector(".ev-dow").textContent = DAYS_LONG[weekdayOf(e.date)];
   li.querySelector(".ev-status").textContent = status.text;
   li.querySelector(".ev-title").textContent = e.title;
-  li.querySelector(".ev-meta").textContent = [eventTime(e), game && game.name, e.place].filter(Boolean).join("  ·  ");
+  const meta = li.querySelector(".ev-meta");
+  [["ev-time", eventTime(e)], ["ev-game", game && game.name], ["ev-place", e.place && `Mekan: ${e.place}`]].forEach(([cls, text]) => {
+    if (!text) return;
+    const span = document.createElement("span");
+    span.className = cls;
+    span.textContent = text;
+    meta.appendChild(span);
+  });
   const card = li.querySelector(".ev-card");
-  card.setAttribute("aria-label", `${d} ${MONTHS[m - 1]}, ${e.title}, ${status.text}. Ayrıntılar için açın.`);
+  card.setAttribute("aria-label", `${d} ${MONTHS[m - 1]}, ${e.title}${status.text ? `, ${status.text}` : ""}. Ayrıntılar için açın.`);
   card.addEventListener("click", () => openEvent(e, card));
   return li;
 }
 
-const eventTime = (e) => (e.time ? (e.end ? `${e.time} - ${e.end}` : e.time) : "tüm gün");
+const eventTime = (e) => (e.time ? (e.end ? `${e.time} - ${e.end}` : e.time) : "");
 
 // ---- Etkinlik penceresi (native <dialog>: Esc ile kapanır, arka plan etkileşimsiz) ----
 const evDialog = $("#ev-dialog");
@@ -697,7 +730,7 @@ function openEvent(e, trigger) {
   $("#evd-title").textContent = e.title;
   const facts = $("#evd-facts");
   facts.innerHTML = "";
-  [["Saat", eventTime(e)], ["Yer", e.place], ["Oyun", game && game.name]].forEach(([k, v]) => {
+  [["Saat", eventTime(e)], ["Mekan", e.place], ["Oyun", game && game.name]].forEach(([k, v]) => {
     if (!v) return;
     const dt = document.createElement("dt");
     const dd = document.createElement("dd");
@@ -744,6 +777,9 @@ evDialog.addEventListener("close", () => {
 
 function initCalendar() {
   renderEvents();
+  // bölüm görünür olduğunda ya da genişliği değiştiğinde 5 satırlık yüksekliği yeniden ölç
+  if ("ResizeObserver" in window) new ResizeObserver(fitEvList).observe($("#home-cal"));
+  else window.addEventListener("resize", fitEvList);
   // "3 gün sonra" gibi durumlar güncel kalsın
   setInterval(() => {
     if (!$("#club-home").hidden && !evDialog.open) renderEvents();
