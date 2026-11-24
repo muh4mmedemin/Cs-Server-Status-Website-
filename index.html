@@ -37,31 +37,10 @@
         <div class="game-cards" id="club-servers"></div>
       </section>
 
-      <!-- ETKİNLİK TAKVİMİ (js/config.js içindeki EVENTS) -->
-      <section class="home-cal" id="home-cal" aria-labelledby="cal-heading">
-        <h2 class="home-section" id="cal-heading"><span>$</span> cal <span class="cal-arg" id="cal-arg"></span></h2>
-        <div class="cal-shell">
-          <div class="cal-month">
-            <div class="cal-head">
-              <span class="cal-title" id="cal-title" aria-live="polite"></span>
-              <span class="cal-nav">
-                <button class="cal-btn" id="cal-prev" type="button">Önceki ay</button>
-                <button class="cal-btn" id="cal-today" type="button">Bugün</button>
-                <button class="cal-btn" id="cal-next" type="button">Sonraki ay</button>
-              </span>
-            </div>
-            <div class="cal-grid" id="cal-grid" role="grid" aria-labelledby="cal-title"></div>
-            <p class="cal-legend" id="cal-legend"></p>
-          </div>
-          <div class="cal-agenda">
-            <div class="cal-next" id="cal-next-box" hidden>
-              <span class="cal-next-label">sonraki etkinlik</span>
-              <span class="cal-next-title" id="cal-next-title"></span>
-              <span class="cal-countdown" id="cal-countdown"></span>
-            </div>
-            <ol class="cal-list" id="cal-list"></ol>
-          </div>
-        </div>
+      <!-- ETKİNLİKLER (js/config.js içindeki EVENTS) -->
+      <section class="home-cal" id="home-cal" aria-labelledby="ev-heading" hidden>
+        <h2 class="home-section" id="ev-heading"><span>$</span> ls etkinlikler/</h2>
+        <ol class="ev-list" id="ev-list"></ol>
       </section>
 
       <section class="home-works" id="home-works" hidden>
@@ -242,6 +221,22 @@
   </div>
 
   <div class="toast" id="toast" hidden></div>
+
+  <!-- Etkinlik penceresi: karta tıklayınca açılır -->
+  <dialog class="ev-dialog" id="ev-dialog" aria-labelledby="evd-title">
+    <div class="evd-head">
+      <span class="evd-day" id="evd-day"></span>
+      <span class="evd-when"><b id="evd-mon"></b><span id="evd-dow"></span></span>
+      <span class="evd-status" id="evd-status"></span>
+      <button class="evd-close" id="evd-close" type="button" aria-label="Pencereyi kapat">Kapat</button>
+    </div>
+    <div class="evd-body">
+      <h3 class="evd-title" id="evd-title"></h3>
+      <dl class="evd-facts" id="evd-facts"></dl>
+      <p class="evd-desc" id="evd-desc"></p>
+      <div class="evd-actions" id="evd-actions"></div>
+    </div>
+  </dialog>
 
   <!-- Tam ekran fotoğraf görüntüleyici -->
   <div class="lightbox" id="lightbox" hidden>

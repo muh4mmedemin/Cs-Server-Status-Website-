@@ -146,15 +146,6 @@ a { color: var(--accent); }
   background: linear-gradient(90deg, color-mix(in srgb, var(--c) 22%, transparent), transparent 85%);
 }
 
-/* vim tarzı durum çubuğu */
-.rail-status {
-  display: flex;
-  margin-top: auto;
-  font-size: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-.rail-mode { padding: 6px 10px; font-weight: 700; color: #001314; background: #00babc; }
-.rail-file { padding: 6px 10px; color: #cfd6d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* seçimde RGB kaymalı kısa glitch */
 .rail-item.glitch,
@@ -676,7 +667,8 @@ body[data-theme="club42"] {
 .club-home,
 .work-page,
 .doc-page,
-.lightbox {
+.lightbox,
+.ev-dialog {
   /* 42 renkleri: siyah, beyaz, turkuaz. Turkuaz yalnızca kulübün kendisi için;
      içerik kendi oyununun rengini taşır (sol kenar çizgisi). */
   --teal: #00babc;
@@ -831,32 +823,32 @@ body[data-theme="club42"] {
 .game-card[data-game="cs16"], .work-page[data-game="cs16"], .doc-page[data-game="cs16"],
 .doc-game[data-game="cs16"], .work-card[data-game="cs16"] { --card-accent: #c4b550; }
 .rail-item[data-game="cs16"] { --c: #c4b550; }
-.cal-item[data-game="cs16"], .cal-mark[data-game="cs16"], .cal-legend-item[data-game="cs16"], .cal-next[data-game="cs16"] { --card-accent: #c4b550; }
+.ev[data-game="cs16"], .ev-dialog[data-game="cs16"] { --card-accent: #c4b550; }
 .live-row[data-game="cs2"], .doc-row[data-game="cs2"],
 .game-card[data-game="cs2"], .work-page[data-game="cs2"], .doc-page[data-game="cs2"],
 .doc-game[data-game="cs2"], .work-card[data-game="cs2"] { --card-accent: #6db3f2; }
 .rail-item[data-game="cs2"] { --c: #6db3f2; }
-.cal-item[data-game="cs2"], .cal-mark[data-game="cs2"], .cal-legend-item[data-game="cs2"], .cal-next[data-game="cs2"] { --card-accent: #6db3f2; }
+.ev[data-game="cs2"], .ev-dialog[data-game="cs2"] { --card-accent: #6db3f2; }
 .live-row[data-game="minecraft"], .doc-row[data-game="minecraft"],
 .game-card[data-game="minecraft"], .work-page[data-game="minecraft"], .doc-page[data-game="minecraft"],
 .doc-game[data-game="minecraft"], .work-card[data-game="minecraft"] { --card-accent: #6db33e; }
 .rail-item[data-game="minecraft"] { --c: #6db33e; }
-.cal-item[data-game="minecraft"], .cal-mark[data-game="minecraft"], .cal-legend-item[data-game="minecraft"], .cal-next[data-game="minecraft"] { --card-accent: #6db33e; }
+.ev[data-game="minecraft"], .ev-dialog[data-game="minecraft"] { --card-accent: #6db33e; }
 .live-row[data-game="rust"], .doc-row[data-game="rust"],
 .game-card[data-game="rust"], .work-page[data-game="rust"], .doc-page[data-game="rust"],
 .doc-game[data-game="rust"], .work-card[data-game="rust"] { --card-accent: #cd412b; }
 .rail-item[data-game="rust"] { --c: #cd412b; }
-.cal-item[data-game="rust"], .cal-mark[data-game="rust"], .cal-legend-item[data-game="rust"], .cal-next[data-game="rust"] { --card-accent: #cd412b; }
+.ev[data-game="rust"], .ev-dialog[data-game="rust"] { --card-accent: #cd412b; }
 .live-row[data-game="arma3"], .doc-row[data-game="arma3"],
 .game-card[data-game="arma3"], .work-page[data-game="arma3"], .doc-page[data-game="arma3"],
 .doc-game[data-game="arma3"], .work-card[data-game="arma3"] { --card-accent: #c48214; }
 .rail-item[data-game="arma3"] { --c: #c48214; }
-.cal-item[data-game="arma3"], .cal-mark[data-game="arma3"], .cal-legend-item[data-game="arma3"], .cal-next[data-game="arma3"] { --card-accent: #c48214; }
+.ev[data-game="arma3"], .ev-dialog[data-game="arma3"] { --card-accent: #c48214; }
 .live-row[data-game="squad"], .doc-row[data-game="squad"],
 .game-card[data-game="squad"], .work-page[data-game="squad"], .doc-page[data-game="squad"],
 .doc-game[data-game="squad"], .work-card[data-game="squad"] { --card-accent: #9aab52; }
 .rail-item[data-game="squad"] { --c: #9aab52; }
-.cal-item[data-game="squad"], .cal-mark[data-game="squad"], .cal-legend-item[data-game="squad"], .cal-next[data-game="squad"] { --card-accent: #9aab52; }
+.ev[data-game="squad"], .ev-dialog[data-game="squad"] { --card-accent: #9aab52; }
 .card-art {
   position: absolute;
   inset: 0;
@@ -1055,139 +1047,160 @@ body[data-theme="club42"] {
 .home-works .work-card { --work-radius: var(--r-lg); border: 0; }
 .home-works .work-dl { top: 0; bottom: 0; }
 
-/* ---------- Etkinlik takvimi ($ cal) ----------
-   Sol: Unix `cal` çıktısı gibi monospace ay tablosu; bugün ters renkte (cal'daki
-   gibi), etkinlik günlerinin altında oyunun renginde kareler.
-   Sağ: en yakın etkinliğe geri sayım ve ayın etkinlik listesi. */
+/* ---------- Etkinlikler ($ ls etkinlikler/) ----------
+   Her etkinlik bir kart: başlığında büyük gün rakamı ve ay adı, üst kenarında
+   oyunun rengi. Karta tıklayınca açılan pencere etkinliği anlatır. */
 .home-cal { margin-top: 64px; }
-.cal-arg { color: var(--muted); }
-.home-section .cal-arg { color: var(--muted); }
-.cal-shell {
+.ev-list {
   display: grid;
-  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
-  background: var(--glass);
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  backdrop-filter: blur(14px);
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.cal-month { padding: 20px 22px 18px; border-right: 1px solid var(--line); }
-.cal-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
-.cal-title { font: 800 22px/1.1 var(--display); font-variation-settings: var(--wide); color: var(--ink); }
-.cal-nav { display: flex; gap: 6px; }
-.cal-btn {
-  font: 500 12px/1 var(--code);
-  color: #cfd6d8;
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  padding: 7px 9px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.cal-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
-.cal-btn:focus-visible, .cal-day:focus-visible, .cal-row:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
-
-.cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 2px;
-  font: 400 15px/1 var(--code);
-  font-variant-numeric: tabular-nums;
-}
-.cal-dow { padding: 0 0 8px; text-align: center; font-size: 12px; color: var(--muted); }
-.cal-dow.weekend { color: #9aa3a6; }
-.cal-day {
-  position: relative;
+.ev { --card-accent: var(--teal); animation: rise 0.6s var(--ease) backwards; animation-delay: calc(0.05s + var(--i, 0) * 0.05s); }
+.ev-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  min-height: 44px;
-  padding: 7px 0 6px;
+  width: 100%;
+  height: 100%;
+  padding: 0;
   font: inherit;
-  color: #d8dcdd;
-  background: none;
-  border: 0;
-  border-radius: 2px;
+  color: var(--ink);
+  text-align: left;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--card-accent);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s var(--ease);
 }
-.cal-day.weekend { color: #9aa3a6; }
-.cal-day.gone { color: #8a9294; }
-.cal-day.today { color: #000; background: #fff; font-weight: 700; }
-.cal-day.has-events { cursor: pointer; color: #fff; }
-.cal-day.has-events.gone { color: #9aa3a6; }
-.cal-day.has-events:hover { background: rgba(255, 255, 255, 0.08); }
-.cal-day.today.has-events:hover { background: #e6e6e6; }
-.cal-day.selected { box-shadow: inset 0 0 0 1px var(--teal); }
-.cal-marks { display: flex; gap: 3px; min-height: 5px; }
-.cal-mark { width: 5px; height: 5px; background: var(--card-accent, var(--teal)); }
-.cal-day.gone .cal-mark { opacity: 0.45; }
-.cal-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 14px 0 0; font: 400 12px/1.4 var(--code); color: var(--muted); }
-.cal-legend-item { display: inline-flex; align-items: center; gap: 6px; }
-
-.cal-agenda { min-width: 0; padding: 20px 22px; }
-.cal-next {
+.ev-card:hover { background: color-mix(in srgb, var(--card-accent) 9%, rgba(16, 18, 19, 0.86)); }
+.ev-card:active { transform: scale(0.985); }
+.ev-card:focus-visible { outline: 2px solid var(--card-accent); outline-offset: 3px; }
+.ev-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: end;
-  gap: 2px 16px;
-  padding: 0 0 18px;
-  margin-bottom: 6px;
-  border-bottom: 1px dashed var(--line);
+  gap: 0 12px;
+  padding: 16px 18px 12px;
 }
-.cal-next-label { grid-column: 1 / -1; font: 400 12px/1.4 var(--code); color: var(--muted); }
-.cal-next-title { min-width: 0; font: 700 17px/1.25 var(--sans); color: var(--ink); }
-.cal-countdown {
-  font: 700 clamp(20px, 2.4vw, 30px)/1 var(--code);
+.ev-day {
+  font: 800 64px/0.82 var(--display);
+  font-variation-settings: var(--wide);
   font-variant-numeric: tabular-nums;
-  color: var(--card-accent, var(--teal));
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.ev-mon { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding-bottom: 2px; }
+.ev-mon b { font: 800 19px/1 var(--display); font-variation-settings: var(--wide); text-transform: uppercase; color: var(--card-accent); }
+.ev-mon small { font: 400 13px/1.2 var(--code); color: #c3c9cb; }
+.ev-status {
+  align-self: flex-start;
+  margin-bottom: 2px;
+  padding: 4px 7px;
+  font: 500 12px/1 var(--code);
+  color: var(--card-accent);
+  border: 1px solid color-mix(in srgb, var(--card-accent) 45%, transparent);
+  border-radius: 2px;
   white-space: nowrap;
 }
-.cal-list { margin: 0; padding: 0; list-style: none; }
-.cal-filter {
+.ev-body {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 0;
-  font: 400 13px/1.4 var(--code);
-  color: #cfd6d8;
-  border-bottom: 1px solid var(--line);
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  padding: 12px 18px 16px;
+  border-top: 1px dashed var(--line);
 }
-.cal-empty { padding: 4px 0; font: 400 14px/1.9 var(--code); color: var(--muted); }
-.cal-empty .cal-btn { margin-top: 6px; }
-.cal-item { --card-accent: var(--teal); border-bottom: 1px solid var(--line); }
-.cal-item:last-child { border-bottom: 0; }
-.cal-row {
+.ev-title { font: 700 17px/1.3 var(--sans); }
+.ev-meta { font: 400 12.5px/1.5 var(--code); color: #b4bcbe; white-space: pre-wrap; }
+.ev.now .ev-status { color: #000; background: var(--card-accent); border-color: var(--card-accent); }
+/* biten etkinlikler soluk; yine de açılıp okunabilir */
+.ev.past .ev-card { border-top-color: #3b4143; }
+.ev.past .ev-day, .ev.past .ev-title { color: #8a9294; }
+.ev.past .ev-mon b, .ev.past .ev-status { color: #8a9294; border-color: #3b4143; }
+
+/* Etkinlik penceresi */
+.ev-dialog {
+  --card-accent: var(--teal);
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  padding: 0;
+  overflow: auto;
+  color: var(--ink);
+  font-family: var(--sans);
+  background: #0d0f10;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+}
+.ev-dialog::backdrop { background: rgba(0, 0, 0, 0.72); backdrop-filter: blur(6px); }
+.ev-dialog[open] { animation: ev-open 0.24s var(--ease); }
+.ev-dialog[open]::backdrop { animation: fade-in 0.24s ease; }
+@keyframes ev-open { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
+.evd-head {
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 12px 0;
-  font: inherit;
-  color: inherit;
-  text-align: left;
-  background: none;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0 14px;
+  padding: 22px 22px 18px;
+  color: #000;
+  background: var(--card-accent);
+}
+.evd-day {
+  font: 800 96px/0.8 var(--display);
+  font-variation-settings: var(--wide);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+.evd-when { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding-bottom: 4px; }
+.evd-when b { font: 800 24px/1 var(--display); font-variation-settings: var(--wide); text-transform: uppercase; }
+.evd-when span { font: 500 14px/1 var(--code); }
+.evd-status {
+  align-self: start;
+  padding: 5px 8px;
+  font: 600 12px/1 var(--code);
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.evd-close {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: start;
+  justify-self: end;
+  min-width: 44px;
+  min-height: 44px;
+  margin: -12px -12px 0 0;
+  padding: 0 12px;
+  font: 600 13px/1 var(--code);
+  color: #000;
+  background: rgba(255, 255, 255, 0.3);
   border: 0;
+  border-radius: 2px;
   cursor: pointer;
 }
-.cal-date { display: flex; flex-direction: column; align-items: flex-start; border-left: 3px solid var(--card-accent); padding-left: 10px; }
-.cal-date b { font: 800 26px/1 var(--display); font-variation-settings: var(--wide); color: var(--ink); font-variant-numeric: tabular-nums; }
-.cal-date small { margin-top: 3px; font: 400 12px/1 var(--code); color: var(--muted); }
-.cal-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.cal-what { font: 700 16px/1.3 var(--sans); color: var(--ink); }
-.cal-meta { font: 400 12.5px/1.4 var(--code); color: #aab2b4; white-space: pre-wrap; }
-.cal-status { font: 500 12px/1 var(--code); color: var(--muted); white-space: nowrap; }
-.cal-item.soon .cal-status { color: var(--card-accent); }
-.cal-item.now .cal-status { color: #000; background: var(--card-accent); padding: 4px 6px; }
-.cal-item.past .cal-date b,
-.cal-item.past .cal-what { color: #7d8587; }
-.cal-item.past .cal-date { border-left-color: #3b4143; }
-.cal-row:hover .cal-what { text-decoration: underline; text-underline-offset: 3px; }
-.cal-detail { padding: 0 0 14px 72px; }
-.cal-desc { margin: 0 0 12px; max-width: 62ch; font-size: 15px; line-height: 1.6; color: #c3c9cb; }
-.cal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.evd-close:hover { background: rgba(255, 255, 255, 0.55); }
+.evd-close:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
+/* durum etiketi kapatma butonunun altında */
+.evd-head .evd-status { grid-column: 3; grid-row: 1; align-self: end; justify-self: end; }
+.evd-body { display: flex; flex-direction: column; gap: 16px; padding: 22px; }
+.evd-title { margin: 0; font: 800 26px/1.15 var(--display); font-variation-settings: var(--wide); text-wrap: balance; }
+.evd-facts { display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; margin: 0; font-size: 15px; }
+.evd-facts dt { font: 400 13px/1.6 var(--code); color: var(--muted); }
+.evd-facts dd { margin: 0; color: #fff; overflow-wrap: anywhere; }
+.evd-desc { margin: 0; max-width: 62ch; font-size: 16px; line-height: 1.65; color: #d8dcdd; }
+.evd-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.evd-actions:empty { display: none; }
+.ev-dialog .home-btn.primary { background: var(--card-accent); color: #000; }
+.ev-dialog .home-btn.primary:hover { background: #fff; }
+.ev-dialog.past .evd-head { background: #3b4143; color: #fff; }
+.ev-dialog.past .evd-status, .ev-dialog.past .evd-close { color: #fff; border-color: rgba(255, 255, 255, 0.5); }
+.ev-dialog.past .evd-close { background: rgba(0, 0, 0, 0.35); }
+.ev-dialog.past .evd-close:hover { background: rgba(0, 0, 0, 0.55); }
 
 /* ---------- Yapım detay sayfası (42 görünümü, oyunun rengiyle) ---------- */
 /* Kartın büyümüş hali gibi açılır, altında metin bir man sayfası gibi dizilir:
@@ -1658,7 +1671,7 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; }
-  .game-card, .card-art-color, .work-card, .work-img img, .work-dl, .home-btn, .doc-row { transition: none; }
+  .game-card, .card-art-color, .work-card, .work-img img, .work-dl, .home-btn, .doc-row, .ev-card { transition: none; }
 }
 
 /* ---------- Mobil ---------- */
@@ -1679,7 +1692,7 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
   .game-rail { align-items: center; gap: 2px; }
   .rail-club { margin: 0 6px 0 0; }
   .rail-club .rail-short { font-size: 18px; }
-  .rail-term, .rail-status { display: none; }
+  .rail-term { display: none; }
   .rail-tree { flex-direction: row; flex: none; }
   .rail-item { flex: none; }
   .rail-name { overflow: visible; text-overflow: clip; }
@@ -1704,15 +1717,10 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
   .card-name { font-size: 20px; }
   .card-addr { font-size: 12px; }
   .wp-layout { grid-template-columns: minmax(0, 1fr); }
-  .cal-shell { grid-template-columns: minmax(0, 1fr); }
-  .cal-month { padding: 16px; border-right: 0; border-bottom: 1px solid var(--line); }
-  .cal-agenda { padding: 16px; }
-  .cal-btn { min-height: 36px; }
-  .cal-day { min-height: 40px; }
-  .cal-row { grid-template-columns: 50px minmax(0, 1fr); }
-  .cal-status { grid-column: 2; justify-self: start; }
-  .cal-detail { padding-left: 0; }
-  .cal-next { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .ev-list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .ev-day { font-size: 56px; }
+  .evd-day { font-size: 72px; }
+  .evd-head, .evd-body { padding: 18px; }
   .work-page { --indent: 0px; }
   .wp-cover { box-shadow: 6px 6px 0 var(--card-accent); }
   .wp-cover-text { padding: 18px 16px 14px; }
@@ -1752,9 +1760,8 @@ a, button, .work-card, .game-card { touch-action: manipulation; }
 @media (pointer: coarse) {
   .rail-item, .rail-club { min-height: 44px; display: flex; align-items: center; }
   .rail-club { min-width: 44px; justify-content: center; }
-  .tab, .vbtn, .home-btn, .cal-btn, .code-copy, .lb-btn, .tbtn { min-height: 44px; }
+  .tab, .vbtn, .home-btn, .code-copy, .lb-btn, .tbtn { min-height: 44px; }
   .tbtn { min-width: 44px; }
-  .cal-day { min-height: 44px; }
   .server-list a { display: inline-block; padding: 12px 0; }
   .dp-toc button { min-height: 44px; display: flex; align-items: center; }
   .wp-crumbs a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 6px; }

@@ -92,9 +92,7 @@ function renderRail() {
       <span class="rail-cmd"></span><span class="rail-caret"></span>
     </div>
     <div class="rail-tree"></div>
-    <div class="rail-status" aria-hidden="true">
-      <span class="rail-mode">NORMAL</span><span class="rail-file"></span>
-    </div>`;
+`;
   const club = $(".rail-club");
   club.title = CLUB.name;
   club.setAttribute("aria-label", CLUB.name);
@@ -157,7 +155,6 @@ function setRailActive(id, cmd) {
     else a.removeAttribute("aria-current");
   });
   const item = $(`.game-rail [data-game="${id}"]`);
-  $(".rail-file").textContent = id === CLUB_ID ? "~/42" : `${id}/`;
   if (cmd) typeCommand(cmd);
   if (!item || !changed) return;
   replay(item, "glitch");
@@ -567,12 +564,9 @@ let tocHeadings = [];
 let tocButtons = [];
 
 // ---- Etkinlik takvimi (EVENTS, js/config.js) ----
-// Unix `cal` gibi bir ay tablosu ve yanında o ayın etkinlik listesi.
 // Saatler İstanbul saatidir (UTC+3, yaz saati yok).
 const TZ = "+03:00";
 const MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-const MONTHS_SHORT = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
-const DAYS_SHORT = ["Pt", "Sa", "Ça", "Pe", "Cu", "Ct", "Pz"];
 const DAYS_LONG = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
 const pad2 = (n) => String(n).padStart(2, "0");
 
@@ -596,8 +590,6 @@ const weekdayOf = (iso) => (new Date(`${iso}T12:00:00Z`).getUTCDay() + 6) % 7;
 const sortedEvents = () =>
   EVENTS.filter((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date || "")).sort((a, b) => eventStart(a) - eventStart(b));
 
-const cal = { year: 0, month: 0, day: null };
-
 function calStatus(e) {
   const now = Date.now();
   if (eventEnd(e) <= now) return { cls: "past", text: "bitti" };
@@ -605,174 +597,6 @@ function calStatus(e) {
   if (e.date === istanbulToday()) return { cls: "soon", text: "bugün" };
   const days = Math.round((new Date(`${e.date}T12:00:00Z`) - new Date(`${istanbulToday()}T12:00:00Z`)) / 864e5);
   return { cls: "soon", text: days === 1 ? "yarın" : `${days} gün sonra` };
-}
-
-function setCalMonth(year, month) {
-  cal.year = year + Math.floor(month / 12);
-  cal.month = ((month % 12) + 12) % 12;
-  cal.day = null;
-  renderCalendar();
-}
-
-function renderCalendar() {
-  const { year, month } = cal;
-  const prefix = `${year}-${pad2(month + 1)}`;
-  const today = istanbulToday();
-  const events = sortedEvents();
-  const monthEvents = events.filter((e) => e.date.startsWith(prefix));
-  const byDay = new Map();
-  monthEvents.forEach((e) => byDay.set(e.date, [...(byDay.get(e.date) || []), e]));
-
-  $("#cal-title").textContent = `${MONTHS[month]} ${year}`;
-  $("#cal-arg").textContent = `${month + 1} ${year}`;
-
-  // ay tablosu: önce gün adları, sonra ayın ilk gününe kadar boşluk (cal gibi)
-  const grid = $("#cal-grid");
-  grid.innerHTML = "";
-  DAYS_SHORT.forEach((d, i) => {
-    const h = document.createElement("span");
-    h.className = `cal-dow${i > 4 ? " weekend" : ""}`;
-    h.textContent = d;
-    h.title = DAYS_LONG[i];
-    grid.appendChild(h);
-  });
-  const first = `${prefix}-01`;
-  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-  for (let i = 0; i < weekdayOf(first); i++) grid.appendChild(document.createElement("span"));
-  for (let d = 1; d <= daysInMonth; d++) {
-    const iso = `${prefix}-${pad2(d)}`;
-    const list = byDay.get(iso) || [];
-    const cell = document.createElement(list.length ? "button" : "span");
-    cell.className = "cal-day";
-    if (weekdayOf(iso) > 4) cell.classList.add("weekend");
-    if (iso === today) cell.classList.add("today");
-    if (iso < today) cell.classList.add("gone");
-    cell.innerHTML = `<span class="cal-num"></span><span class="cal-marks"></span>`;
-    cell.querySelector(".cal-num").textContent = d;
-    if (list.length) {
-      cell.type = "button";
-      cell.classList.add("has-events");
-      cell.classList.toggle("selected", cal.day === iso);
-      cell.setAttribute("aria-pressed", String(cal.day === iso));
-      cell.setAttribute(
-        "aria-label",
-        `${d} ${MONTHS[month]} ${DAYS_LONG[weekdayOf(iso)]}: ${list.map((e) => e.title).join(", ")}`
-      );
-      list.slice(0, 3).forEach((e) => {
-        const m = document.createElement("span");
-        m.className = "cal-mark";
-        if (e.game) m.dataset.game = e.game;
-        cell.querySelector(".cal-marks").appendChild(m);
-      });
-      cell.addEventListener("click", () => {
-        cal.day = cal.day === iso ? null : iso;
-        renderCalendar();
-      });
-    }
-    grid.appendChild(cell);
-  }
-
-  // renk açıklaması: bu ay hangi oyunların etkinliği var
-  const games = [...new Set(monthEvents.map((e) => e.game).filter(Boolean))];
-  const legend = $("#cal-legend");
-  legend.innerHTML = "";
-  games.forEach((g) => {
-    const server = SERVERS.find((s) => s.id === g);
-    if (!server) return;
-    const item = document.createElement("span");
-    item.className = "cal-legend-item";
-    item.dataset.game = g;
-    item.innerHTML = `<span class="cal-mark"></span>`;
-    item.append(server.name);
-    legend.appendChild(item);
-  });
-  legend.hidden = !legend.childElementCount;
-
-  renderAgenda(cal.day ? byDay.get(cal.day) || [] : monthEvents, events);
-  updateCountdown42();
-}
-
-function renderAgenda(shown, all) {
-  const list = $("#cal-list");
-  list.innerHTML = "";
-  if (cal.day) {
-    const [y, m, d] = cal.day.split("-").map(Number);
-    const head = document.createElement("li");
-    head.className = "cal-filter";
-    head.innerHTML = `<span></span><button class="cal-btn" type="button">Tüm ay</button>`;
-    head.querySelector("span").textContent = `${d} ${MONTHS[m - 1]} ${y}, ${DAYS_LONG[weekdayOf(cal.day)]}`;
-    head.querySelector("button").addEventListener("click", () => {
-      cal.day = null;
-      renderCalendar();
-    });
-    list.appendChild(head);
-  }
-  if (!shown.length) {
-    const empty = document.createElement("li");
-    empty.className = "cal-empty";
-    empty.textContent = `# ${MONTHS[cal.month]} ${cal.year} için planlanmış etkinlik yok.`;
-    const next = all.find((e) => eventEnd(e) > Date.now());
-    if (next) {
-      const [y, m, d] = next.date.split("-").map(Number);
-      const jump = document.createElement("button");
-      jump.type = "button";
-      jump.className = "cal-btn";
-      jump.textContent = `Sonraki etkinlik: ${d} ${MONTHS[m - 1]}`;
-      jump.addEventListener("click", () => setCalMonth(y, m - 1));
-      empty.append(document.createElement("br"), jump);
-    }
-    list.appendChild(empty);
-    return;
-  }
-  shown.forEach((e) => list.appendChild(agendaItem(e)));
-}
-
-function agendaItem(e) {
-  const [, m, d] = e.date.split("-").map(Number);
-  const status = calStatus(e);
-  const game = SERVERS.find((s) => s.id === e.game);
-  const li = document.createElement("li");
-  li.className = `cal-item ${status.cls}`;
-  if (game) li.dataset.game = game.id;
-  li.innerHTML = `
-    <button class="cal-row" type="button" aria-expanded="false">
-      <span class="cal-date"><b></b><small></small></span>
-      <span class="cal-main">
-        <span class="cal-what"></span>
-        <span class="cal-meta"></span>
-      </span>
-      <span class="cal-status"></span>
-    </button>
-    <div class="cal-detail" hidden>
-      <p class="cal-desc"></p>
-      <div class="cal-actions"><button class="cal-btn cal-ics" type="button">Takvime ekle</button></div>
-    </div>`;
-  li.querySelector(".cal-date b").textContent = d;
-  li.querySelector(".cal-date small").textContent = `${MONTHS_SHORT[m - 1]} ${DAYS_SHORT[weekdayOf(e.date)]}`;
-  li.querySelector(".cal-what").textContent = e.title;
-  const time = e.time ? (e.end ? `${e.time} - ${e.end}` : e.time) : "tüm gün";
-  li.querySelector(".cal-meta").textContent = [time, game && game.name, e.place].filter(Boolean).join("  ·  ");
-  li.querySelector(".cal-status").textContent = status.text;
-  const desc = li.querySelector(".cal-desc");
-  if (e.description) desc.textContent = e.description;
-  else desc.remove();
-  if (game) {
-    const link = document.createElement("a");
-    link.className = "cal-btn";
-    link.href = `#${game.id}`;
-    link.textContent = `${game.name} sunucusu`;
-    li.querySelector(".cal-actions").appendChild(link);
-  }
-  const ics = li.querySelector(".cal-ics");
-  if (status.cls === "past") ics.remove();
-  else ics.addEventListener("click", () => downloadIcs(e));
-  const row = li.querySelector(".cal-row");
-  row.addEventListener("click", () => {
-    const open = row.getAttribute("aria-expanded") !== "true";
-    row.setAttribute("aria-expanded", String(open));
-    li.querySelector(".cal-detail").hidden = !open;
-  });
-  return li;
 }
 
 // .ics dosyası: Google Takvim, Apple Takvim ve Outlook içe aktarabilir
@@ -808,40 +632,122 @@ function downloadIcs(e) {
   log(`Takvim dosyası indirildi: ${e.title}`);
 }
 
-// en yakın etkinliğe geri sayım
-function updateCountdown42() {
-  const box = $("#cal-next-box");
-  const next = sortedEvents().find((e) => eventEnd(e) > Date.now());
-  box.hidden = !next;
-  if (!next) return;
-  box.dataset.game = next.game || "";
-  $("#cal-next-title").textContent = next.title;
-  const left = eventStart(next) - Date.now();
-  if (left <= 0) {
-    $("#cal-countdown").textContent = "şu an sürüyor";
-    return;
-  }
-  const s = Math.floor(left / 1000);
-  const parts = [[Math.floor(s / 86400), "g"], [Math.floor((s % 86400) / 3600), "sa"], [Math.floor((s % 3600) / 60), "dk"], [s % 60, "sn"]];
-  $("#cal-countdown").textContent = parts
-    .slice(parts.findIndex(([v]) => v > 0))
-    .map(([v, u]) => `${pad2(v)}${u}`)
-    .join(" ");
+// Etkinlik kartları: tarih kartın başlığında büyük; karta tıklayınca açılan
+// pencere etkinliği anlatır. Önce yaklaşanlar (en yakını başta), sonra bitenler.
+function renderEvents() {
+  const all = sortedEvents();
+  const now = Date.now();
+  const upcoming = all.filter((e) => eventEnd(e) > now);
+  const past = all.filter((e) => eventEnd(e) <= now).reverse();
+  const list = $("#ev-list");
+  list.innerHTML = "";
+  $("#home-cal").hidden = all.length === 0;
+  [...upcoming, ...past].forEach((e, i) => list.appendChild(eventCard(e, i)));
 }
-setInterval(() => {
-  if (!$("#club-home").hidden) updateCountdown42();
-}, 1000);
 
-$("#cal-prev").addEventListener("click", () => setCalMonth(cal.year, cal.month - 1));
-$("#cal-next").addEventListener("click", () => setCalMonth(cal.year, cal.month + 1));
-$("#cal-today").addEventListener("click", () => {
-  const [y, m] = istanbulToday().split("-").map(Number);
-  setCalMonth(y, m - 1);
+function eventCard(e, i) {
+  const [y, m, d] = e.date.split("-").map(Number);
+  const status = calStatus(e);
+  const game = SERVERS.find((s) => s.id === e.game);
+  const li = document.createElement("li");
+  li.className = `ev ${status.cls}`;
+  li.style.setProperty("--i", i);
+  if (game) li.dataset.game = game.id;
+  li.innerHTML = `
+    <button class="ev-card" type="button" aria-haspopup="dialog">
+      <span class="ev-head">
+        <span class="ev-day"></span>
+        <span class="ev-mon"><b></b><small></small></span>
+      </span>
+      <span class="ev-body">
+        <span class="ev-status"></span>
+        <span class="ev-title"></span>
+        <span class="ev-meta"></span>
+      </span>
+    </button>`;
+  li.querySelector(".ev-day").textContent = d;
+  li.querySelector(".ev-mon b").textContent = MONTHS[m - 1];
+  li.querySelector(".ev-mon small").textContent = `${DAYS_LONG[weekdayOf(e.date)]}${y !== Number(istanbulToday().slice(0, 4)) ? ` ${y}` : ""}`;
+  li.querySelector(".ev-status").textContent = status.text;
+  li.querySelector(".ev-title").textContent = e.title;
+  li.querySelector(".ev-meta").textContent = [eventTime(e), game && game.name, e.place].filter(Boolean).join("  ·  ");
+  const card = li.querySelector(".ev-card");
+  card.setAttribute("aria-label", `${d} ${MONTHS[m - 1]}, ${e.title}, ${status.text}. Ayrıntılar için açın.`);
+  card.addEventListener("click", () => openEvent(e, card));
+  return li;
+}
+
+const eventTime = (e) => (e.time ? (e.end ? `${e.time} - ${e.end}` : e.time) : "tüm gün");
+
+// ---- Etkinlik penceresi (native <dialog>: Esc ile kapanır, arka plan etkileşimsiz) ----
+const evDialog = $("#ev-dialog");
+let evTrigger = null;
+
+function openEvent(e, trigger) {
+  const [y, m, d] = e.date.split("-").map(Number);
+  const status = calStatus(e);
+  const game = SERVERS.find((s) => s.id === e.game);
+  evTrigger = trigger;
+  evDialog.dataset.game = game ? game.id : "";
+  evDialog.className = `ev-dialog ${status.cls}`;
+  $("#evd-day").textContent = d;
+  $("#evd-mon").textContent = `${MONTHS[m - 1]} ${y}`;
+  $("#evd-dow").textContent = DAYS_LONG[weekdayOf(e.date)];
+  $("#evd-status").textContent = status.text;
+  $("#evd-title").textContent = e.title;
+  const facts = $("#evd-facts");
+  facts.innerHTML = "";
+  [["Saat", eventTime(e)], ["Yer", e.place], ["Oyun", game && game.name]].forEach(([k, v]) => {
+    if (!v) return;
+    const dt = document.createElement("dt");
+    const dd = document.createElement("dd");
+    dt.textContent = k;
+    dd.textContent = v;
+    facts.append(dt, dd);
+  });
+  const desc = $("#evd-desc");
+  desc.textContent = e.description || "";
+  desc.hidden = !e.description;
+
+  const actions = $("#evd-actions");
+  actions.innerHTML = "";
+  if (status.cls !== "past") {
+    const ics = document.createElement("button");
+    ics.type = "button";
+    ics.className = "home-btn primary";
+    ics.textContent = "Takvime ekle";
+    ics.addEventListener("click", () => downloadIcs(e));
+    actions.appendChild(ics);
+  }
+  if (game) {
+    const link = document.createElement("a");
+    link.className = "home-btn";
+    link.href = `#${game.id}`;
+    link.textContent = `${game.name} sunucusu`;
+    link.addEventListener("click", () => evDialog.close());
+    actions.appendChild(link);
+  }
+  evDialog.showModal();
+  $("#evd-close").focus();
+}
+
+$("#evd-close").addEventListener("click", () => evDialog.close());
+// pencerenin dışına (karartılmış alana) tıklayınca kapan
+evDialog.addEventListener("click", (ev) => {
+  if (ev.target === evDialog) evDialog.close();
+});
+// kapanınca odak, açan karta geri döner
+evDialog.addEventListener("close", () => {
+  if (evTrigger && evTrigger.isConnected) evTrigger.focus({ preventScroll: true });
+  evTrigger = null;
 });
 
 function initCalendar() {
-  const [y, m] = istanbulToday().split("-").map(Number);
-  setCalMonth(y, m - 1);
+  renderEvents();
+  // "3 gün sonra" gibi durumlar güncel kalsın
+  setInterval(() => {
+    if (!$("#club-home").hidden && !evDialog.open) renderEvents();
+  }, 60e3);
 }
 
 function renderHomeDocs() {
