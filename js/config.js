@@ -129,11 +129,11 @@ const DOCS = [
   },
 ];
 
-// ---- Etkinlik takvimi: ana sayfadaki "$ cal" bölümü ----
+// ---- Etkinlikler: ana sayfadaki "$ ls etkinlikler/" bölümü ----
 // Her etkinlik için listeye bir blok ekleyin. Saatler İstanbul saatiyle yazılır.
-// Etkinlik hem ay takviminde (o günün altında oyunun renginde işaret) hem de
-// yanındaki listede görünür; ziyaretçiler "Takvime ekle" ile kendi takvimlerine
-// (.ics) kaydedebilir. Tarihi geçen etkinlikler listede soluk görünür.
+// Her etkinlik bir kart olarak görünür; kartın başlığında tarih büyük yazılır.
+// Karta tıklayınca açılan pencerede açıklama, saat, yer ve "Takvime ekle" (.ics)
+// butonu bulunur. Yaklaşanlar önce gelir; tarihi geçenler sonda soluk görünür.
 //
 // date:        "YYYY-AA-GG" biçiminde gün, ör. "2026-11-21"
 // time:        başlangıç saati "SS:DD", ör. "20:00" (isteğe bağlı; yoksa tüm gün)
