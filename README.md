@@ -75,7 +75,7 @@ not kutuları, tablolar ve otomatik içindekiler.
 
 ## Etkinlik ekleme (takvim)
 
-Ana sayfadaki `$ ls etkinlikler/` bölümü etkinlik kartlarından oluşur. Etkinlik eklemek
+Ana sayfadaki `$ ls etkinlikler/` bölümü uzun etkinlik satırlarından oluşur. Etkinlik eklemek
 için `js/config.js` içindeki `EVENTS` listesine bir blok yazın (dosyada örnek var):
 
 ```js
@@ -90,10 +90,11 @@ için `js/config.js` içindeki `EVENTS` listesine bir blok yazın (dosyada örne
 },
 ```
 
-Saatler İstanbul saatidir. Kartın başlığında tarih büyük yazılır, üst kenarı oyunun
-rengini alır. Karta tıklayınca açılan pencere etkinliği anlatır; ziyaretçi oradan
-**Takvime ekle** ile `.ics` dosyası indirip kendi takvimine kaydedebilir. Yaklaşan
-etkinlikler önce gelir, tarihi geçenler sonda soluk görünür.
+Saatler İstanbul saatidir. Her satırın solunda tarih büyük yazılır; yaklaşan
+etkinlikler oyunun rengini alır, tarihi geçenler sonda soluk ve renksiz görünür.
+5 etkinlikten fazlası varsa liste kendi içinde kaydırılır. Satıra tıklayınca açılan
+pencere etkinliği anlatır; ziyaretçi oradan **Takvime ekle** ile `.ics` dosyası
+indirip kendi takvimine kaydedebilir.
 
 ## Tasarım skill'i (ui-ux-pro-max)
 

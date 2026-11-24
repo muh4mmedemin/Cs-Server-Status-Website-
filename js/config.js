@@ -131,12 +131,13 @@ const DOCS = [
 
 // ---- Etkinlikler: ana sayfadaki "$ ls etkinlikler/" bölümü ----
 // Her etkinlik için listeye bir blok ekleyin. Saatler İstanbul saatiyle yazılır.
-// Her etkinlik bir kart olarak görünür; kartın başlığında tarih büyük yazılır.
-// Karta tıklayınca açılan pencerede açıklama, saat, yer ve "Takvime ekle" (.ics)
+// Her etkinlik uzun bir satır olarak görünür; solunda tarih büyük yazılır.
+// 5 etkinlikten fazlası varsa liste kaydırılır.
+// Satıra tıklayınca açılan pencerede açıklama, saat, mekan ve "Takvime ekle" (.ics)
 // butonu bulunur. Yaklaşanlar önce gelir; tarihi geçenler sonda soluk görünür.
 //
 // date:        "YYYY-AA-GG" biçiminde gün, ör. "2026-11-21"
-// time:        başlangıç saati "SS:DD", ör. "20:00" (isteğe bağlı; yoksa tüm gün)
+// time:        başlangıç saati "SS:DD", ör. "20:00" (isteğe bağlı; yoksa saat yazılmaz)
 // end:         bitiş saati "SS:DD" (isteğe bağlı)
 // title:       etkinliğin adı
 // game:        ilgili oyun (SERVERS içindeki id; isteğe bağlı, etkinlik o oyunun renginde olur)
@@ -188,6 +189,33 @@ const EVENTS = [
     game: "squad",
     place: "Discord",
     description: "İlk kulüp operasyonu. Squad liderleri mikrofonla katılmalı.",
+  },
+  {
+    date: "2026-12-12",
+    time: "20:00",
+    end: "23:00",
+    title: "CS2 kulüp turnuvası",
+    game: "cs2",
+    place: "Cluster",
+    description: "2v2 wingman turnuvası. Takımlar etkinlikten bir gün önce Discord'da kurulur.",
+  },
+  {
+    date: "2026-12-19",
+    time: "21:00",
+    end: "00:30",
+    title: "Rust wipe gecesi",
+    game: "rust",
+    place: "Discord",
+    description: "Sunucu sıfırlanıyor. Herkes aynı anda başlıyor; ilk gece takımlar en fazla 3 kişi.",
+  },
+  {
+    date: "2026-12-26",
+    time: "20:30",
+    end: "23:30",
+    title: "Arma 3 ortak görev",
+    game: "arma3",
+    place: "Discord",
+    description: "Kulübün yazdığı ilk görev. Gerekli modların listesi Discord'da paylaşılacak.",
   },
 ];
 

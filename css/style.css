@@ -838,7 +838,7 @@ body[data-theme="club42"] {
 .game-card[data-game="rust"], .work-page[data-game="rust"], .doc-page[data-game="rust"],
 .doc-game[data-game="rust"], .work-card[data-game="rust"] { --card-accent: #cd412b; }
 .rail-item[data-game="rust"] { --c: #cd412b; }
-.ev[data-game="rust"], .ev-dialog[data-game="rust"] { --card-accent: #cd412b; }
+.ev[data-game="rust"], .ev-dialog[data-game="rust"] { --card-accent: #cd412b; --on-accent: #fff; }
 .live-row[data-game="arma3"], .doc-row[data-game="arma3"],
 .game-card[data-game="arma3"], .work-page[data-game="arma3"], .doc-page[data-game="arma3"],
 .doc-game[data-game="arma3"], .work-card[data-game="arma3"] { --card-accent: #c48214; }
@@ -1048,80 +1048,104 @@ body[data-theme="club42"] {
 .home-works .work-dl { top: 0; bottom: 0; }
 
 /* ---------- Etkinlikler ($ ls etkinlikler/) ----------
-   Her etkinlik bir kart: başlığında büyük gün rakamı ve ay adı, üst kenarında
-   oyunun rengi. Karta tıklayınca açılan pencere etkinliği anlatır. */
+   Her etkinlik uzun bir satır: solda oyunun renginde dolu tarih bloğu, ortada
+   ad ve bilgiler. 5 satırdan fazlası liste içinde kaydırılır. Tıklayınca açılan
+   pencere etkinliği anlatır. */
 .home-cal { margin-top: 64px; }
 .ev-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.ev { --card-accent: var(--teal); animation: rise 0.6s var(--ease) backwards; animation-delay: calc(0.05s + var(--i, 0) * 0.05s); }
+.ev-list.scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #4a5254 transparent;
+}
+.ev-list.scroll::-webkit-scrollbar { width: 6px; }
+.ev-list.scroll::-webkit-scrollbar-thumb { background: #4a5254; border-radius: 3px; }
+.ev {
+  --card-accent: var(--teal);
+  --on-accent: #000;
+  flex: none;
+  animation: rise 0.6s var(--ease) backwards;
+  animation-delay: calc(0.05s + var(--i, 0) * 0.05s);
+}
 .ev-card {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 124px minmax(0, 1fr) auto;
+  align-items: stretch;
   width: 100%;
-  height: 100%;
+  min-height: 104px;
   padding: 0;
+  overflow: hidden;
   font: inherit;
   color: var(--ink);
   text-align: left;
-  background: var(--glass);
-  border: 1px solid var(--line);
-  border-top: 3px solid var(--card-accent);
+  background: color-mix(in srgb, var(--card-accent) 7%, rgba(16, 18, 19, 0.86));
+  border: 1px solid color-mix(in srgb, var(--card-accent) 35%, transparent);
   border-radius: var(--r-lg);
-  backdrop-filter: blur(14px);
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s var(--ease);
 }
-.ev-card:hover { background: color-mix(in srgb, var(--card-accent) 9%, rgba(16, 18, 19, 0.86)); }
-.ev-card:active { transform: scale(0.985); }
-.ev-card:focus-visible { outline: 2px solid var(--card-accent); outline-offset: 3px; }
-.ev-head {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: end;
-  gap: 0 12px;
-  padding: 16px 18px 12px;
+.ev-card:hover { background: color-mix(in srgb, var(--card-accent) 16%, rgba(16, 18, 19, 0.86)); }
+.ev-card:active { transform: scale(0.99); }
+.ev-card:focus-visible { outline: 2px solid var(--card-accent); outline-offset: -2px; }
+.ev-date {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 16px;
+  color: var(--on-accent);
+  background: var(--card-accent);
 }
 .ev-day {
-  font: 800 64px/0.82 var(--display);
+  font: 800 52px/0.82 var(--display);
   font-variation-settings: var(--wide);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
-  color: var(--ink);
 }
-.ev-mon { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding-bottom: 2px; }
-.ev-mon b { font: 800 19px/1 var(--display); font-variation-settings: var(--wide); text-transform: uppercase; color: var(--card-accent); }
-.ev-mon small { font: 400 13px/1.2 var(--code); color: #c3c9cb; }
-.ev-status {
-  align-self: flex-start;
-  margin-bottom: 2px;
-  padding: 4px 7px;
-  font: 500 12px/1 var(--code);
-  color: var(--card-accent);
-  border: 1px solid color-mix(in srgb, var(--card-accent) 45%, transparent);
-  border-radius: 2px;
-  white-space: nowrap;
-}
+.ev-mon { font: 800 15px/1 var(--display); font-variation-settings: var(--wide); text-transform: uppercase; }
+.ev-dow { font: 500 12px/1 var(--code); }
 .ev-body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  flex: 1;
-  padding: 12px 18px 16px;
-  border-top: 1px dashed var(--line);
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px 22px;
 }
-.ev-title { font: 700 17px/1.3 var(--sans); }
-.ev-meta { font: 400 12.5px/1.5 var(--code); color: #b4bcbe; white-space: pre-wrap; }
-.ev.now .ev-status { color: #000; background: var(--card-accent); border-color: var(--card-accent); }
-/* biten etkinlikler soluk; yine de açılıp okunabilir */
-.ev.past .ev-card { border-top-color: #3b4143; }
-.ev.past .ev-day, .ev.past .ev-title { color: #8a9294; }
-.ev.past .ev-mon b, .ev.past .ev-status { color: #8a9294; border-color: #3b4143; }
+.ev-title { font: 700 19px/1.25 var(--sans); }
+.ev-meta { display: flex; flex-wrap: wrap; gap: 4px 22px; font: 400 13px/1.5 var(--code); color: #c3c9cb; }
+.ev-game { color: var(--card-accent); }
+.ev[data-game="rust"] .ev-game { color: #e8705c; }
+.ev-status {
+  align-self: center;
+  margin-right: 20px;
+  padding: 5px 9px;
+  font: 500 12px/1 var(--code);
+  color: var(--card-accent);
+  border: 1px solid color-mix(in srgb, var(--card-accent) 55%, transparent);
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.ev-status:empty, .evd-status:empty { display: none; }
+.ev-more { margin: 12px 0 0; font: 400 13px/1.5 var(--code); color: var(--muted); }
+.ev.now .ev-status { color: var(--on-accent); background: var(--card-accent); border-color: var(--card-accent); }
+/* biten etkinlikler soluk ve renksiz; yine de açılıp okunabilir */
+.ev.past .ev-card { background: rgba(16, 18, 19, 0.7); border-color: #2c3133; }
+.ev.past .ev-card:hover { background: rgba(30, 33, 35, 0.86); }
+.ev.past .ev-date { color: #9ba3a5; background: #24282a; }
+.ev.past .ev-title { color: #9ba3a5; }
+.ev.past .ev-meta, .ev.past .ev-game { color: #8f989a; }
+.ev.past .ev-status { color: #8f989a; border-color: #3b4143; }
 
 /* Etkinlik penceresi */
 .ev-dialog {
@@ -1147,7 +1171,7 @@ body[data-theme="club42"] {
   align-items: end;
   gap: 0 14px;
   padding: 22px 22px 18px;
-  color: #000;
+  color: var(--on-accent, #000);
   background: var(--card-accent);
 }
 .evd-day {
@@ -1195,12 +1219,12 @@ body[data-theme="club42"] {
 .evd-desc { margin: 0; max-width: 62ch; font-size: 16px; line-height: 1.65; color: #d8dcdd; }
 .evd-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .evd-actions:empty { display: none; }
-.ev-dialog .home-btn.primary { background: var(--card-accent); color: #000; }
+.ev-dialog .home-btn.primary { background: var(--card-accent); color: var(--on-accent, #000); }
 .ev-dialog .home-btn.primary:hover { background: #fff; }
 .ev-dialog.past .evd-head { background: #3b4143; color: #fff; }
 .ev-dialog.past .evd-status, .ev-dialog.past .evd-close { color: #fff; border-color: rgba(255, 255, 255, 0.5); }
-.ev-dialog.past .evd-close { background: rgba(0, 0, 0, 0.35); }
-.ev-dialog.past .evd-close:hover { background: rgba(0, 0, 0, 0.55); }
+.ev-dialog.past .evd-close, .ev-dialog[data-game="rust"] .evd-close { color: #fff; background: rgba(0, 0, 0, 0.35); }
+.ev-dialog.past .evd-close:hover, .ev-dialog[data-game="rust"] .evd-close:hover { background: rgba(0, 0, 0, 0.55); }
 
 /* ---------- Yapım detay sayfası (42 görünümü, oyunun rengiyle) ---------- */
 /* Kartın büyümüş hali gibi açılır, altında metin bir man sayfası gibi dizilir:
@@ -1717,8 +1741,14 @@ body[data-cursor] :is(input, textarea) { cursor: text; }
   .card-name { font-size: 20px; }
   .card-addr { font-size: 12px; }
   .wp-layout { grid-template-columns: minmax(0, 1fr); }
-  .ev-list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .ev-day { font-size: 56px; }
+  .ev-card { grid-template-columns: 92px minmax(0, 1fr); }
+  .ev-date { grid-row: span 2; padding: 12px; }
+  .ev-day { font-size: 42px; }
+  .ev-mon { font-size: 13px; }
+  .ev-body { padding: 14px 16px; gap: 6px; }
+  .ev-title { font-size: 17px; }
+  .ev-meta { flex-direction: column; gap: 2px; font-size: 12.5px; }
+  .ev-status { grid-column: 2; justify-self: start; margin: -6px 16px 14px; }
   .evd-day { font-size: 72px; }
   .evd-head, .evd-body { padding: 18px; }
   .work-page { --indent: 0px; }
